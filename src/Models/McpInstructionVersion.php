@@ -27,6 +27,7 @@ final class McpInstructionVersion extends Model
 
     /** @use HasFactory<McpInstructionVersionFactory> */
     use HasFactory;
+
     use HasUlids;
 
     protected $table = 'cortex_mcp_instruction_versions';

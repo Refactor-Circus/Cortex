@@ -30,6 +30,7 @@ final class McpInstruction extends Model
 
     /** @use HasFactory<McpInstructionFactory> */
     use HasFactory;
+
     use HasUlids;
 
     protected $table = 'cortex_mcp_instructions';

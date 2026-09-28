@@ -30,6 +30,7 @@ final class ToolDescription extends Model
 
     /** @use HasFactory<ToolDescriptionFactory> */
     use HasFactory;
+
     use HasUlids;
 
     protected $table = 'cortex_tool_descriptions';
