@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Cache;
 use Throwable;
 
 /**
- * Cache for published content (prompt versions, tool description overrides)
- * that only changes when a new version is published — the publishing actions
- * invalidate explicitly.
+ * Cache for published content (virtual agent prompts, tool description,
+ * MCP instruction and concrete agent overrides) that only changes when a new
+ * version is published — the publishing actions invalidate explicitly.
  *
  * When Redis is available the Redis store is used with the flexible
  * (stale-while-revalidate) strategy, serving cached content instantly and
@@ -94,9 +94,14 @@ final class PublicationCache
         return '{cortex.published}.mcp-instructions';
     }
 
-    public function promptKey(string $promptId): string
+    public function concreteAgentsKey(): string
     {
-        return '{cortex.published}.prompt.'.$promptId;
+        return '{cortex.published}.concrete-agents';
+    }
+
+    public function virtualAgentKey(string $agentId): string
+    {
+        return '{cortex.published}.virtual-agent.'.$agentId;
     }
 
     private function repository(): Repository

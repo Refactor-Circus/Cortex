@@ -6,9 +6,16 @@ namespace JayI\Cortex\Http\Ui;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use JayI\Cortex\Actions\RunAgentAction;
-use JayI\Cortex\Models\Agent;
+use Illuminate\Validation\Rule;
+use JayI\Cortex\Actions\RunConcreteAgentAction;
+use JayI\Cortex\Actions\RunVirtualAgentAction;
+use JayI\Cortex\Agents\AgentRegistry;
+use JayI\Cortex\Models\VirtualAgent;
 
+/**
+ * Runs either kind of agent. The select submits `virtual:{slug}` or
+ * `concrete:{name}` so one field covers both.
+ */
 final class RunAgentUiController
 {
     public function create(Request $request): View
@@ -17,7 +24,7 @@ final class RunAgentUiController
         $view = 'cortex::ui.run';
 
         return view($view, [
-            'agents' => Agent::query()->orderBy('name')->get(),
+            'agents' => $this->options(),
             'selected' => $request->string('agent')->toString(),
             'result' => null,
         ]);
@@ -25,24 +32,53 @@ final class RunAgentUiController
 
     public function store(Request $request): View
     {
+        $options = $this->options();
+
         $data = $request->validate([
-            'agent' => ['required', 'string', 'exists:cortex_agents,slug'],
+            'agent' => ['required', 'string', Rule::in(array_keys($options))],
             'input' => ['required', 'string'],
         ]);
 
-        /** @var Agent $agent */
-        $agent = Agent::query()->where('slug', $data['agent'])->firstOrFail();
+        [$kind, $key] = explode(':', (string) $data['agent'], 2);
 
-        $response = app(RunAgentAction::class)->execute($agent, $data['input']);
+        $response = $kind === 'virtual'
+            ? app(RunVirtualAgentAction::class)->execute(
+                VirtualAgent::query()->where('slug', $key)->firstOrFail(),
+                $data['input'],
+            )
+            : app(RunConcreteAgentAction::class)->execute($key, $data['input']);
 
         /** @var view-string $view */
         $view = 'cortex::ui.run';
 
         return view($view, [
-            'agents' => Agent::query()->orderBy('name')->get(),
+            'agents' => $options,
             'selected' => $data['agent'],
             'input' => $data['input'],
             'result' => $response,
         ]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function options(): array
+    {
+        $virtual = VirtualAgent::query()
+            ->orderBy('name')
+            ->get()
+            ->mapWithKeys(fn (VirtualAgent $agent): array => [
+                'virtual:'.$agent->slug => $agent->name.' ('.__('cortex::cortex.virtual').')',
+            ])
+            ->all();
+
+        $concrete = collect(app(AgentRegistry::class)->names())
+            ->sort()
+            ->mapWithKeys(fn (string $name): array => [
+                'concrete:'.$name => $name.' ('.__('cortex::cortex.concrete').')',
+            ])
+            ->all();
+
+        return [...$virtual, ...$concrete];
     }
 }

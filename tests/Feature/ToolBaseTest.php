@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Mcp\Tools\CreateAgentTool;
+use JayI\Cortex\Mcp\Tools\CreateVirtualAgentTool;
 use JayI\Cortex\Models\ToolDescription;
 use JayI\Cortex\Support\PublicationCache;
 use JayI\Cortex\Tests\Fixtures\EchoCortexTool;
@@ -44,8 +44,8 @@ it('serves the published override to agents through the registry', function () {
 });
 
 it('applies overrides to the package management tools', function () {
-    publishToolDescriptionOverride('create-agent-tool', 'Create agents, but described differently.');
+    publishToolDescriptionOverride('create-virtual-agent-tool', 'Create agents, but described differently.');
 
-    expect(app(CreateAgentTool::class)->toArray()['description'])
+    expect(app(CreateVirtualAgentTool::class)->toArray()['description'])
         ->toBe('Create agents, but described differently.');
 });

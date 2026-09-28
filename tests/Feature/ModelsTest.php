@@ -3,48 +3,48 @@
 declare(strict_types=1);
 
 use Illuminate\Database\QueryException;
-use JayI\Cortex\Models\Agent;
+use JayI\Cortex\Models\ConcreteAgentOverride;
+use JayI\Cortex\Models\ConcreteAgentOverrideVersion;
 use JayI\Cortex\Models\McpInstruction;
 use JayI\Cortex\Models\McpInstructionVersion;
-use JayI\Cortex\Models\Prompt;
-use JayI\Cortex\Models\PromptVersion;
+use JayI\Cortex\Models\VirtualAgent;
+use JayI\Cortex\Models\VirtualAgentVersion;
 
-it('relates prompts to versions and a published version', function () {
-    $prompt = Prompt::factory()->create();
-    $version = PromptVersion::factory()->for($prompt, 'prompt')->create(['version' => 1]);
+it('relates virtual agents to versions and a published version', function () {
+    $agent = VirtualAgent::factory()->create();
+    $version = VirtualAgentVersion::factory()->for($agent, 'virtualAgent')->create(['version' => 1]);
 
-    $prompt->published_version_id = $version->getKey();
-    $prompt->save();
+    $agent->published_version_id = $version->getKey();
+    $agent->save();
 
-    expect($prompt->versions)->toHaveCount(1)
-        ->and($prompt->refresh()->publishedVersion?->getKey())->toBe($version->getKey())
-        ->and($version->prompt?->getKey())->toBe($prompt->getKey());
+    expect($agent->versions)->toHaveCount(1)
+        ->and($agent->refresh()->publishedVersion?->getKey())->toBe($version->getKey())
+        ->and($version->virtualAgent?->getKey())->toBe($agent->getKey());
 });
 
-it('enforces prompt version immutability', function () {
-    $version = PromptVersion::factory()->create();
+it('enforces virtual agent version immutability', function () {
+    $version = VirtualAgentVersion::factory()->create();
 
     $version->update(['content' => 'changed']);
-})->throws(LogicException::class, 'Prompt versions are immutable.');
+})->throws(LogicException::class, 'Virtual agent prompt versions are immutable.');
 
-it('enforces one version number per prompt', function () {
-    $prompt = Prompt::factory()->create();
+it('enforces one version number per virtual agent', function () {
+    $agent = VirtualAgent::factory()->create();
 
-    PromptVersion::factory()->for($prompt, 'prompt')->create(['version' => 1]);
-    PromptVersion::factory()->for($prompt, 'prompt')->create(['version' => 1]);
+    VirtualAgentVersion::factory()->for($agent, 'virtualAgent')->create(['version' => 1]);
+    VirtualAgentVersion::factory()->for($agent, 'virtualAgent')->create(['version' => 1]);
 })->throws(QueryException::class);
 
-it('deletes versions when the prompt is deleted', function () {
-    $prompt = Prompt::factory()->create();
-    PromptVersion::factory()->for($prompt, 'prompt')->create(['version' => 1]);
+it('deletes versions when the virtual agent is deleted', function () {
+    $agent = VirtualAgent::factory()->published()->create();
 
-    $prompt->delete();
+    $agent->delete();
 
-    expect(PromptVersion::query()->count())->toBe(0);
+    expect(VirtualAgentVersion::query()->count())->toBe(0);
 });
 
 it('casts agent settings and tools to arrays', function () {
-    $agent = Agent::factory()->create([
+    $agent = VirtualAgent::factory()->create([
         'settings' => ['temperature' => 0.5],
         'tools' => ['echo'],
     ]);
@@ -54,29 +54,16 @@ it('casts agent settings and tools to arrays', function () {
         ->tools->toBe(['echo']);
 });
 
-it('defaults agent tools to an empty array', function () {
-    $agent = Agent::factory()->create();
+it('defaults agent tools and concrete sub-agents to empty arrays', function () {
+    $agent = VirtualAgent::query()->create(['name' => 'Helper', 'slug' => 'helper']);
 
-    expect($agent->refresh()->tools)->toBe([]);
-});
-
-it('relates agents to prompts and pinned versions', function () {
-    $prompt = Prompt::factory()->create();
-    $version = PromptVersion::factory()->for($prompt, 'prompt')->create(['version' => 1]);
-
-    $agent = Agent::factory()->create([
-        'prompt_id' => $prompt->getKey(),
-        'prompt_version_id' => $version->getKey(),
-    ]);
-
-    expect($agent->prompt?->getKey())->toBe($prompt->getKey())
-        ->and($agent->pinnedVersion?->getKey())->toBe($version->getKey())
-        ->and($prompt->agents()->count())->toBe(1);
+    expect($agent->refresh()->tools)->toBe([])
+        ->and($agent->concrete_sub_agents)->toBe([]);
 });
 
 it('relates agents to sub-agents in both directions', function () {
-    $parent = Agent::factory()->create();
-    $child = Agent::factory()->create();
+    $parent = VirtualAgent::factory()->create();
+    $child = VirtualAgent::factory()->create();
 
     $parent->subAgents()->attach($child);
 
@@ -85,8 +72,8 @@ it('relates agents to sub-agents in both directions', function () {
 });
 
 it('detaches sub-agent links when an agent is deleted', function () {
-    $parent = Agent::factory()->create();
-    $child = Agent::factory()->create();
+    $parent = VirtualAgent::factory()->create();
+    $child = VirtualAgent::factory()->create();
     $parent->subAgents()->attach($child);
 
     $child->delete();
@@ -126,4 +113,31 @@ it('deletes versions when the mcp instruction is deleted', function () {
     $instruction->delete();
 
     expect(McpInstructionVersion::query()->count())->toBe(0);
+});
+
+it('relates concrete agent overrides to versions and a published version', function () {
+    $override = ConcreteAgentOverride::factory()->create(['tools' => ['echo']]);
+    $version = ConcreteAgentOverrideVersion::factory()->for($override, 'concreteAgentOverride')->create(['version' => 1]);
+
+    $override->published_version_id = $version->getKey();
+    $override->save();
+
+    expect($override->refresh()->tools)->toBe(['echo'])
+        ->and($override->publishedVersion?->getKey())->toBe($version->getKey())
+        ->and($version->concreteAgentOverride?->getKey())->toBe($override->getKey());
+});
+
+it('enforces concrete agent override version immutability', function () {
+    $version = ConcreteAgentOverrideVersion::factory()->create();
+
+    $version->update(['content' => 'changed']);
+})->throws(LogicException::class, 'Concrete agent prompt versions are immutable.');
+
+it('deletes versions when the concrete agent override is deleted', function () {
+    $override = ConcreteAgentOverride::factory()->create();
+    ConcreteAgentOverrideVersion::factory()->for($override, 'concreteAgentOverride')->create(['version' => 1]);
+
+    $override->delete();
+
+    expect(ConcreteAgentOverrideVersion::query()->count())->toBe(0);
 });

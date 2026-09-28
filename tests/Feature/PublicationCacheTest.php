@@ -5,48 +5,76 @@ declare(strict_types=1);
 use Illuminate\Cache\RedisStore;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Cache;
+use JayI\Cortex\Actions\CreateConcreteAgentVersionAction;
 use JayI\Cortex\Actions\CreateMcpInstructionVersionAction;
-use JayI\Cortex\Actions\CreatePromptVersionAction;
 use JayI\Cortex\Actions\CreateToolDescriptionVersionAction;
+use JayI\Cortex\Actions\CreateVirtualAgentVersionAction;
 use JayI\Cortex\Actions\DeleteMcpInstructionAction;
 use JayI\Cortex\Actions\DeleteToolDescriptionAction;
+use JayI\Cortex\Actions\PublishConcreteAgentVersionAction;
 use JayI\Cortex\Actions\PublishMcpInstructionVersionAction;
-use JayI\Cortex\Actions\PublishPromptVersionAction;
 use JayI\Cortex\Actions\PublishToolDescriptionVersionAction;
+use JayI\Cortex\Actions\PublishVirtualAgentVersionAction;
+use JayI\Cortex\Agents\AgentRegistry;
 use JayI\Cortex\Mcp\McpInstructionOverrides;
-use JayI\Cortex\Models\Agent;
+use JayI\Cortex\Models\ConcreteAgentOverride;
 use JayI\Cortex\Models\McpInstruction;
-use JayI\Cortex\Models\Prompt;
 use JayI\Cortex\Models\ToolDescription;
+use JayI\Cortex\Models\VirtualAgent;
 use JayI\Cortex\Runtime\AgentFactory;
 use JayI\Cortex\Support\PublicationCache;
+use JayI\Cortex\Tests\Fixtures\EchoAgent;
 use JayI\Cortex\Tests\Fixtures\EchoTool;
 use JayI\Cortex\Tools\ToolRegistry;
 
-function freshAgentInstructions(Agent $agent): string
+function freshAgentInstructions(VirtualAgent $agent): string
 {
-    return app(AgentFactory::class)->make($agent->fresh(['prompt', 'pinnedVersion', 'subAgents']))->instructions();
+    return app(AgentFactory::class)->make($agent->fresh(['publishedVersion', 'subAgents']))->instructions();
 }
 
-it('caches published prompt content until a new version is published', function () {
-    $prompt = Prompt::factory()->create();
-    app(CreatePromptVersionAction::class)->execute($prompt, ['content' => 'v1 instructions', 'publish' => true]);
-
-    $agent = Agent::factory()->create(['prompt_id' => $prompt->getKey()]);
+it('caches the published prompt until a new version is published', function () {
+    $agent = VirtualAgent::factory()->create();
+    app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'v1 instructions', 'publish' => true]);
 
     expect(freshAgentInstructions($agent))->toBe('v1 instructions');
 
     // A write that bypasses the publishing actions is not seen — the cached
     // copy keeps serving until an action invalidates it.
-    $rogue = $prompt->versions()->create(['version' => 2, 'content' => 'rogue instructions']);
-    $prompt->published_version_id = $rogue->getKey();
-    $prompt->save();
+    $rogue = $agent->versions()->create(['version' => 2, 'content' => 'rogue instructions']);
+    $agent->published_version_id = $rogue->getKey();
+    $agent->save();
 
     expect(freshAgentInstructions($agent))->toBe('v1 instructions');
 
-    app(PublishPromptVersionAction::class)->execute($prompt->fresh(), 2);
+    app(PublishVirtualAgentVersionAction::class)->execute($agent->fresh(), 2);
 
     expect(freshAgentInstructions($agent))->toBe('rogue instructions');
+});
+
+it('caches concrete agent overrides until one is published', function () {
+    app(AgentRegistry::class)->register('echo-agent', EchoAgent::class);
+
+    $freshInstructions = function (): string {
+        app()->forgetScopedInstances();
+
+        return (string) app(EchoAgent::class)->instructions();
+    };
+
+    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', ['content' => 'first', 'publish' => true]);
+
+    expect($freshInstructions())->toBe('first');
+
+    // Direct write bypassing the actions: cache keeps serving the old map.
+    $override = ConcreteAgentOverride::query()->where('agent', 'echo-agent')->firstOrFail();
+    $rogue = $override->versions()->create(['version' => 2, 'content' => 'rogue']);
+    $override->published_version_id = $rogue->getKey();
+    $override->save();
+
+    expect($freshInstructions())->toBe('first');
+
+    app(PublishConcreteAgentVersionAction::class)->execute($override->fresh(), 2);
+
+    expect($freshInstructions())->toBe('rogue');
 });
 
 it('caches the tool description override map until a version is published', function () {
@@ -79,17 +107,15 @@ it('caches the tool description override map until a version is published', func
 it('reads straight from the database when caching is disabled', function () {
     config()->set('cortex.cache.enabled', false);
 
-    $prompt = Prompt::factory()->create();
-    app(CreatePromptVersionAction::class)->execute($prompt, ['content' => 'v1 instructions', 'publish' => true]);
-
-    $agent = Agent::factory()->create(['prompt_id' => $prompt->getKey()]);
+    $agent = VirtualAgent::factory()->create();
+    app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'v1 instructions', 'publish' => true]);
 
     expect(freshAgentInstructions($agent))->toBe('v1 instructions');
 
     // Even a rogue write bypassing the actions is visible immediately.
-    $rogue = $prompt->versions()->create(['version' => 2, 'content' => 'rogue instructions']);
-    $prompt->published_version_id = $rogue->getKey();
-    $prompt->save();
+    $rogue = $agent->versions()->create(['version' => 2, 'content' => 'rogue instructions']);
+    $agent->published_version_id = $rogue->getKey();
+    $agent->save();
 
     expect(freshAgentInstructions($agent))->toBe('rogue instructions');
 });
@@ -139,7 +165,8 @@ it('shares a redis hash tag between each cache key and its flexible created twin
     $keys = [
         $cache->toolDescriptionsKey(),
         $cache->mcpInstructionsKey(),
-        $cache->promptKey('7'),
+        $cache->concreteAgentsKey(),
+        $cache->virtualAgentKey('7'),
     ];
 
     foreach ($keys as $key) {

@@ -1,7 +1,8 @@
 <div class="flex flex-col gap-4">
-    <div class="grid gap-4 sm:grid-cols-3">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <x-atrium::stat :label="__('cortex::cortex.providers')" :value="count($providers)" />
         <x-atrium::stat :label="__('cortex::cortex.registered_tools')" :value="$toolCount" />
+        <x-atrium::stat :label="__('cortex::cortex.concrete_agents')" :value="$agentCount" />
         <x-atrium::stat :label="__('cortex::cortex.mcp_servers')" :value="$serverCount" />
     </div>
 

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace JayI\Cortex;
 
+use JayI\Cortex\Agents\AgentRegistry;
 use JayI\Cortex\Mcp\McpServerRegistry;
-use JayI\Cortex\Models\Agent;
+use JayI\Cortex\Models\VirtualAgent;
 use JayI\Cortex\Runtime\AgentFactory;
 use JayI\Cortex\Runtime\DbAgent;
 use JayI\Cortex\Tools\ToolRegistry;
+use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Responses\AgentResponse;
 
 class Cortex
@@ -16,7 +18,8 @@ class Cortex
     public function __construct(
         private readonly ToolRegistry $tools,
         private readonly McpServerRegistry $servers,
-        private readonly AgentFactory $agents,
+        private readonly AgentRegistry $agents,
+        private readonly AgentFactory $factory,
     ) {}
 
     public function tools(): ToolRegistry
@@ -29,15 +32,30 @@ class Cortex
         return $this->servers;
     }
 
-    public function agent(string $slug): DbAgent
+    public function agents(): AgentRegistry
     {
-        return $this->agents->make(
-            Agent::query()->where('slug', $slug)->firstOrFail(),
+        return $this->agents;
+    }
+
+    public function virtualAgent(string $slug): DbAgent
+    {
+        return $this->factory->make(
+            VirtualAgent::query()->where('slug', $slug)->firstOrFail(),
         );
     }
 
-    public function run(string $slug, string $input): AgentResponse
+    public function concreteAgent(string $name): Agent
     {
-        return $this->agent($slug)->prompt($input);
+        return $this->agents->make($name);
+    }
+
+    public function runVirtualAgent(string $slug, string $input): AgentResponse
+    {
+        return $this->virtualAgent($slug)->prompt($input);
+    }
+
+    public function runConcreteAgent(string $name, string $input): AgentResponse
+    {
+        return $this->concreteAgent($name)->prompt($input);
     }
 }

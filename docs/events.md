@@ -11,13 +11,14 @@ Every event carries the models involved, not just their ids. Every event also us
 
 Each model fires a class-based event for the 10 hooks that apply to models without soft deletes: `retrieved`, `creating`, `created`, `updating`, `updated`, `saving`, `saved`, `deleting`, `deleted` and `replicating`. No Cortex model uses soft deletes, so there are no `restoring`, `restored`, `trashed`, `forceDeleting` or `forceDeleted` events.
 
-They live in `JayI\Cortex\Events\Model` and are named `{Model}{Hook}Event`, for example `PromptCreatingEvent` or `AgentDeletedEvent`. The model is a typed property:
+They live in `JayI\Cortex\Events\Model` and are named `{Model}{Hook}Event`, for example `VirtualAgentCreatingEvent` or `ConcreteAgentOverrideDeletedEvent`. The model is a typed property:
 
 | Model | Property |
 | --- | --- |
-| `Agent` | `$event->agent` |
-| `Prompt` | `$event->prompt` |
-| `PromptVersion` | `$event->version` |
+| `VirtualAgent` | `$event->agent` |
+| `VirtualAgentVersion` | `$event->version` |
+| `ConcreteAgentOverride` | `$event->override` |
+| `ConcreteAgentOverrideVersion` | `$event->version` |
 | `ToolDescription` | `$event->description` |
 | `ToolDescriptionVersion` | `$event->version` |
 | `McpInstruction` | `$event->instruction` |
@@ -26,10 +27,10 @@ They live in `JayI\Cortex\Events\Model` and are named `{Model}{Hook}Event`, for 
 The model is also available as `$event->model()`, alongside `$event->hook()`.
 
 ```php
-use JayI\Cortex\Events\Model\PromptVersionCreatedEvent;
+use JayI\Cortex\Events\Model\VirtualAgentVersionCreatedEvent;
 
-Event::listen(PromptVersionCreatedEvent::class, function (PromptVersionCreatedEvent $event) {
-    Log::info('New prompt version', ['prompt' => $event->version->prompt_id, 'version' => $event->version->version]);
+Event::listen(VirtualAgentVersionCreatedEvent::class, function (VirtualAgentVersionCreatedEvent $event) {
+    Log::info('New prompt version', ['agent' => $event->version->virtual_agent_id, 'version' => $event->version->version]);
 });
 ```
 
@@ -43,24 +44,24 @@ The mapping is done by the `DispatchesModelEvents` trait (`JayI\Cortex\Models\Co
 
 Every action dispatches two events:
 
-1. **A start event** (`…ingActionEvent`, e.g. `PromptVersionPublishingActionEvent`), before the action does any work. It carries the action's input.
-2. **A finish event** (`…edActionEvent`, e.g. `PromptVersionPublishedActionEvent`), once the action has succeeded. It carries the result.
+1. **A start event** (`…ingActionEvent`, e.g. `VirtualAgentVersionPublishingActionEvent`), before the action does any work. It carries the action's input.
+2. **A finish event** (`…edActionEvent`, e.g. `VirtualAgentVersionPublishedActionEvent`), once the action has succeeded. It carries the result.
 
 ```php
-use JayI\Cortex\Events\Action\AgentRanActionEvent;
-use JayI\Cortex\Events\Action\PromptVersionPublishedActionEvent;
+use JayI\Cortex\Events\Action\VirtualAgentRanActionEvent;
+use JayI\Cortex\Events\Action\VirtualAgentVersionPublishedActionEvent;
 
-Event::listen(PromptVersionPublishedActionEvent::class, function (PromptVersionPublishedActionEvent $event) {
+Event::listen(VirtualAgentVersionPublishedActionEvent::class, function (VirtualAgentVersionPublishedActionEvent $event) {
     Notification::route('slack', config('services.slack.prompts'))
-        ->notify(new PromptPublished($event->prompt));
+        ->notify(new PromptPublished($event->agent));
 });
 
-Event::listen(AgentRanActionEvent::class, function (AgentRanActionEvent $event) {
+Event::listen(VirtualAgentRanActionEvent::class, function (VirtualAgentRanActionEvent $event) {
     Metrics::record($event->agent->slug, $event->response->usage);
 });
 ```
 
-- **Failure:** an action that throws fires its start event and no finish event. Deleting a prompt that agents still use fires `PromptDeletingActionEvent` only.
+- **Failure:** an action that throws fires its start event and no finish event. Publishing a version number that does not exist fires `VirtualAgentVersionPublishingActionEvent` only.
 - **Timing:** finish events implement `ShouldDispatchAfterCommit`, so inside a transaction they fire once it commits and never for work that was rolled back. Start events fire immediately.
 
 Action events live in `JayI\Cortex\Events\Action`.
@@ -85,47 +86,50 @@ Event::listen(ActionFinishedEvent::class, fn (ActionFinishedEvent $event) => Aud
 
 | Action | Start event | Carries | Finish event | Carries |
 | --- | --- | --- | --- | --- |
-| `CreateAgentAction` | `AgentCreatingActionEvent` | `$data` | `AgentCreatedActionEvent` | `$agent` |
+| `CreateVirtualAgentAction` | `VirtualAgentCreatingActionEvent` | `$data` | `VirtualAgentCreatedActionEvent` | `$agent` |
+| `CreateVirtualAgentVersionAction` | `VirtualAgentVersionCreatingActionEvent` | `$agent`, `$data` | `VirtualAgentVersionCreatedActionEvent` | `$agent`, `$version` |
+| `DeleteVirtualAgentAction` | `VirtualAgentDeletingActionEvent` | `$agent` | `VirtualAgentDeletedActionEvent` | `$agent` |
+| `ListVirtualAgentsAction` | `VirtualAgentsListingActionEvent` | `$page` | `VirtualAgentsListedActionEvent` | `$agents` |
+| `ListVirtualAgentVersionsAction` | `VirtualAgentVersionsListingActionEvent` | `$agent`, `$page` | `VirtualAgentVersionsListedActionEvent` | `$agent`, `$versions` |
+| `PublishVirtualAgentVersionAction` | `VirtualAgentVersionPublishingActionEvent` | `$agent`, `$version` | `VirtualAgentVersionPublishedActionEvent` | `$agent` |
+| `RunVirtualAgentAction` | `VirtualAgentRunningActionEvent` | `$agent`, `$input` | `VirtualAgentRanActionEvent` | `$agent`, `$input`, `$response` |
+| `ShowVirtualAgentAction` | `VirtualAgentShowingActionEvent` | `$agent` | `VirtualAgentShownActionEvent` | `$agent` |
+| `ShowVirtualAgentVersionAction` | `VirtualAgentVersionShowingActionEvent` | `$agent`, `$version` | `VirtualAgentVersionShownActionEvent` | `$agent`, `$version` |
+| `UpdateVirtualAgentAction` | `VirtualAgentUpdatingActionEvent` | `$agent`, `$data` | `VirtualAgentUpdatedActionEvent` | `$agent` |
+| `CreateConcreteAgentVersionAction` | `ConcreteAgentVersionCreatingActionEvent` | `$agent`, `$data` | `ConcreteAgentVersionCreatedActionEvent` | `$agent`, `$version` |
+| `DeleteConcreteAgentOverrideAction` | `ConcreteAgentOverrideDeletingActionEvent` | `$override` | `ConcreteAgentOverrideDeletedActionEvent` | `$override` |
+| `ListConcreteAgentsAction` | `ConcreteAgentsListingActionEvent` | — | `ConcreteAgentsListedActionEvent` | `$agents` |
+| `ListConcreteAgentVersionsAction` | `ConcreteAgentVersionsListingActionEvent` | `$override` | `ConcreteAgentVersionsListedActionEvent` | `$override`, `$versions` |
+| `PublishConcreteAgentVersionAction` | `ConcreteAgentVersionPublishingActionEvent` | `$override`, `$version` | `ConcreteAgentVersionPublishedActionEvent` | `$override` |
+| `RunConcreteAgentAction` | `ConcreteAgentRunningActionEvent` | `$agent`, `$input` | `ConcreteAgentRanActionEvent` | `$agent`, `$input`, `$response` |
+| `ShowConcreteAgentAction` | `ConcreteAgentShowingActionEvent` | `$agent` | `ConcreteAgentShownActionEvent` | `$agent` |
+| `UpdateConcreteAgentToolsAction` | `ConcreteAgentToolsUpdatingActionEvent` | `$agent`, `$tools` | `ConcreteAgentToolsUpdatedActionEvent` | `$override` |
 | `CreateMcpInstructionVersionAction` | `McpInstructionVersionCreatingActionEvent` | `$server`, `$data` | `McpInstructionVersionCreatedActionEvent` | `$server`, `$version` |
-| `CreatePromptAction` | `PromptCreatingActionEvent` | `$data` | `PromptCreatedActionEvent` | `$prompt` |
-| `CreatePromptVersionAction` | `PromptVersionCreatingActionEvent` | `$prompt`, `$data` | `PromptVersionCreatedActionEvent` | `$prompt`, `$version` |
-| `CreateToolDescriptionVersionAction` | `ToolDescriptionVersionCreatingActionEvent` | `$tool`, `$data` | `ToolDescriptionVersionCreatedActionEvent` | `$tool`, `$version` |
-| `DeleteAgentAction` | `AgentDeletingActionEvent` | `$agent` | `AgentDeletedActionEvent` | `$agent` |
 | `DeleteMcpInstructionAction` | `McpInstructionDeletingActionEvent` | `$instruction` | `McpInstructionDeletedActionEvent` | `$instruction` |
-| `DeletePromptAction` | `PromptDeletingActionEvent` | `$prompt` | `PromptDeletedActionEvent` | `$prompt` |
-| `DeleteToolDescriptionAction` | `ToolDescriptionDeletingActionEvent` | `$description` | `ToolDescriptionDeletedActionEvent` | `$description` |
-| `ListAgentsAction` | `AgentsListingActionEvent` | `$page` | `AgentsListedActionEvent` | `$agents` |
 | `ListMcpInstructionVersionsAction` | `McpInstructionVersionsListingActionEvent` | `$instruction` | `McpInstructionVersionsListedActionEvent` | `$instruction`, `$versions` |
 | `ListMcpServersAction` | `McpServersListingActionEvent` | — | `McpServersListedActionEvent` | `$servers` |
-| `ListPromptVersionsAction` | `PromptVersionsListingActionEvent` | `$prompt`, `$page` | `PromptVersionsListedActionEvent` | `$prompt`, `$versions` |
-| `ListPromptsAction` | `PromptsListingActionEvent` | `$page` | `PromptsListedActionEvent` | `$prompts` |
-| `ListProvidersAction` | `ProvidersListingActionEvent` | — | `ProvidersListedActionEvent` | `$providers` |
-| `ListToolDescriptionVersionsAction` | `ToolDescriptionVersionsListingActionEvent` | `$description` | `ToolDescriptionVersionsListedActionEvent` | `$description`, `$versions` |
-| `ListToolsAction` | `ToolsListingActionEvent` | — | `ToolsListedActionEvent` | `$tools` |
 | `PublishMcpInstructionVersionAction` | `McpInstructionVersionPublishingActionEvent` | `$instruction`, `$version` | `McpInstructionVersionPublishedActionEvent` | `$instruction` |
-| `PublishPromptVersionAction` | `PromptVersionPublishingActionEvent` | `$prompt`, `$version` | `PromptVersionPublishedActionEvent` | `$prompt` |
-| `PublishToolDescriptionVersionAction` | `ToolDescriptionVersionPublishingActionEvent` | `$description`, `$version` | `ToolDescriptionVersionPublishedActionEvent` | `$description` |
-| `RunAgentAction` | `AgentRunningActionEvent` | `$agent`, `$input` | `AgentRanActionEvent` | `$agent`, `$input`, `$response` |
-| `ShowAgentAction` | `AgentShowingActionEvent` | `$agent` | `AgentShownActionEvent` | `$agent` |
 | `ShowMcpInstructionAction` | `McpInstructionShowingActionEvent` | `$server` | `McpInstructionShownActionEvent` | `$instruction` |
-| `ShowPromptAction` | `PromptShowingActionEvent` | `$prompt` | `PromptShownActionEvent` | `$prompt` |
-| `ShowPromptVersionAction` | `PromptVersionShowingActionEvent` | `$prompt`, `$version` | `PromptVersionShownActionEvent` | `$prompt`, `$version` |
+| `CreateToolDescriptionVersionAction` | `ToolDescriptionVersionCreatingActionEvent` | `$tool`, `$data` | `ToolDescriptionVersionCreatedActionEvent` | `$tool`, `$version` |
+| `DeleteToolDescriptionAction` | `ToolDescriptionDeletingActionEvent` | `$description` | `ToolDescriptionDeletedActionEvent` | `$description` |
+| `ListToolDescriptionVersionsAction` | `ToolDescriptionVersionsListingActionEvent` | `$description` | `ToolDescriptionVersionsListedActionEvent` | `$description`, `$versions` |
+| `PublishToolDescriptionVersionAction` | `ToolDescriptionVersionPublishingActionEvent` | `$description`, `$version` | `ToolDescriptionVersionPublishedActionEvent` | `$description` |
 | `ShowToolDescriptionAction` | `ToolDescriptionShowingActionEvent` | `$tool` | `ToolDescriptionShownActionEvent` | `$description` |
-| `UpdateAgentAction` | `AgentUpdatingActionEvent` | `$agent`, `$data` | `AgentUpdatedActionEvent` | `$agent` |
-| `UpdatePromptAction` | `PromptUpdatingActionEvent` | `$prompt`, `$data` | `PromptUpdatedActionEvent` | `$prompt` |
+| `ListToolsAction` | `ToolsListingActionEvent` | — | `ToolsListedActionEvent` | `$tools` |
+| `ListProvidersAction` | `ProvidersListingActionEvent` | — | `ProvidersListedActionEvent` | `$providers` |
 
-`$data` is the validated input array. `$page` is the requested page number, or `null`. On the list actions for tools, servers and providers, the finish event carries the listed rows as arrays.
+`$data` is the validated input array. `$page` is the requested page number, or `null`. On the concrete agent actions `$agent` is the registered agent name, except on `ConcreteAgentShownActionEvent`, where it is the shown row. `$tools` is the new toolset, or `null` to clear the override. On the list actions for concrete agents, tools, servers and providers, the finish event carries the listed rows as arrays. `UpdateVirtualAgentAction` with changed instructions also runs `CreateVirtualAgentVersionAction`, so its events fire inside the update's.
 
 ## Testing
 
 Fake only the events you assert on, so the rest of Cortex keeps working:
 
 ```php
-use JayI\Cortex\Events\Action\PromptVersionPublishedActionEvent;
+use JayI\Cortex\Events\Action\VirtualAgentVersionPublishedActionEvent;
 
-Event::fake([PromptVersionPublishedActionEvent::class]);
+Event::fake([VirtualAgentVersionPublishedActionEvent::class]);
 
-$this->postJson('/cortex/prompts/support/versions/2/publish')->assertOk();
+$this->postJson('/cortex/virtual-agents/support/versions/2/publish')->assertOk();
 
-Event::assertDispatched(PromptVersionPublishedActionEvent::class, fn ($event) => $event->prompt->slug === 'support');
+Event::assertDispatched(VirtualAgentVersionPublishedActionEvent::class, fn ($event) => $event->agent->slug === 'support');
 ```

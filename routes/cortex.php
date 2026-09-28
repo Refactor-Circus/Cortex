@@ -3,15 +3,16 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use JayI\Cortex\Http\Controllers\AgentController;
-use JayI\Cortex\Http\Controllers\AgentRunController;
+use JayI\Cortex\Http\Controllers\ConcreteAgentController;
+use JayI\Cortex\Http\Controllers\ConcreteAgentVersionController;
 use JayI\Cortex\Http\Controllers\McpInstructionController;
 use JayI\Cortex\Http\Controllers\McpServerController;
-use JayI\Cortex\Http\Controllers\PromptController;
-use JayI\Cortex\Http\Controllers\PromptVersionController;
 use JayI\Cortex\Http\Controllers\ProviderController;
 use JayI\Cortex\Http\Controllers\ToolController;
 use JayI\Cortex\Http\Controllers\ToolDescriptionController;
+use JayI\Cortex\Http\Controllers\VirtualAgentController;
+use JayI\Cortex\Http\Controllers\VirtualAgentRunController;
+use JayI\Cortex\Http\Controllers\VirtualAgentVersionController;
 
 /** @var string $prefix */
 $prefix = config('cortex.routes.prefix');
@@ -20,26 +21,31 @@ $prefix = config('cortex.routes.prefix');
 $middleware = config('cortex.routes.middleware');
 
 Route::prefix($prefix)->middleware($middleware)->name('cortex.')->group(function (): void {
-    Route::get('prompts', [PromptController::class, 'index'])->name('prompts.index');
-    Route::post('prompts', [PromptController::class, 'store'])->name('prompts.store');
-    Route::get('prompts/{prompt:slug}', [PromptController::class, 'show'])->name('prompts.show');
-    Route::patch('prompts/{prompt:slug}', [PromptController::class, 'update'])->name('prompts.update');
-    Route::delete('prompts/{prompt:slug}', [PromptController::class, 'destroy'])->name('prompts.destroy');
+    Route::get('virtual-agents', [VirtualAgentController::class, 'index'])->name('virtual-agents.index');
+    Route::post('virtual-agents', [VirtualAgentController::class, 'store'])->name('virtual-agents.store');
+    Route::get('virtual-agents/{agent:slug}', [VirtualAgentController::class, 'show'])->name('virtual-agents.show');
+    Route::patch('virtual-agents/{agent:slug}', [VirtualAgentController::class, 'update'])->name('virtual-agents.update');
+    Route::delete('virtual-agents/{agent:slug}', [VirtualAgentController::class, 'destroy'])->name('virtual-agents.destroy');
 
-    Route::get('prompts/{prompt:slug}/versions', [PromptVersionController::class, 'index'])->name('prompts.versions.index');
-    Route::post('prompts/{prompt:slug}/versions', [PromptVersionController::class, 'store'])->name('prompts.versions.store');
-    Route::get('prompts/{prompt:slug}/versions/{version}', [PromptVersionController::class, 'show'])
-        ->whereNumber('version')->name('prompts.versions.show');
-    Route::post('prompts/{prompt:slug}/versions/{version}/publish', [PromptVersionController::class, 'publish'])
-        ->whereNumber('version')->name('prompts.versions.publish');
+    Route::post('virtual-agents/{agent:slug}/run', [VirtualAgentRunController::class, 'store'])->name('virtual-agents.run');
 
-    Route::get('agents', [AgentController::class, 'index'])->name('agents.index');
-    Route::post('agents', [AgentController::class, 'store'])->name('agents.store');
-    Route::get('agents/{agent:slug}', [AgentController::class, 'show'])->name('agents.show');
-    Route::patch('agents/{agent:slug}', [AgentController::class, 'update'])->name('agents.update');
-    Route::delete('agents/{agent:slug}', [AgentController::class, 'destroy'])->name('agents.destroy');
+    Route::get('virtual-agents/{agent:slug}/versions', [VirtualAgentVersionController::class, 'index'])->name('virtual-agents.versions.index');
+    Route::post('virtual-agents/{agent:slug}/versions', [VirtualAgentVersionController::class, 'store'])->name('virtual-agents.versions.store');
+    Route::get('virtual-agents/{agent:slug}/versions/{version}', [VirtualAgentVersionController::class, 'show'])
+        ->whereNumber('version')->name('virtual-agents.versions.show');
+    Route::post('virtual-agents/{agent:slug}/versions/{version}/publish', [VirtualAgentVersionController::class, 'publish'])
+        ->whereNumber('version')->name('virtual-agents.versions.publish');
 
-    Route::post('agents/{agent:slug}/run', [AgentRunController::class, 'store'])->name('agents.run');
+    Route::get('concrete-agents', [ConcreteAgentController::class, 'index'])->name('concrete-agents.index');
+    Route::get('concrete-agents/{agent}', [ConcreteAgentController::class, 'show'])->name('concrete-agents.show');
+    Route::post('concrete-agents/{agent}/run', [ConcreteAgentController::class, 'run'])->name('concrete-agents.run');
+    Route::put('concrete-agents/{agent}/tools', [ConcreteAgentController::class, 'tools'])->name('concrete-agents.tools.update');
+    Route::delete('concrete-agents/{agent}/override', [ConcreteAgentController::class, 'destroy'])->name('concrete-agents.override.destroy');
+
+    Route::get('concrete-agents/{agent}/versions', [ConcreteAgentVersionController::class, 'index'])->name('concrete-agents.versions.index');
+    Route::post('concrete-agents/{agent}/versions', [ConcreteAgentVersionController::class, 'store'])->name('concrete-agents.versions.store');
+    Route::post('concrete-agents/{agent}/versions/{version}/publish', [ConcreteAgentVersionController::class, 'publish'])
+        ->whereNumber('version')->name('concrete-agents.versions.publish');
 
     Route::get('providers', [ProviderController::class, 'index'])->name('providers.index');
 

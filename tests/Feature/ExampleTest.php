@@ -18,14 +18,15 @@ it('merges the package config', function () {
         ->and(config('cortex.ui.enabled'))->toBeTrue()
         ->and(config('cortex.mcp.web.enabled'))->toBeFalse()
         ->and(config('cortex.mcp.local.enabled'))->toBeFalse()
-        ->and(config('cortex.tools'))->toBe([]);
+        ->and(config('cortex.tools'))->toBe([])
+        ->and(config('cortex.agents'))->toBe([]);
 });
 
 it('loads the package translations', function () {
-    expect(trans('cortex::cortex.prompts'))->toBe('Prompts');
+    expect(trans('cortex::cortex.virtual_agents'))->toBe('Virtual agents');
 });
 
 it('loads the package views', function () {
-    expect(view()->exists('cortex::ui.prompts.index'))->toBeTrue()
-        ->and(view()->exists('cortex::ui.agents.form'))->toBeTrue();
+    expect(view()->exists('cortex::ui.concrete-agents.index'))->toBeTrue()
+        ->and(view()->exists('cortex::ui.virtual-agents.form'))->toBeTrue();
 });

@@ -2,20 +2,22 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Models\Agent;
+use JayI\Cortex\Models\ConcreteAgentOverride;
+use JayI\Cortex\Models\ConcreteAgentOverrideVersion;
 use JayI\Cortex\Models\McpInstruction;
 use JayI\Cortex\Models\McpInstructionVersion;
-use JayI\Cortex\Models\Prompt;
-use JayI\Cortex\Models\PromptVersion;
 use JayI\Cortex\Models\ToolDescription;
 use JayI\Cortex\Models\ToolDescriptionVersion;
-use JayI\Cortex\Policies\AgentPolicy;
+use JayI\Cortex\Models\VirtualAgent;
+use JayI\Cortex\Models\VirtualAgentVersion;
+use JayI\Cortex\Policies\ConcreteAgentOverridePolicy;
+use JayI\Cortex\Policies\ConcreteAgentOverrideVersionPolicy;
 use JayI\Cortex\Policies\McpInstructionPolicy;
 use JayI\Cortex\Policies\McpInstructionVersionPolicy;
-use JayI\Cortex\Policies\PromptPolicy;
-use JayI\Cortex\Policies\PromptVersionPolicy;
 use JayI\Cortex\Policies\ToolDescriptionPolicy;
 use JayI\Cortex\Policies\ToolDescriptionVersionPolicy;
+use JayI\Cortex\Policies\VirtualAgentPolicy;
+use JayI\Cortex\Policies\VirtualAgentVersionPolicy;
 
 return [
 
@@ -44,16 +46,17 @@ return [
     | check every call against these, as the authenticated user (or as a
     | guest when nobody is signed in). Cortex records have no owner, so the
     | bundled policies allow everything and your route middleware stays the
-    | gate, as before. Versions defer to their prompt or override: reading
-    | one needs `view` on it, adding or publishing one needs `update`.
+    | gate, as before. Versions defer to their virtual agent or override:
+    | reading one needs `view` on it, adding or publishing one needs `update`.
     | Point a model at your own class to replace its policy.
     |
     */
 
     'policies' => [
-        Agent::class => AgentPolicy::class,
-        Prompt::class => PromptPolicy::class,
-        PromptVersion::class => PromptVersionPolicy::class,
+        VirtualAgent::class => VirtualAgentPolicy::class,
+        VirtualAgentVersion::class => VirtualAgentVersionPolicy::class,
+        ConcreteAgentOverride::class => ConcreteAgentOverridePolicy::class,
+        ConcreteAgentOverrideVersion::class => ConcreteAgentOverrideVersionPolicy::class,
         ToolDescription::class => ToolDescriptionPolicy::class,
         ToolDescriptionVersion::class => ToolDescriptionVersionPolicy::class,
         McpInstruction::class => McpInstructionPolicy::class,
@@ -119,8 +122,8 @@ return [
     | Publication Cache
     |--------------------------------------------------------------------------
     |
-    | Published prompt versions, tool description overrides, and MCP server
-    | instruction overrides are cached so agent runs and MCP listings don't
+    | Published virtual agent prompts, tool description overrides, MCP server
+    | instruction overrides and concrete agent overrides are cached so agent runs and MCP listings don't
     | hit the database on every request; the publishing actions invalidate
     | explicitly. When Redis is
     | available it is preferred and read via Cache::flexible()
@@ -171,6 +174,26 @@ return [
     'tools' => [
         // 'search' => \App\Ai\Tools\SearchTool::class,
         // \App\Mcp\Tools\LookupTool::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Concrete Agents
+    |--------------------------------------------------------------------------
+    |
+    | Class-based agents to manage in Cortex. Each class must implement
+    | Laravel\Ai\Contracts\Agent. Registered agents can be run and attached
+    | to virtual agents as sub-agents. Extend JayI\Cortex\Agents\Agent (or
+    | use the HasCortexOverrides trait) so the prompt and toolset published
+    | in Cortex replace the ones declared in code. String keys set the
+    | agent's registered name; unkeyed entries derive it from the class
+    | basename. Agents may also be registered at runtime via
+    | Cortex::agents()->register($name, $class).
+    |
+    */
+
+    'agents' => [
+        // 'triage' => \App\Ai\Agents\TriageAgent::class,
     ],
 
 ];

@@ -17,14 +17,14 @@ it('contributes navigation for every section', function (): void {
         app(CortexPlugin::class)->navigation(),
     );
 
-    expect($labels)->toBe(['Prompts', 'Agents', 'Run agent', 'Tools', 'Servers']);
+    expect($labels)->toBe(['Virtual agents', 'Concrete agents', 'Run agent', 'Tools', 'Servers']);
 });
 
 it('registers its routes inside the atrium group', function (): void {
-    expect(Route::has('atrium.cortex.prompts.index'))->toBeTrue()
-        ->and(Route::has('atrium.cortex.agents.index'))->toBeTrue()
+    expect(Route::has('atrium.cortex.virtual-agents.index'))->toBeTrue()
+        ->and(Route::has('atrium.cortex.concrete-agents.index'))->toBeTrue()
         ->and(Route::has('atrium.cortex.run'))->toBeTrue()
-        ->and(route('atrium.cortex.prompts.index'))->toContain('/atrium/cortex/prompts');
+        ->and(route('atrium.cortex.virtual-agents.index'))->toContain('/atrium/cortex/virtual-agents');
 });
 
 it('offers a settings panel', function (): void {
