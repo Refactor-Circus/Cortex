@@ -10,12 +10,14 @@
     <a href="https://packagist.org/packages/jayi/cortex"><img src="https://img.shields.io/packagist/dt/jayi/cortex.svg?style=flat-square" alt="Total Downloads"></a>
 </p>
 
-AI orchestration for Laravel. Cortex manages **prompts (with immutable versioning), tools, and agents/sub-agents** on top of the [Laravel AI SDK](https://laravel.com/docs/ai-sdk), exposed through a REST API, a prebuilt dashboard, and an [MCP](https://laravel.com/docs/mcp) server mirroring the prompt/agent/tool operations.
+AI orchestration for Laravel. Cortex manages **virtual agents, concrete agents, tools, and MCP servers** on top of the [Laravel AI SDK](https://laravel.com/docs/ai-sdk), exposed through a REST API, a prebuilt dashboard, and an [MCP](https://laravel.com/docs/mcp) server mirroring the same operations.
 
-- **Prompts** are versioned: content is immutable per version, and a published pointer decides what agents use. Roll back by publishing an older version.
+- **Virtual agents** are database records that combine their own versioned prompt, registered tools, provider/model settings, and other agents (virtual or concrete) as sub-agents. Prompt content is immutable per version and a published pointer decides what runs; roll back by publishing an older version.
+- **Concrete agents** are classes in your code. Register them with Cortex to list, run and attach them as sub-agents, and override their prompt (versioned, publishable) and toolset without a deploy.
 - **Tools** are PHP classes implementing `Laravel\Ai\Contracts\Tool` or extending `Laravel\Mcp\Server\Tool` (wrapped automatically), registered by name in the Cortex tool registry. Their descriptions can be overridden at runtime with versioned, publishable content.
 - **MCP servers** registered with Cortex get the same treatment for their instructions: versioned, publishable overrides that replace the code-declared instructions served to MCP clients, manageable over HTTP, MCP, and the dashboard.
-- **Agents** are database records that combine a prompt (published or pinned version), registered tools, provider/model settings, and other agents as sub-agents. Run them via the API, the dashboard, the MCP server, or the `Cortex` facade.
+
+Run either kind via the API, the dashboard, the MCP server, or the `Cortex` facade.
 
 ## Installation
 
@@ -73,8 +75,11 @@ return [
         // 'search' => \App\Ai\Tools\SearchTool::class,
         // \App\Mcp\Tools\LookupTool::class,
     ],
+    'agents' => [
+        // 'triage' => \App\Ai\Agents\TriageAgent::class,
+    ],
     'policies' => [
-        // Agent::class => AgentPolicy::class, ... one entry per Cortex model
+        // VirtualAgent::class => VirtualAgentPolicy::class, ... one entry per Cortex model
     ],
 ];
 ```
@@ -86,7 +91,7 @@ return [
 
 Every API endpoint and MCP tool that touches a model checks it through the Gate, using the policies in `cortex.policies`. It checks as the signed-in user, or as a guest when nobody is signed in. Listing or creating checks `viewAny` or `create` against the model class. Reading, changing, deleting, publishing or running checks `view`, `update`, `delete`, `publish` or `run` against the record.
 
-Cortex records have no owner, so the bundled policies allow everything and your middleware stays the gate, as before. Version policies defer to their prompt or override through the Gate: reading a version needs `view` on it, adding or publishing one needs `update`. Point a model at your own policy class in `cortex.policies` to restrict it.
+Cortex records have no owner, so the bundled policies allow everything and your middleware stays the gate, as before. Version policies defer to their virtual agent or override through the Gate: reading a version needs `view` on it, adding or publishing one needs `update`. Point a model at your own policy class in `cortex.policies` to restrict it.
 
 **Full guide:** [Policies](docs/policies.md). It covers what each endpoint and MCP tool checks, and how to replace a policy.
 
@@ -100,7 +105,7 @@ use Illuminate\Support\Facades\Gate;
 Gate::define('viewAtrium', fn ($user) => $user->is_admin);
 ```
 
-The dashboard covers prompts and their versions, agents, a run playground, the tool registry with a versioned description editor, and the MCP server registry with a versioned instructions editor.
+The dashboard covers virtual agents with their prompt versions, concrete agents with their prompt and toolset overrides, a run playground, the tool registry with a versioned description editor, and the MCP server registry with a versioned instructions editor.
 
 Atrium owns the path, the middleware and the authorization gate, so there is nothing to configure here beyond the single switch:
 
@@ -125,22 +130,65 @@ Cortex::tools()->register('search', \App\Ai\Tools\SearchTool::class);
 
 ### Tool Description Overrides
 
-A tool's code-declared description can be overridden without a deploy: each tool has an optional, immutably versioned description with a published pointer — same model as prompts. Manage overrides from the dashboard or the API (`/cortex/tools/{tool}/description`). Extend `JayI\Cortex\Tools\Tool` (or use the `JayI\Cortex\Tools\Concerns\HasVersionedDescription` trait on an existing MCP tool) so the tool also serves its published override when used directly outside Cortex.
+A tool's code-declared description can be overridden without a deploy: each tool has an optional, immutably versioned description with a published pointer — same model as agent prompts. Manage overrides from the dashboard or the API (`/cortex/tools/{tool}/description`). Extend `JayI\Cortex\Tools\Tool` (or use the `JayI\Cortex\Tools\Concerns\HasVersionedDescription` trait on an existing MCP tool) so the tool also serves its published override when used directly outside Cortex.
 
-## Managing Prompts and Agents
+## Concrete Agents
+
+A concrete agent is a `Laravel\Ai\Contracts\Agent` class. Extend `JayI\Cortex\Agents\Agent` and declare the prompt and toolset in `defaultInstructions()` and `defaultTools()`:
+
+```php
+use JayI\Cortex\Agents\Agent;
+
+class TriageAgent extends Agent
+{
+    public function __construct(private SearchIssues $search) {}
+
+    public function defaultInstructions(): string
+    {
+        return 'Decide whether the report duplicates an open issue.';
+    }
+
+    public function defaultTools(): iterable
+    {
+        return [$this->search];
+    }
+}
+```
+
+Register it in `config/cortex.php` under `agents` (string keys set the registered name; unkeyed entries use the kebab-cased class basename), or at runtime:
+
+```php
+Cortex::agents()->register('triage', \App\Ai\Agents\TriageAgent::class);
+```
+
+Wherever the agent runs — your own `TriageAgent::make()->prompt(...)`, the API, the dashboard or MCP — it uses the published Cortex overrides when they exist and its code declarations otherwise:
+
+- **Prompt:** versioned and publishable, like tool descriptions. Removing the override restores the code prompt.
+- **Tools:** a replacement list picked from the class's own tools (by the name the model sees) and the registered Cortex tools (by registered name). Clearing it restores the code toolset. Names that no longer resolve are skipped at run time.
+
+Mark an agent `#[JayI\Cortex\Agents\Attributes\LockedTools]` when its safety depends on the exact tools it holds. Cortex still manages its prompt, but rejects toolset overrides (clearing one is still allowed) and ignores any saved earlier. The dashboard shows its toolset as locked, and the API reports `tools_overridable: false`.
+
+Agents that cannot change their base class can use the `JayI\Cortex\Agents\Concerns\HasCortexOverrides` trait instead. Registered agents without it are still listed, runnable and usable as sub-agents, but ignore overrides.
+
+## API
 
 Everything is available over the REST API (prefix `cortex` by default):
 
 | Method | URI | Purpose |
 | --- | --- | --- |
-| GET/POST | `/cortex/prompts` | List / create prompts (create stores version 1, published by default) |
-| GET/PATCH/DELETE | `/cortex/prompts/{slug}` | Show / update metadata / delete |
-| GET/POST | `/cortex/prompts/{slug}/versions` | List / create immutable versions |
-| GET | `/cortex/prompts/{slug}/versions/{version}` | Show a version |
-| POST | `/cortex/prompts/{slug}/versions/{version}/publish` | Publish a version |
-| GET/POST | `/cortex/agents` | List / create agents |
-| GET/PATCH/DELETE | `/cortex/agents/{slug}` | Show / update / delete |
-| POST | `/cortex/agents/{slug}/run` | Run an agent with `{"input": "..."}` — returns `{text, usage}` |
+| GET/POST | `/cortex/virtual-agents` | List / create virtual agents (create stores the prompt as version 1, published) |
+| GET/PATCH/DELETE | `/cortex/virtual-agents/{slug}` | Show / update / delete |
+| POST | `/cortex/virtual-agents/{slug}/run` | Run with `{"input": "..."}` — returns `{text, usage}` |
+| GET/POST | `/cortex/virtual-agents/{slug}/versions` | List / create immutable prompt versions |
+| GET | `/cortex/virtual-agents/{slug}/versions/{version}` | Show a version |
+| POST | `/cortex/virtual-agents/{slug}/versions/{version}/publish` | Publish a version |
+| GET | `/cortex/concrete-agents` | List registered concrete agents with their live prompt and tools |
+| GET | `/cortex/concrete-agents/{agent}` | Show one, with its code defaults and overrides |
+| POST | `/cortex/concrete-agents/{agent}/run` | Run with `{"input": "..."}` — returns `{text, usage}` |
+| PUT | `/cortex/concrete-agents/{agent}/tools` | Set the toolset override with `{"tools": [...]}`, or clear it with `{"tools": null}` |
+| DELETE | `/cortex/concrete-agents/{agent}/override` | Remove the prompt and toolset overrides |
+| GET/POST | `/cortex/concrete-agents/{agent}/versions` | List / create immutable prompt override versions |
+| POST | `/cortex/concrete-agents/{agent}/versions/{version}/publish` | Publish a prompt override version |
 | GET | `/cortex/providers` | List providers with their models and default model |
 | GET | `/cortex/tools` | List registered tools with their schemas |
 | GET/DELETE | `/cortex/tools/{tool}/description` | Show / remove the description override |
@@ -151,18 +199,19 @@ Everything is available over the REST API (prefix `cortex` by default):
 | GET/POST | `/cortex/servers/{server}/instructions/versions` | List / create immutable override versions |
 | POST | `/cortex/servers/{server}/instructions/versions/{version}/publish` | Publish an override version |
 
-Agent create/update payloads accept `tools` (registered tool names), `prompt` (prompt slug), `prompt_version` (pin a version; omit to follow the published version), and `sub_agents` (agent slugs). The `tools` and `sub_agents` lists use sync semantics — send the desired end state. Circular sub-agent references are rejected.
+Virtual agent create/update payloads accept `instructions` (the prompt; required on create), `tools` (registered tool names), `sub_agents` (virtual agent slugs) and `concrete_sub_agents` (registered concrete agent names). Updating with changed `instructions` saves them as a new published version; unchanged instructions leave the history alone. The lists use sync semantics — send the desired end state. Circular sub-agent references are rejected. Sub-agents are offered to the parent under their slug or registered class name.
 
 ```json
 {
     "name": "Coordinator",
     "slug": "coordinator",
+    "instructions": "Coordinate the support team.",
     "provider": "anthropic",
     "model": "claude-sonnet-5",
     "settings": {"temperature": 0.3, "max_steps": 10},
     "tools": ["search"],
-    "prompt": "support",
-    "sub_agents": ["researcher"]
+    "sub_agents": ["researcher"],
+    "concrete_sub_agents": ["triage"]
 }
 ```
 
@@ -171,19 +220,21 @@ Agent create/update payloads accept `tools` (registered tool names), `prompt` (p
 ```php
 use JayI\Cortex\Facades\Cortex;
 
-$response = Cortex::run('coordinator', 'Summarize the open tickets.');
+$response = Cortex::runVirtualAgent('coordinator', 'Summarize the open tickets.');
+$response = Cortex::runConcreteAgent('triage', 'The export button does nothing.');
 
 $response->text;
 
 // Or build the laravel/ai agent yourself:
-Cortex::agent('coordinator')->stream('...');
+Cortex::virtualAgent('coordinator')->stream('...');
+Cortex::concreteAgent('triage')->prompt('...');
 ```
 
-Providers, models, and settings fall back to your app's `config/ai.php` defaults when not set on the agent.
+Providers, models, and settings fall back to your app's `config/ai.php` defaults when not set on a virtual agent.
 
 ## Providers
 
-The dashboard's agent form and `GET /cortex/providers` offer the same provider and model list. By default every text-capable provider configured for laravel/ai is offered, along with the models it declares (default, smartest, cheapest). Set `cortex.providers` to curate the list — it becomes authoritative when non-empty, with the first model of each provider used as its default:
+The dashboard's virtual agent form and `GET /cortex/providers` offer the same provider and model list. By default every text-capable provider configured for laravel/ai is offered, along with the models it declares (default, smartest, cheapest). Set `cortex.providers` to curate the list — it becomes authoritative when non-empty, with the first model of each provider used as its default:
 
 ```php
 'providers' => [
@@ -193,11 +244,11 @@ The dashboard's agent form and `GET /cortex/providers` offer the same provider a
 
 ## Publication Cache
 
-Published prompt content, tool description overrides, and MCP server instruction overrides are cached so agent runs, tool listings, and MCP handshakes don't hit the database on every request; publishing invalidates explicitly. When Redis is available it is preferred and read via `Cache::flexible()` using the `cache.fresh`/`cache.stale` windows (stale-while-revalidate); any other store caches until invalidation. Pin a store with `cache.store`, or set `cache.enabled` to `false` to read from the database on every pull.
+Published virtual agent prompts, tool description overrides, MCP server instruction overrides and concrete agent overrides are cached so agent runs, tool listings, and MCP handshakes don't hit the database on every request; publishing invalidates explicitly. When Redis is available it is preferred and read via `Cache::flexible()` using the `cache.fresh`/`cache.stale` windows (stale-while-revalidate); any other store caches until invalidation. Pin a store with `cache.store`, or set `cache.enabled` to `false` to read from the database on every pull.
 
 ## MCP Server
 
-The `CortexServer` exposes the prompt, agent, tool, and server-instruction operations as MCP tools (22 tools: prompt CRUD + versions + publish, agent CRUD, list tools, run agent, server instructions + versions + publish). The provider and tool-description endpoints are HTTP-only. Enable a transport in the config:
+The `CortexServer` exposes the virtual agent, concrete agent, tool, and server-instruction operations as MCP tools (25 tools: virtual agent CRUD + run + prompt versions + publish, concrete agent list/show/run + prompt versions + publish + tools + remove overrides, list tools, server instructions + versions + publish). The provider and tool-description endpoints are HTTP-only. Enable a transport in the config:
 
 ```php
 'mcp' => [
@@ -217,7 +268,7 @@ Mcp::web('/mcp/cortex', CortexServer::class)->middleware(['auth:sanctum']);
 
 ### Server Instruction Overrides
 
-An MCP server's code-declared instructions (the `#[Instructions]` attribute or `$instructions` property) can be overridden without a deploy: each registered server has an optional, immutably versioned instruction override with a published pointer — same model as prompts and tool descriptions. Manage overrides from the dashboard, the API (`/cortex/servers/{server}/instructions`), or the MCP tools.
+An MCP server's code-declared instructions (the `#[Instructions]` attribute or `$instructions` property) can be overridden without a deploy: each registered server has an optional, immutably versioned instruction override with a published pointer — same model as agent prompts and tool descriptions. Manage overrides from the dashboard, the API (`/cortex/servers/{server}/instructions`), or the MCP tools.
 
 Cortex's own server is always registered as `cortex`. Register additional servers in `config/cortex.php` under `mcp.servers` (string keys set the registered name; unkeyed entries derive it from the server's `#[Name]` attribute or class basename), or at runtime:
 
@@ -231,20 +282,21 @@ For the published override to actually be served to MCP clients, the server clas
 
 ## Events
 
-- **Model events:** every Eloquent hook of every Cortex model fires its own class, such as `PromptCreatingEvent`, `AgentDeletedEvent` or `PromptVersionSavedEvent`.
-- **Action events:** every action fires a start and a finish event, such as `PromptVersionPublishingActionEvent` and `PromptVersionPublishedActionEvent`, or `AgentRunningActionEvent` and `AgentRanActionEvent`. The start event fires before the work. The finish event fires after the transaction commits, and only on success.
+- **Model events:** every Eloquent hook of every Cortex model fires its own class, such as `VirtualAgentCreatingEvent`, `VirtualAgentVersionSavedEvent` or `ConcreteAgentOverrideDeletedEvent`.
+- **Action events:** every action fires a start and a finish event, such as `VirtualAgentVersionPublishingActionEvent` and `VirtualAgentVersionPublishedActionEvent`, or `VirtualAgentRunningActionEvent` and `VirtualAgentRanActionEvent`. The start event fires before the work. The finish event fires after the transaction commits, and only on success.
 - **Listening to a whole family:** listen to `ModelLifecycleEvent`, `ActionStartingEvent` or `ActionFinishedEvent` (in `JayI\Cortex\Contracts`) to receive every event of that family.
 
 **Full guide:** [Events](docs/events.md). It lists every action with its two events and what they carry.
 
 ## Testing Your Integration
 
-Fake agent responses with the Laravel AI SDK's testing helpers — Cortex agents all run through `JayI\Cortex\Runtime\DbAgent`:
+Fake agent responses with the Laravel AI SDK's testing helpers. Virtual agents all run through `JayI\Cortex\Runtime\DbAgent`; concrete agents are faked through their own class:
 
 ```php
 use JayI\Cortex\Runtime\DbAgent;
 
 DbAgent::fake(['Canned response.']);
+TriageAgent::fake(['Canned triage.']);
 
 DbAgent::assertPrompted(fn ($prompt) => str_contains($prompt->prompt, 'tickets'));
 ```

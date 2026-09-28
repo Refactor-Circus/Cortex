@@ -28,7 +28,7 @@ function publishServerInstructionOverride(string $server, string $content): void
 it('serves the code-declared instructions without a published override', function () {
     $context = (new CortexServer(new FakeTransporter))->createContext();
 
-    expect($context->instructions)->toContain('Manage Cortex prompts');
+    expect($context->instructions)->toContain('Manage Cortex virtual agents');
 });
 
 it('serves the published override in the server context', function () {
@@ -45,7 +45,7 @@ it('keeps serving code-declared instructions while a version is only drafted', f
 
     $context = (new CortexServer(new FakeTransporter))->createContext();
 
-    expect($context->instructions)->toContain('Manage Cortex prompts');
+    expect($context->instructions)->toContain('Manage Cortex virtual agents');
 });
 
 it('applies overrides to servers registered at runtime', function () {

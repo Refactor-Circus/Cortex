@@ -27,6 +27,7 @@ final class ToolDescriptionVersion extends Model
 
     /** @use HasFactory<ToolDescriptionVersionFactory> */
     use HasFactory;
+
     use HasUlids;
 
     protected $table = 'cortex_tool_description_versions';

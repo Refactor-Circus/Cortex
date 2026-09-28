@@ -10,7 +10,7 @@
                     name="agent"
                     :label="__('cortex::cortex.agents')"
                     :placeholder="__('cortex::cortex.select_agent')"
-                    :options="$agents->mapWithKeys(fn ($agent) => [$agent->slug => $agent->name])"
+                    :options="$agents"
                     :selected="$selected"
                     required />
 

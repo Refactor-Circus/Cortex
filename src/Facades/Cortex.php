@@ -8,8 +8,12 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static \JayI\Cortex\Tools\ToolRegistry tools()
- * @method static \JayI\Cortex\Runtime\DbAgent agent(string $slug)
- * @method static \Laravel\Ai\Responses\AgentResponse run(string $slug, string $input)
+ * @method static \JayI\Cortex\Mcp\McpServerRegistry servers()
+ * @method static \JayI\Cortex\Agents\AgentRegistry agents()
+ * @method static \JayI\Cortex\Runtime\DbAgent virtualAgent(string $slug)
+ * @method static \Laravel\Ai\Contracts\Agent concreteAgent(string $name)
+ * @method static \Laravel\Ai\Responses\AgentResponse runVirtualAgent(string $slug, string $input)
+ * @method static \Laravel\Ai\Responses\AgentResponse runConcreteAgent(string $name, string $input)
  *
  * @see \JayI\Cortex\Cortex
  */

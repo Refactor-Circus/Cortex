@@ -8,6 +8,8 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use JayI\Atrium\Facades\Atrium;
+use JayI\Cortex\Agents\AgentRegistry;
+use JayI\Cortex\Agents\ConcreteAgentOverrides;
 use JayI\Cortex\Atrium\CortexPlugin;
 use JayI\Cortex\Mcp\CortexServer;
 use JayI\Cortex\Mcp\McpInstructionOverrides;
@@ -31,6 +33,10 @@ class CortexServiceProvider extends ServiceProvider
         $this->app->singleton(McpServerRegistry::class);
 
         $this->app->scoped(McpInstructionOverrides::class);
+
+        $this->app->singleton(AgentRegistry::class);
+
+        $this->app->scoped(ConcreteAgentOverrides::class);
 
         $this->app->singleton(Cortex::class);
 

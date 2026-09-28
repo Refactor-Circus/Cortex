@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Mcp\Tools\ShowAgentTool;
+use JayI\Cortex\Mcp\Tools\ShowVirtualAgentTool;
 use JayI\Cortex\Tests\Fixtures\EchoMcpTool;
 use JayI\Cortex\Tests\Fixtures\EchoRequestTool;
 use JayI\Cortex\Tools\ToolRegistry;
@@ -26,7 +26,7 @@ it('still fills the base request when an agent calls a tool', function () {
 
 it('lets agents call the package tools with their arguments', function () {
     $registry = app(ToolRegistry::class);
-    $registry->register('show-agent', ShowAgentTool::class);
+    $registry->register('show-agent', ShowVirtualAgentTool::class);
 
     // Before the fix the request arrived empty and failed validation on
     // `slug`; with it, the tool looks the slug up and reports it missing.

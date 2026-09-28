@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
  * Dispatch a class-based event for every Eloquent lifecycle hook.
  *
  * Each hook maps by convention to `JayI\Cortex\Events\Model\{Model}{Hook}Event`
- * — `PromptVersion` fires `PromptVersionCreatingEvent` — and hooks without
+ * — `VirtualAgentVersion` fires `VirtualAgentVersionCreatingEvent` — and hooks without
  * such a class (the soft-delete hooks, since no Cortex model can be trashed)
  * are skipped.
  *

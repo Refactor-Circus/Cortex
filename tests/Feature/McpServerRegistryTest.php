@@ -82,7 +82,7 @@ it('lists servers with effective instructions', function () {
     expect($servers)->toHaveCount(2)
         ->and($servers[0]['name'])->toBe('cortex')
         ->and($servers[0]['class'])->toBe(CortexServer::class)
-        ->and($servers[0]['instructions'])->toContain('Manage Cortex prompts')
+        ->and($servers[0]['instructions'])->toContain('Manage Cortex virtual agents')
         ->and($servers[1]['name'])->toBe('echo')
         ->and($servers[1]['instructions'])->toBe('Published echo instructions.');
 });

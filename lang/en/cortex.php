@@ -7,15 +7,16 @@ return [
     'label' => 'Cortex',
 
     // Navigation
-    'prompts' => 'Prompts',
     'agents' => 'Agents',
+    'virtual_agents' => 'Virtual agents',
+    'concrete_agents' => 'Concrete agents',
     'run_agent' => 'Run agent',
     'tools' => 'Tools',
     'servers' => 'Servers',
 
     // Settings panel
     'settings_label' => 'Cortex',
-    'settings_description' => 'Providers, tools and MCP servers available to your agents.',
+    'settings_description' => 'Providers, tools, concrete agents and MCP servers available to your agents.',
     'providers' => 'Providers',
     'registered_tools' => 'Registered tools',
     'mcp_servers' => 'MCP servers',
@@ -23,13 +24,7 @@ return [
     'enabled' => 'Enabled',
     'disabled' => 'Disabled',
 
-    // Prompts
-    'new_prompt' => 'New prompt',
-    'edit_prompt' => 'Edit prompt',
-    'no_prompts' => 'No prompts yet.',
-    'prompt_created' => 'Prompt created.',
-    'prompt_updated' => 'Prompt updated.',
-    'prompt_deleted' => 'Prompt deleted.',
+    // Shared fields
     'name' => 'Name',
     'slug' => 'Slug',
     'slug_hint' => 'Letters, numbers, dashes and underscores. This cannot be changed later.',
@@ -38,7 +33,6 @@ return [
     'published' => 'Published',
     'updated' => 'Updated',
     'publish_immediately' => 'Publish this version immediately',
-    'versioned_hint' => 'Prompt content is versioned. Add a new version from the prompt page.',
 
     // Versions
     'versions' => 'Versions',
@@ -53,13 +47,14 @@ return [
     'view' => 'View',
     'hide' => 'Hide',
 
-    // Agents
-    'new_agent' => 'New agent',
-    'edit_agent' => 'Edit agent',
-    'no_agents' => 'No agents yet.',
-    'agent_created' => 'Agent created.',
-    'agent_updated' => 'Agent updated.',
-    'agent_deleted' => 'Agent deleted.',
+    // Virtual agents
+    'new_virtual_agent' => 'New virtual agent',
+    'edit_virtual_agent' => 'Edit virtual agent',
+    'no_agents' => 'No virtual agents yet.',
+    'agent_created' => 'Virtual agent created.',
+    'agent_updated' => 'Virtual agent updated.',
+    'agent_deleted' => 'Virtual agent deleted.',
+    'virtual' => 'virtual',
     'provider' => 'Provider',
     'provider_default' => 'Provider default',
     'model' => 'Model',
@@ -69,10 +64,27 @@ return [
     'max_tokens' => 'Max tokens',
     'top_p' => 'Top P',
     'prompt' => 'Prompt',
-    'no_prompt' => 'No prompt',
-    'pinned_version' => 'Pinned prompt version',
-    'pinned_version_hint' => 'Leave blank to always use the published version.',
-    'sub_agents' => 'Sub-agents',
+    'prompt_hint' => 'Saving a changed prompt adds a new version and publishes it. Earlier versions can be republished below.',
+    'sub_agents' => 'Virtual sub-agents',
+    'concrete_sub_agents' => 'Concrete sub-agents',
+
+    // Concrete agents
+    'concrete' => 'concrete',
+    'concrete_agents_description' => 'Agents defined in code. Their prompt and tools can be overridden here.',
+    'no_concrete_agents' => 'No concrete agents are registered. Add them under the cortex.agents config key.',
+    'manage' => 'Manage',
+    'live_prompt' => 'Live prompt',
+    'overridden' => 'Overridden',
+    'locked' => 'Locked',
+    'tools_locked_hint' => 'This agent keeps the toolset declared in code (#[LockedTools]), so it cannot be overridden here.',
+    'not_overridable' => 'This agent does not extend JayI\\Cortex\\Agents\\Agent or use the HasCortexOverrides trait, so overrides saved here are not applied when it runs.',
+    'tools_override_hint' => 'The checked tools replace the toolset the class declares in code.',
+    'tools_no_override_hint' => 'No override exists, so the toolset declared in code is used. Saving the checked tools creates one.',
+    'no_tools_available' => 'The agent declares no tools and none are registered.',
+    'save_tools' => 'Save tools',
+    'use_code_tools' => 'Use code toolset',
+    'tools_updated' => 'Tools updated.',
+    'back_to_concrete_agents' => 'Back to concrete agents',
 
     // Running
     'select_agent' => 'Select an agent',
@@ -91,7 +103,7 @@ return [
     'from_code' => 'From code',
     'override' => 'Override v:version',
     'override_hint' => 'The published override replaces what the class declares in code.',
-    'no_override_hint' => 'No override exists, so the description declared in code is used.',
+    'no_override_hint' => 'No override exists, so the value declared in code is used.',
     'remove_override' => 'Remove override',
     'override_removed' => 'Override removed.',
     'back_to_tools' => 'Back to tools',

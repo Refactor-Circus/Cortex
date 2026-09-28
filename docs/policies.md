@@ -4,9 +4,10 @@ Cortex registers a policy for each of its models from `cortex.policies`, and the
 
 ```php
 'policies' => [
-    Agent::class => \JayI\Cortex\Policies\AgentPolicy::class,
-    Prompt::class => \JayI\Cortex\Policies\PromptPolicy::class,
-    PromptVersion::class => \JayI\Cortex\Policies\PromptVersionPolicy::class,
+    VirtualAgent::class => \JayI\Cortex\Policies\VirtualAgentPolicy::class,
+    VirtualAgentVersion::class => \JayI\Cortex\Policies\VirtualAgentVersionPolicy::class,
+    ConcreteAgentOverride::class => \JayI\Cortex\Policies\ConcreteAgentOverridePolicy::class,
+    ConcreteAgentOverrideVersion::class => \JayI\Cortex\Policies\ConcreteAgentOverrideVersionPolicy::class,
     ToolDescription::class => \JayI\Cortex\Policies\ToolDescriptionPolicy::class,
     ToolDescriptionVersion::class => \JayI\Cortex\Policies\ToolDescriptionVersionPolicy::class,
     McpInstruction::class => \JayI\Cortex\Policies\McpInstructionPolicy::class,
@@ -16,12 +17,12 @@ Cortex registers a policy for each of its models from `cortex.policies`, and the
 
 ## What the bundled policies allow
 
-Cortex records have no owner. Prompts, agents and overrides are shared configuration, so there is no "owner may do anything" rule to apply. Instead:
+Cortex records have no owner. Agents and overrides are shared configuration, so there is no "owner may do anything" rule to apply. Instead:
 
-- **`AgentPolicy`, `PromptPolicy`, `ToolDescriptionPolicy`, `McpInstructionPolicy`** allow every ability, for signed-in users and guests alike. Your route and MCP middleware stay the only gate, exactly as before policies existed. Nothing that worked without them is refused.
-- **`PromptVersionPolicy`, `ToolDescriptionVersionPolicy`, `McpInstructionVersionPolicy`** ask the Gate about the parent prompt or override. Listing or reading versions needs `view` on the parent. Adding or publishing a version needs `update` on the parent. Versions are immutable, so no ability changes or deletes one.
+- **`VirtualAgentPolicy`, `ConcreteAgentOverridePolicy`, `ToolDescriptionPolicy`, `McpInstructionPolicy`** allow every ability, for signed-in users and guests alike. Your route and MCP middleware stay the only gate, exactly as before policies existed. Nothing that worked without them is refused.
+- **`VirtualAgentVersionPolicy`, `ConcreteAgentOverrideVersionPolicy`, `ToolDescriptionVersionPolicy`, `McpInstructionVersionPolicy`** ask the Gate about the parent virtual agent or override. Listing or reading versions needs `view` on the parent. Adding or publishing a version needs `update` on the parent. Versions are immutable, so no ability changes or deletes one.
 
-Because version policies go through the Gate, replacing the prompt policy also governs its versions.
+Because version policies go through the Gate, replacing the virtual agent policy also governs its prompt versions.
 
 ## What each endpoint checks
 
@@ -29,21 +30,24 @@ Calls are checked as the authenticated user, or as a guest when nobody is signed
 
 | Endpoint | MCP tool | Ability | Subject |
 | --- | --- | --- | --- |
-| `GET /agents` | `list-agents-tool` | `viewAny` | `Agent::class` |
-| `POST /agents` | `create-agent-tool` | `create` | `Agent::class` |
-| `GET /agents/{slug}` | `show-agent-tool` | `view` | the agent |
-| `PATCH /agents/{slug}` | `update-agent-tool` | `update` | the agent |
-| `DELETE /agents/{slug}` | `delete-agent-tool` | `delete` | the agent |
-| `POST /agents/{slug}/run` | `run-agent-tool` | `run` | the agent |
-| `GET /prompts` | `list-prompts-tool` | `viewAny` | `Prompt::class` |
-| `POST /prompts` | `create-prompt-tool` | `create` | `Prompt::class` |
-| `GET /prompts/{slug}` | `show-prompt-tool` | `view` | the prompt |
-| `PATCH /prompts/{slug}` | `update-prompt-tool` | `update` | the prompt |
-| `DELETE /prompts/{slug}` | `delete-prompt-tool` | `delete` | the prompt |
-| `GET /prompts/{slug}/versions` | `list-prompt-versions-tool` | `viewAny` | `[PromptVersion::class, $prompt]` |
-| `POST /prompts/{slug}/versions` | `create-prompt-version-tool` | `create` | `[PromptVersion::class, $prompt]` |
-| `GET /prompts/{slug}/versions/{version}` | `show-prompt-version-tool` | `view` | the version |
-| `POST /prompts/{slug}/versions/{version}/publish` | `publish-prompt-version-tool` | `publish` | the version |
+| `GET /virtual-agents` | `list-virtual-agents-tool` | `viewAny` | `VirtualAgent::class` |
+| `POST /virtual-agents` | `create-virtual-agent-tool` | `create` | `VirtualAgent::class` |
+| `GET /virtual-agents/{slug}` | `show-virtual-agent-tool` | `view` | the agent |
+| `PATCH /virtual-agents/{slug}` | `update-virtual-agent-tool` | `update` | the agent |
+| `DELETE /virtual-agents/{slug}` | `delete-virtual-agent-tool` | `delete` | the agent |
+| `POST /virtual-agents/{slug}/run` | `run-virtual-agent-tool` | `run` | the agent |
+| `GET /virtual-agents/{slug}/versions` | `list-virtual-agent-versions-tool` | `viewAny` | `[VirtualAgentVersion::class, $agent]` |
+| `POST /virtual-agents/{slug}/versions` | `create-virtual-agent-version-tool` | `create` | `[VirtualAgentVersion::class, $agent]` |
+| `GET /virtual-agents/{slug}/versions/{version}` | `show-virtual-agent-version-tool` | `view` | the version |
+| `POST /virtual-agents/{slug}/versions/{version}/publish` | `publish-virtual-agent-version-tool` | `publish` | the version |
+| `GET /concrete-agents` | `list-concrete-agents-tool` | `viewAny` | `ConcreteAgentOverride::class` |
+| `GET /concrete-agents/{agent}` | `show-concrete-agent-tool` | `view` | the override |
+| `POST /concrete-agents/{agent}/run` | `run-concrete-agent-tool` | `run` | the override |
+| `PUT /concrete-agents/{agent}/tools` | `update-concrete-agent-tools-tool` | `update` | the override |
+| `DELETE /concrete-agents/{agent}/override` | `delete-concrete-agent-override-tool` | `delete` | the override |
+| `GET /concrete-agents/{agent}/versions` | `list-concrete-agent-versions-tool` | `viewAny` | `[ConcreteAgentOverrideVersion::class, $override]` |
+| `POST /concrete-agents/{agent}/versions` | `create-concrete-agent-version-tool` | `create` | `[ConcreteAgentOverrideVersion::class, $override]` |
+| `POST /concrete-agents/{agent}/versions/{version}/publish` | `publish-concrete-agent-version-tool` | `publish` | the version |
 | `GET /tools/{tool}/description` | | `view` | the override |
 | `DELETE /tools/{tool}/description` | | `delete` | the override |
 | `GET /tools/{tool}/description/versions` | | `viewAny` | `[ToolDescriptionVersion::class, $description]` |
@@ -55,7 +59,7 @@ Calls are checked as the authenticated user, or as a guest when nobody is signed
 | `POST /servers/{server}/instructions/versions` | `create-server-instruction-version-tool` | `create` | `[McpInstructionVersion::class, $instruction]` |
 | `POST /servers/{server}/instructions/versions/{version}/publish` | `publish-server-instruction-version-tool` | `publish` | the version |
 
-Creating the first version of a tool description or server instruction override also creates the override. That call is checked against an unsaved override for that tool or server, so your policy sees `$description->tool` or `$instruction->server` either way.
+Creating the first version of a tool description, server instruction or concrete agent override also creates the override. That call is checked against an unsaved override for that tool, server or agent, so your policy sees `$description->tool`, `$instruction->server` or `$override->agent` either way. Showing, running or setting the tools of a concrete agent with no override row is checked the same way.
 
 `GET /tools`, `GET /servers` and `GET /providers` and their MCP tools read the tool and server registries and the provider config. No model is involved, so they check no policy.
 
@@ -69,13 +73,13 @@ An HTTP call that is refused returns `403`. An MCP call that is refused returns 
   namespace App\Policies;
 
   use Illuminate\Contracts\Auth\Authenticatable;
-  use JayI\Cortex\Models\Prompt;
-  use JayI\Cortex\Policies\PromptPolicy as CortexPromptPolicy;
+  use JayI\Cortex\Models\VirtualAgent;
+  use JayI\Cortex\Policies\VirtualAgentPolicy as CortexVirtualAgentPolicy;
 
-  class PromptPolicy extends CortexPromptPolicy
+  class VirtualAgentPolicy extends CortexVirtualAgentPolicy
   {
-      // Only prompt editors may change prompts, or add and publish versions.
-      public function update(?Authenticatable $user, Prompt $prompt): bool
+      // Only prompt editors may change agents, or add and publish prompt versions.
+      public function update(?Authenticatable $user, VirtualAgent $agent): bool
       {
           return $user?->can('edit-prompts') ?? false;
       }
@@ -84,7 +88,7 @@ An HTTP call that is refused returns `403`. An MCP call that is refused returns 
 
   ```php
   'policies' => [
-      Prompt::class => App\Policies\PromptPolicy::class,
+      VirtualAgent::class => App\Policies\VirtualAgentPolicy::class,
       // ...
   ],
   ```

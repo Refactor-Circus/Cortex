@@ -50,7 +50,7 @@ it('finds catalog tools by search term', function (): void {
 
     expect($payload['ok'])->toBeTrue()
         ->and($payload['tools'])->not->toBeEmpty()
-        ->and(array_column($payload['tools'], 'name'))->toContain('list-agents-tool');
+        ->and(array_column($payload['tools'], 'name'))->toContain('list-virtual-agents-tool');
 });
 
 it('browses the catalog with an empty query', function (): void {
@@ -64,13 +64,13 @@ it('browses the catalog with an empty query', function (): void {
 
 it('executes a catalog tool through execute_tools', function (): void {
     $responses = cortexServerTool('execute_tools')->handle(new Request([
-        'calls' => [['name' => 'list-agents-tool', 'arguments' => []]],
+        'calls' => [['name' => 'list-virtual-agents-tool', 'arguments' => []]],
     ]));
 
     $payload = decodeToolSearchPayload(collect($responses)->firstOrFail());
 
     expect($payload['ok'])->toBeTrue()
-        ->and($payload['results'][0]['name'])->toBe('list-agents-tool')
+        ->and($payload['results'][0]['name'])->toBe('list-virtual-agents-tool')
         ->and($payload['results'][0]['isError'])->toBeFalse();
 });
 
