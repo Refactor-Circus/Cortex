@@ -39,10 +39,7 @@ final class ConcreteAgentUiController
             'agent' => $details,
             'override' => $details['override'],
             'versions' => $details['override']?->versions()->orderByDesc('version')->get() ?? collect(),
-            'availableTools' => array_values(array_unique([
-                ...$details['default_tools'],
-                ...app(ToolRegistry::class)->names(),
-            ])),
+            'availableTools' => $this->availableTools($details['default_tools']),
         ]);
     }
 
@@ -114,5 +111,23 @@ final class ConcreteAgentUiController
     private function assertRegistered(string $agent): void
     {
         abort_unless(app(AgentRegistry::class)->has($agent), 404);
+    }
+
+    /**
+     * The tools the agent can be given, with their tags: its code-declared
+     * tools first, then every registered one. A code-declared tool Cortex
+     * does not know has no tags.
+     *
+     * @param  list<string>  $defaults
+     * @return list<array{name: string, tags: list<string>}>
+     */
+    private function availableTools(array $defaults): array
+    {
+        $registry = app(ToolRegistry::class);
+
+        return array_map(fn (string $name): array => [
+            'name' => $name,
+            'tags' => $registry->has($name) ? $registry->tagsFor($name) : [],
+        ], array_values(array_unique([...$defaults, ...$registry->names()])));
     }
 }

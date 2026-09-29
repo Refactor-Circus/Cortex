@@ -2,7 +2,7 @@
     <x-atrium::page-header :title="__('cortex::cortex.virtual_agents')">
         <x-slot:actions>
             <x-atrium::button :href="route('atrium.cortex.virtual-agents.create')" data-testid="new-agent">
-                {{ __('cortex::cortex.new_agent') }}
+                {{ __('cortex::cortex.new_virtual_agent') }}
             </x-atrium::button>
         </x-slot:actions>
     </x-atrium::page-header>

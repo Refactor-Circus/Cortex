@@ -72,16 +72,11 @@
 
                 @if ($tools !== [])
                     <x-atrium::section :title="__('cortex::cortex.tools')">
-                        <div class="flex flex-col gap-2">
-                            @foreach ($tools as $tool)
-                                <x-atrium::form.checkbox
-                                    name="tools[]"
-                                    :value="$tool['name']"
-                                    :label="$tool['name']"
-                                    :id="'tool-'.$tool['name']"
-                                    :checked="in_array($tool['name'], (array) ($agent?->tools ?? []), true)" />
-                            @endforeach
-                        </div>
+                        @include('cortex::ui.partials.tool-picker', [
+                            'pickerTools' => collect($tools)->map(fn ($tool) => ['name' => $tool['name'], 'label' => $tool['name'], 'tags' => $tool['tags']])->all(),
+                            'checked' => (array) ($agent?->tools ?? []),
+                            'idPrefix' => 'tool-',
+                        ])
                     </x-atrium::section>
                 @endif
 

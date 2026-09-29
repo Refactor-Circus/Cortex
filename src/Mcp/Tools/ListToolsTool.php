@@ -11,7 +11,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 
-#[Description('List the tools registered with Cortex that can be attached to agents, including their input schemas.')]
+#[Description('List the tools registered with Cortex that can be attached to agents, including their input schemas and tags. Pass a tag to list only the tools carrying it.')]
 final class ListToolsTool extends Tool
 {
     public function handle(ListToolsMcpRequest $request): Response|ResponseFactory
@@ -21,6 +21,8 @@ final class ListToolsTool extends Tool
 
     public function schema(JsonSchema $schema): array
     {
-        return [];
+        return [
+            'tag' => $schema->string()->description('Only list tools carrying this tag, e.g. "orders".'),
+        ];
     }
 }

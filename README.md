@@ -105,7 +105,7 @@ use Illuminate\Support\Facades\Gate;
 Gate::define('viewAtrium', fn ($user) => $user->is_admin);
 ```
 
-The dashboard covers virtual agents with their prompt versions, concrete agents with their prompt and toolset overrides, a run playground, the tool registry with a versioned description editor, and the MCP server registry with a versioned instructions editor.
+The dashboard covers virtual agents with their prompt versions, concrete agents with their prompt and toolset overrides, a run playground, the tool registry (filterable by tag) with a versioned description editor, and the MCP server registry with a versioned instructions editor.
 
 Atrium owns the path, the middleware and the authorization gate, so there is nothing to configure here beyond the single switch:
 
@@ -127,6 +127,27 @@ use JayI\Cortex\Facades\Cortex;
 
 Cortex::tools()->register('search', \App\Ai\Tools\SearchTool::class);
 ```
+
+### Tool Tags
+
+Tags group tools on the dashboard's tool list and in the agent tool pickers, which filter by tag, name and selection. A tool gets the tags given when it is registered plus one per matching namespace pattern:
+
+```php
+// config/cortex.php
+'tools' => [
+    'lookup' => ['class' => \App\Mcp\Tools\LookupTool::class, 'tags' => ['catalog']],
+],
+
+'tool_tags' => [
+    // `{tag}` is one namespace segment: App\Domains\Order\Mcp\ShowOrderTool is tagged `order`.
+    'namespaces' => ['App\\Domains\\{tag}\\', 'App\\Modules\\{tag}\\'],
+],
+
+// or at runtime:
+Cortex::tools()->register('search', \App\Ai\Tools\SearchTool::class, ['catalog']);
+```
+
+Tags are kebab-cased. `GET /cortex/tools?tag=catalog` and the `list-tools-tool` MCP tool's `tag` argument list only the tools carrying a tag, and every listed tool includes its `tags`.
 
 ### Tool Description Overrides
 
@@ -190,7 +211,7 @@ Everything is available over the REST API (prefix `cortex` by default):
 | GET/POST | `/cortex/concrete-agents/{agent}/versions` | List / create immutable prompt override versions |
 | POST | `/cortex/concrete-agents/{agent}/versions/{version}/publish` | Publish a prompt override version |
 | GET | `/cortex/providers` | List providers with their models and default model |
-| GET | `/cortex/tools` | List registered tools with their schemas |
+| GET | `/cortex/tools?tag=` | List registered tools with their schemas and tags, optionally one tag's |
 | GET/DELETE | `/cortex/tools/{tool}/description` | Show / remove the description override |
 | GET/POST | `/cortex/tools/{tool}/description/versions` | List / create immutable override versions |
 | POST | `/cortex/tools/{tool}/description/versions/{version}/publish` | Publish an override version |

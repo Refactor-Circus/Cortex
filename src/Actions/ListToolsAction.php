@@ -17,19 +17,21 @@ final class ListToolsAction
      */
     public static function rules(): array
     {
-        return [];
+        return [
+            'tag' => ['sometimes', 'nullable', 'string'],
+        ];
     }
 
     public function __construct(private readonly ToolRegistry $registry) {}
 
     /**
-     * @return list<array{name: string, class: class-string<Tool>|class-string<McpTool>, description: string, schema: array<string, mixed>}>
+     * @return list<array{name: string, class: class-string<Tool>|class-string<McpTool>, description: string, schema: array<string, mixed>, tags: list<string>}>
      */
-    public function execute(): array
+    public function execute(?string $tag = null): array
     {
-        ToolsListingActionEvent::dispatch();
+        ToolsListingActionEvent::dispatch($tag);
 
-        $result = $this->perform();
+        $result = $this->perform($tag);
 
         ToolsListedActionEvent::dispatch($result);
 
@@ -37,10 +39,10 @@ final class ListToolsAction
     }
 
     /**
-     * @return list<array{name: string, class: class-string<Tool>|class-string<McpTool>, description: string, schema: array<string, mixed>}>
+     * @return list<array{name: string, class: class-string<Tool>|class-string<McpTool>, description: string, schema: array<string, mixed>, tags: list<string>}>
      */
-    private function perform(): array
+    private function perform(?string $tag): array
     {
-        return $this->registry->all();
+        return $this->registry->all($tag);
     }
 }

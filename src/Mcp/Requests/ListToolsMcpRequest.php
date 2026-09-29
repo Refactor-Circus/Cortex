@@ -11,9 +11,17 @@ use Laravel\Mcp\ResponseFactory;
 
 final class ListToolsMcpRequest extends Request
 {
+    protected function rules(): array
+    {
+        return ListToolsAction::rules();
+    }
+
     protected function handle(array $validated): ResponseFactory
     {
-        $tools = app(ListToolsAction::class)->execute();
+        /** @var string|null $tag */
+        $tag = $validated['tag'] ?? null;
+
+        $tools = app(ListToolsAction::class)->execute($tag);
 
         return $this->structuredCollection(ToolResource::collection($tools)->resolve());
     }
