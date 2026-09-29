@@ -95,6 +95,12 @@ return [
 
     // Tools and servers
     'no_tools' => 'No tools are registered. Add them under the cortex.tools config key.',
+    'no_tools_tagged' => 'No tools are tagged :tag.',
+    'tags' => 'Tags',
+    'all_tags' => 'All',
+    'search_tools' => 'Search tools',
+    'selected_only' => 'Selected only',
+    'tools_selected' => ':count selected',
     'no_servers' => 'No MCP servers are registered. Add them under the cortex.mcp.servers config key.',
     'instructions' => 'Instructions',
     'tool_description' => 'Tool description',

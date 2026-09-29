@@ -82,6 +82,8 @@ use JayI\Cortex\Facades\Cortex;
 Cortex::tools()->register('search', \App\Ai\Tools\SearchTool::class);
 ```
 
+Tag tools to group them in the dashboard and agent tool pickers: `Cortex::tools()->register($name, $class, ['catalog'])`, a config entry `'lookup' => ['class' => LookupTool::class, 'tags' => ['catalog']]`, or namespace patterns under `cortex.tool_tags.namespaces` (default `App\\Domains\\{tag}\\` and `App\\Modules\\{tag}\\`, `{tag}` = one namespace segment, kebab-cased). Packages registering their own tools should tag them with the package name. Filter with `GET /cortex/tools?tag=` or the `list-tools-tool` `tag` argument.
+
 To let a tool's description be overridden at runtime (versioned + published like agent prompts), extend `JayI\Cortex\Tools\Tool` or use the `JayI\Cortex\Tools\Concerns\HasVersionedDescription` trait. Manage overrides from the dashboard or `/cortex/tools/{tool}/description` endpoints.
 
 MCP server *instructions* work the same way. Cortex's own server is always registered as `cortex`; register app servers under `cortex.mcp.servers` config (string keys name them; unkeyed entries derive the name from `#[Name]` or the class basename) or at runtime with `Cortex::servers()->register('support', \App\Mcp\SupportServer::class)`. For published overrides to be served to MCP clients, the server must extend `JayI\Cortex\Mcp\Server` or use the `JayI\Cortex\Mcp\Concerns\HasVersionedInstructions` trait.

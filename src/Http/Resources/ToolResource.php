@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property array{name: string, class: string, description: string, schema: array<string, mixed>} $resource
+ * @property array{name: string, class: string, description: string, schema: array<string, mixed>, tags: list<string>} $resource
  */
 final class ToolResource extends JsonResource
 {
@@ -21,6 +21,7 @@ final class ToolResource extends JsonResource
             'name' => $this->resource['name'],
             'description' => $this->resource['description'],
             'schema' => $this->resource['schema'],
+            'tags' => $this->resource['tags'],
         ];
     }
 }

@@ -166,14 +166,36 @@ return [
     | Laravel\Ai\Contracts\Tool or extend Laravel\Mcp\Server\Tool (MCP tools
     | are wrapped for agent use automatically). String keys set the tool's
     | registered name; unkeyed entries derive it from the tool itself.
-    | Tools may also be registered at runtime via
-    | Cortex::tools()->register($name, $class).
+    | An array entry sets tags too. Tools may also be registered at runtime
+    | via Cortex::tools()->register($name, $class, $tags).
     |
     */
 
     'tools' => [
         // 'search' => \App\Ai\Tools\SearchTool::class,
         // \App\Mcp\Tools\LookupTool::class,
+        // 'lookup' => ['class' => \App\Mcp\Tools\LookupTool::class, 'tags' => ['catalog']],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tool Tags
+    |--------------------------------------------------------------------------
+    |
+    | Tags group tools on the dashboard and in the agent tool pickers. A tool
+    | gets the tags given when it is registered (the `tags` of an array
+    | entry above, or register($name, $class, $tags)) plus one per matching
+    | namespace pattern below, where `{tag}` stands for one namespace
+    | segment: `App\Domains\{tag}\` tags App\Domains\Order\...\ShowOrderTool
+    | as `order`. Tags are kebab-cased.
+    |
+    */
+
+    'tool_tags' => [
+        'namespaces' => [
+            'App\\Domains\\{tag}\\',
+            'App\\Modules\\{tag}\\',
+        ],
     ],
 
     /*

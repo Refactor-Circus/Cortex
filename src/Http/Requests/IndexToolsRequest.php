@@ -18,7 +18,10 @@ final class IndexToolsRequest extends Request
 
     public function persist(): JsonResponse
     {
-        $tools = app(ListToolsAction::class)->execute();
+        /** @var string|null $tag */
+        $tag = $this->validated('tag');
+
+        $tools = app(ListToolsAction::class)->execute($tag);
 
         return ToolResource::collection($tools)->response();
     }
