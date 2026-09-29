@@ -138,6 +138,16 @@ it('creates and publishes a description override', function (): void {
         ->assertSee('A better description.');
 });
 
+it('prefills the new version with the live description', function (): void {
+    $this->post(route('atrium.cortex.tools.description.store', 'echo'), ['content' => 'Live override', 'publish' => true]);
+    $this->post(route('atrium.cortex.tools.description.store', 'echo'), ['content' => 'Unpublished draft']);
+
+    $this->get(route('atrium.cortex.tools.description', 'echo'))
+        ->assertOk()
+        ->assertSee('>Live override</textarea>', false)
+        ->assertDontSee('>Unpublished draft</textarea>', false);
+});
+
 it('removes a description override', function (): void {
     $this->post(route('atrium.cortex.tools.description.store', 'echo'), ['content' => 'Override', 'publish' => true]);
 

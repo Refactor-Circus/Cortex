@@ -29,7 +29,9 @@
     <x-atrium::card :title="__('cortex::cortex.new_version')">
         <form method="POST" action="{{ $storeRoute }}" class="flex flex-col gap-4">
             @csrf
-            <x-atrium::form.textarea name="content" :label="__('cortex::cortex.content')" rows="8" required class="font-mono text-xs" />
+            <x-atrium::form.textarea name="content" :label="__('cortex::cortex.content')"
+                                     :value="$override?->publishedVersion?->content ?? $fallback"
+                                     rows="8" required class="font-mono text-xs" />
             <x-atrium::form.checkbox name="publish" :label="__('cortex::cortex.publish_immediately')" :checked="true" />
 
             <div>
