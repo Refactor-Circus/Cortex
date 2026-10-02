@@ -6,6 +6,7 @@ namespace JayI\Cortex\Http\Ui;
 
 use Illuminate\Http\RedirectResponse;
 use JayI\Cortex\Actions\PublishVirtualAgentVersionAction;
+use JayI\Cortex\Http\Ui\Concerns\AuthorizesScreens;
 use JayI\Cortex\Models\VirtualAgent;
 
 /**
@@ -14,8 +15,12 @@ use JayI\Cortex\Models\VirtualAgent;
  */
 final class VirtualAgentVersionUiController
 {
+    use AuthorizesScreens;
+
     public function publish(VirtualAgent $agent, int $version): RedirectResponse
     {
+        $this->authorizeScreen('publish', $agent->versions()->where('version', $version)->firstOrFail());
+
         app(PublishVirtualAgentVersionAction::class)->execute($agent, $version);
 
         return redirect()

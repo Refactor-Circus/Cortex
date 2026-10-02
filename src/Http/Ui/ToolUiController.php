@@ -7,6 +7,7 @@ namespace JayI\Cortex\Http\Ui;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use JayI\Cortex\Actions\ListToolsAction;
+use JayI\Cortex\Models\ToolDescription;
 use JayI\Cortex\Tools\ToolRegistry;
 
 final class ToolUiController
@@ -24,6 +25,8 @@ final class ToolUiController
             'tools' => app(ListToolsAction::class)->execute($tag),
             'tags' => app(ToolRegistry::class)->tags(),
             'tag' => $tag,
+            // Each row's description link is checked against its override.
+            'descriptions' => ToolDescription::query()->get()->keyBy('tool'),
         ]);
     }
 }

@@ -50,6 +50,7 @@ return [
     // Virtual agents
     'new_virtual_agent' => 'New virtual agent',
     'edit_virtual_agent' => 'Edit virtual agent',
+    'back_to_virtual_agents' => 'Back to virtual agents',
     'no_agents' => 'No virtual agents yet.',
     'agent_created' => 'Virtual agent created.',
     'agent_updated' => 'Virtual agent updated.',

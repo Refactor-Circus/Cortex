@@ -10,16 +10,22 @@ use Illuminate\Http\Request;
 use JayI\Cortex\Actions\CreateMcpInstructionVersionAction;
 use JayI\Cortex\Actions\DeleteMcpInstructionAction;
 use JayI\Cortex\Actions\PublishMcpInstructionVersionAction;
+use JayI\Cortex\Http\Ui\Concerns\AuthorizesScreens;
 use JayI\Cortex\Mcp\McpServerRegistry;
 use JayI\Cortex\Models\McpInstruction;
+use JayI\Cortex\Models\McpInstructionVersion;
 
 final class McpInstructionUiController
 {
+    use AuthorizesScreens;
+
     public function show(string $server): View
     {
         $this->assertRegistered($server);
 
         $instruction = $this->override($server);
+
+        $this->authorizeScreen('view', ScreenAccess::serverInstruction($server, $instruction));
 
         /** @var view-string $view */
         $view = 'cortex::ui.servers.instructions';
@@ -28,13 +34,16 @@ final class McpInstructionUiController
             'server' => $server,
             'codeInstructions' => app(McpServerRegistry::class)->defaultInstructions($server),
             'instruction' => $instruction,
-            'versions' => $instruction?->versions()->orderByDesc('version')->get() ?? collect(),
+            'subject' => ScreenAccess::serverInstruction($server, $instruction),
+            'versions' => $instruction?->versions()->chaperone('mcpInstruction')->orderByDesc('version')->get() ?? collect(),
         ]);
     }
 
     public function store(Request $request, string $server): RedirectResponse
     {
         $this->assertRegistered($server);
+
+        $this->authorizeScreen('create', McpInstructionVersion::class, [ScreenAccess::serverInstruction($server, $this->override($server))]);
 
         $data = $request->validate(CreateMcpInstructionVersionAction::rules());
 
@@ -53,6 +62,8 @@ final class McpInstructionUiController
 
         abort_if($instruction === null, 404);
 
+        $this->authorizeScreen('publish', $instruction->versions()->where('version', $version)->firstOrFail());
+
         app(PublishMcpInstructionVersionAction::class)->execute($instruction, $version);
 
         return redirect()
@@ -67,6 +78,8 @@ final class McpInstructionUiController
         $instruction = $this->override($server);
 
         abort_if($instruction === null, 404);
+
+        $this->authorizeScreen('delete', $instruction);
 
         app(DeleteMcpInstructionAction::class)->execute($instruction);
 

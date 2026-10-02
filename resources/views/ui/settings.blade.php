@@ -7,8 +7,7 @@
     </div>
 
     <x-atrium::card :title="__('cortex::cortex.cache')">
-        <x-atrium::badge :variant="$cacheEnabled ? 'success' : 'neutral'">
-            {{ $cacheEnabled ? __('cortex::cortex.enabled') : __('cortex::cortex.disabled') }}
-        </x-atrium::badge>
+        @php($cacheStatus = $cacheEnabled ? 'enabled' : 'disabled')
+        <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus($cacheStatus)" :label="__('cortex::cortex.'.$cacheStatus)" data-status="{{ $cacheStatus }}" />
     </x-atrium::card>
 </div>

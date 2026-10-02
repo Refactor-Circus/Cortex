@@ -66,6 +66,10 @@ Gate::define('viewAtrium', fn ($user) => $user->is_admin);
 
 Without a `viewAtrium` gate Atrium allows the `local` environment only. Set `'ui' => ['enabled' => false]` to leave Cortex out of the dashboard; the JSON API keeps serving.
 
+The pages check the same policies as the API (`JayI\Cortex\Http\Ui\ScreenAccess`): each page and action answers 403 when refused, and each navigation item, button, form and card shows only when its action is allowed. In published or custom views, gate a control with `@cortexCan('ability', $subject, [$arguments])` ... `@endcortexCan`, asked exactly as the action asks. Actions are `<x-atrium::icon-button>`s and states are `<x-atrium::status-dot>`s coloured by `JayI\Cortex\Atrium\Badges::forStatus()`.
+
+With `jayi/pennantplus` installed, `JayI\Cortex\Features\CortexSupportFeature` switches Cortex in Atrium on and off as a whole (global value only; pages 404 while off). Configure the list in `cortex.atrium.features`; feature classes that cannot load are skipped.
+
 ### 4. Register tools
 
 Tools implement `Laravel\Ai\Contracts\Tool` (`description()`, `handle()`, `schema()`) or extend `Laravel\Mcp\Server\Tool` (wrapped for agent use automatically). String config keys set the registered name; unkeyed entries derive it from the tool:

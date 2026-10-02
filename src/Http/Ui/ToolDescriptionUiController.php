@@ -10,16 +10,22 @@ use Illuminate\Http\Request;
 use JayI\Cortex\Actions\CreateToolDescriptionVersionAction;
 use JayI\Cortex\Actions\DeleteToolDescriptionAction;
 use JayI\Cortex\Actions\PublishToolDescriptionVersionAction;
+use JayI\Cortex\Http\Ui\Concerns\AuthorizesScreens;
 use JayI\Cortex\Models\ToolDescription;
+use JayI\Cortex\Models\ToolDescriptionVersion;
 use JayI\Cortex\Tools\ToolRegistry;
 
 final class ToolDescriptionUiController
 {
+    use AuthorizesScreens;
+
     public function show(string $tool): View
     {
         $this->assertRegistered($tool);
 
         $description = $this->override($tool);
+
+        $this->authorizeScreen('view', ScreenAccess::toolDescription($tool, $description));
 
         /** @var view-string $view */
         $view = 'cortex::ui.tools.description';
@@ -28,13 +34,16 @@ final class ToolDescriptionUiController
             'tool' => $tool,
             'codeDescription' => app(ToolRegistry::class)->get($tool)->description(),
             'description' => $description,
-            'versions' => $description?->versions()->orderByDesc('version')->get() ?? collect(),
+            'subject' => ScreenAccess::toolDescription($tool, $description),
+            'versions' => $description?->versions()->chaperone('toolDescription')->orderByDesc('version')->get() ?? collect(),
         ]);
     }
 
     public function store(Request $request, string $tool): RedirectResponse
     {
         $this->assertRegistered($tool);
+
+        $this->authorizeScreen('create', ToolDescriptionVersion::class, [ScreenAccess::toolDescription($tool, $this->override($tool))]);
 
         $data = $request->validate(CreateToolDescriptionVersionAction::rules());
 
@@ -53,6 +62,8 @@ final class ToolDescriptionUiController
 
         abort_if($description === null, 404);
 
+        $this->authorizeScreen('publish', $description->versions()->where('version', $version)->firstOrFail());
+
         app(PublishToolDescriptionVersionAction::class)->execute($description, $version);
 
         return redirect()
@@ -67,6 +78,8 @@ final class ToolDescriptionUiController
         $description = $this->override($tool);
 
         abort_if($description === null, 404);
+
+        $this->authorizeScreen('delete', $description);
 
         app(DeleteToolDescriptionAction::class)->execute($description);
 

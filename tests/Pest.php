@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use JayI\Cortex\Mcp\CortexServer;
+use JayI\Cortex\Tests\PennantPlusTestCase;
 use JayI\Cortex\Tests\TestCase;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Server\Testing\TestResponse;
@@ -10,7 +11,8 @@ use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Transport\FakeTransporter;
 use Laravel\Mcp\Transport\JsonRpcResponse;
 
-uses(TestCase::class)->in(__DIR__);
+uses(TestCase::class)->in('ArchTest.php', 'Feature', 'Unit');
+uses(PennantPlusTestCase::class)->in('Modes/PennantPlus');
 
 /**
  * Call a catalog tool the way a client must now reach it.

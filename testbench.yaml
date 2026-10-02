@@ -8,6 +8,9 @@ providers:
 migrations:
   - workbench/database/migrations
   - database/migrations
+  # jayi/pennantplus (dev dependency, auto-discovered) decides CortexSupportFeature
+  # through Pennant, whose features table lives here.
+  - vendor/laravel/pennant/database/migrations
 
 seeders:
   - Workbench\Database\Seeders\DatabaseSeeder

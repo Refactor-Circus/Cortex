@@ -1,14 +1,15 @@
 <x-atrium::layout :title="__('cortex::cortex.tool_description')">
     <x-atrium::page-header :title="$tool" :description="__('cortex::cortex.tool_description')">
         <x-slot:actions>
-            <x-atrium::button variant="ghost" :href="route('atrium.cortex.tools.index')">
-                {{ __('cortex::cortex.back_to_tools') }}
-            </x-atrium::button>
+            <x-atrium::icon-button icon="arrow-left" :label="__('cortex::cortex.back_to_tools')" variant="ghost"
+                                   :href="route('atrium.cortex.tools.index')" data-testid="back" />
         </x-slot:actions>
     </x-atrium::page-header>
 
     @include('cortex::ui.partials.override', [
         'override' => $description,
+        'subject' => $subject,
+        'versionClass' => \JayI\Cortex\Models\ToolDescriptionVersion::class,
         'fallback' => $codeDescription,
         'versions' => $versions,
         'storeRoute' => route('atrium.cortex.tools.description.store', $tool),

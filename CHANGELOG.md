@@ -23,7 +23,14 @@
 - Action events: every action dispatches a start event before its work and a finish event with its result (`JayI\Cortex\Events\Action`, e.g. `VirtualAgentRunningActionEvent` / `VirtualAgentRanActionEvent`). Start events implement `ActionStartingEvent`. Finish events implement `ActionFinishedEvent`, dispatch after commit and are skipped when the action throws. See `docs/events.md`.
 - Policies for every model (`JayI\Cortex\Policies`), registered with the Gate from the new `cortex.policies` config. Every API endpoint and MCP tool that touches a model now authorizes through them, as the signed-in user or as a guest. The bundled policies allow everything, since Cortex records have no owner, so existing behaviour is unchanged. Version policies defer to their virtual agent or override through the Gate. See `docs/policies.md`.
 
+- Dashboard permission gates: every Atrium page, action and control is checked against the `cortex.policies` policies exactly as the JSON API and MCP tools check them, through `JayI\Cortex\Http\Ui\ScreenAccess` and the new `@cortexCan` Blade conditional. Navigation items, buttons, forms and cards are shown only when their action would be allowed, the run page offers only the agents the user may `run`, and search returns only what the searcher may view.
+- `JayI\Cortex\Features\CortexSupportFeature` (needs `jayi/pennantplus`, suggested) and the `cortex.atrium.features` config: switch Cortex in Atrium on and off as a whole. Feature classes that cannot be loaded are skipped.
+- `JayI\Cortex\Atrium\Badges` maps each dashboard state to its Atrium colour.
+
 ### Changed
+
+- The Atrium screens follow Atrium's screen conventions: actions, tabs and back links are icon buttons (the label is the tooltip and accessible name), states are status dots carrying `data-status`, and every navigation item has a Heroicons icon. Tool tag filters are linked badges. Requires `jayi/atrium` at f5eb488 or later.
+- The dashboard pages now authorize: before, they ran actions without asking the policies the API asks.
 
 - The dashboard is server-rendered Blade built on `jayi/atrium`, which Cortex now requires, replacing the Vue 3 SPA. Cortex registers an Atrium plugin with navigation, routes under `/atrium/cortex/...`, search over virtual and concrete agents, and a settings panel. Atrium owns the path, middleware and `viewAtrium` gate, so the `ui.auth` config, the `UiTokenResolver` contract and the `/cortex/ui` route are gone; `ui.enabled` remains as the switch.
 - Requires `laravel/framework` instead of `illuminate/support`, since the package uses form requests, events and queues from the framework.

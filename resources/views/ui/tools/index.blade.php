@@ -3,16 +3,16 @@
 
     <div class="mt-5 flex flex-col gap-4" x-data="{ search: '' }">
         @if ($tags !== [])
-            {{-- The tag filter is a query string, so a filtered list can be linked to. --}}
-            <div class="flex flex-wrap gap-2" data-testid="tool-tags">
-                <x-atrium::button size="sm" :variant="$tag === null ? 'primary' : 'outline'" :href="route('atrium.cortex.tools.index')">
-                    {{ __('cortex::cortex.all_tags') }}
-                </x-atrium::button>
+            {{-- The tag filter is a query string, so a filtered list can be linked to.
+                 Tags are named, so they are linked badges, like the tags in the table. --}}
+            <div class="flex flex-wrap items-center gap-2" data-testid="tool-tags">
+                <a href="{{ route('atrium.cortex.tools.index') }}" data-testid="tag-all" @if ($tag === null) aria-current="true" @endif>
+                    <x-atrium::badge :variant="$tag === null ? 'primary' : 'neutral'">{{ __('cortex::cortex.all_tags') }}</x-atrium::badge>
+                </a>
                 @foreach ($tags as $option)
-                    <x-atrium::button size="sm" :variant="$tag === $option ? 'primary' : 'outline'"
-                                      :href="route('atrium.cortex.tools.index', ['tag' => $option])">
-                        {{ $option }}
-                    </x-atrium::button>
+                    <a href="{{ route('atrium.cortex.tools.index', ['tag' => $option]) }}" data-testid="tag-{{ $option }}" @if ($tag === $option) aria-current="true" @endif>
+                        <x-atrium::badge :variant="$tag === $option ? 'primary' : 'neutral'">{{ $option }}</x-atrium::badge>
+                    </a>
                 @endforeach
             </div>
         @endif
@@ -45,10 +45,11 @@
                             </div>
                         </x-atrium::table.cell>
                         <x-atrium::table.cell>
-                            <x-atrium::button size="sm" variant="outline"
-                                              :href="route('atrium.cortex.tools.description', $tool['name'])">
-                                {{ __('cortex::cortex.description') }}
-                            </x-atrium::button>
+                            @cortexCan('view', \JayI\Cortex\Http\Ui\ScreenAccess::toolDescription($tool['name'], $descriptions->get($tool['name'])))
+                                <x-atrium::icon-button icon="document-text" :label="__('cortex::cortex.description')" size="sm" variant="outline"
+                                                       :href="route('atrium.cortex.tools.description', $tool['name'])"
+                                                       data-testid="description-{{ $tool['name'] }}" />
+                            @endcortexCan
                         </x-atrium::table.cell>
                     </x-atrium::table.row>
                 @endforeach

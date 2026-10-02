@@ -5,24 +5,30 @@ declare(strict_types=1);
 namespace JayI\Cortex\Atrium;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use JayI\Atrium\Navigation\NavItem;
 use JayI\Atrium\Plugins\Plugin;
 use JayI\Atrium\Search\SearchResult;
 use JayI\Atrium\Search\SearchSource;
 use JayI\Atrium\Settings\SettingsPanel;
+use JayI\Atrium\Support\Icons;
 use JayI\Cortex\Agents\AgentRegistry;
 use JayI\Cortex\Http\Ui\ConcreteAgentUiController;
 use JayI\Cortex\Http\Ui\McpInstructionUiController;
 use JayI\Cortex\Http\Ui\RunAgentUiController;
+use JayI\Cortex\Http\Ui\RunnableAgents;
+use JayI\Cortex\Http\Ui\ScreenAccess;
 use JayI\Cortex\Http\Ui\ServerUiController;
 use JayI\Cortex\Http\Ui\ToolDescriptionUiController;
 use JayI\Cortex\Http\Ui\ToolUiController;
 use JayI\Cortex\Http\Ui\VirtualAgentUiController;
 use JayI\Cortex\Http\Ui\VirtualAgentVersionUiController;
 use JayI\Cortex\Mcp\McpServerRegistry;
+use JayI\Cortex\Models\ConcreteAgentOverride;
 use JayI\Cortex\Models\VirtualAgent;
 use JayI\Cortex\Tools\ToolRegistry;
+use Throwable;
 
 /**
  * Registers Cortex inside the Atrium dashboard.
@@ -42,14 +48,77 @@ class CortexPlugin extends Plugin
         return 'Cortex';
     }
 
+    /**
+     * Features from `cortex.atrium.features` that switch Cortex in Atrium on
+     * and off as a whole. A feature class that cannot be loaded, such as
+     * CortexSupportFeature without jayi/pennantplus, is skipped.
+     *
+     * @return array<int, string>
+     */
+    public function features(): array
+    {
+        $features = config('cortex.atrium.features', []);
+
+        return array_values(array_filter(
+            is_array($features) ? $features : [],
+            fn (mixed $feature): bool => is_string($feature) && (! str_contains($feature, '\\') || self::classLoads($feature)),
+        ));
+    }
+
+    /**
+     * Whether a class can be loaded. Autoloading CortexSupportFeature without
+     * jayi/pennantplus throws, because its parent class is missing, so that
+     * counts as not installed rather than an error.
+     */
+    private static function classLoads(string $class): bool
+    {
+        try {
+            return class_exists($class);
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    /**
+     * Each item is shown when the policy check behind its page passes, asked
+     * as the JSON API asks it. Tools and servers are listed by the API
+     * without a policy check, so they are shown to everyone in Atrium.
+     */
     public function navigation(): array
     {
         return [
-            NavItem::make(__('cortex::cortex.virtual_agents'))->route('atrium.cortex.virtual-agents.index')->group('Cortex')->sort(10),
-            NavItem::make(__('cortex::cortex.concrete_agents'))->route('atrium.cortex.concrete-agents.index')->group('Cortex')->sort(20),
-            NavItem::make(__('cortex::cortex.run_agent'))->route('atrium.cortex.run')->group('Cortex')->sort(30),
-            NavItem::make(__('cortex::cortex.tools'))->route('atrium.cortex.tools.index')->group('Cortex')->sort(40),
-            NavItem::make(__('cortex::cortex.servers'))->route('atrium.cortex.servers.index')->group('Cortex')->sort(50),
+            NavItem::make(__('cortex::cortex.virtual_agents'))
+                ->icon(Icons::svg('sparkles'))
+                ->route('atrium.cortex.virtual-agents.index')
+                ->group('Cortex')
+                ->sort(10)
+                ->authorize(fn (Request $request): bool => ScreenAccess::allowsFor($request->user(), 'viewAny', VirtualAgent::class)),
+
+            NavItem::make(__('cortex::cortex.concrete_agents'))
+                ->icon(Icons::svg('cpu-chip'))
+                ->route('atrium.cortex.concrete-agents.index')
+                ->group('Cortex')
+                ->sort(20)
+                ->authorize(fn (Request $request): bool => ScreenAccess::allowsFor($request->user(), 'viewAny', ConcreteAgentOverride::class)),
+
+            NavItem::make(__('cortex::cortex.run_agent'))
+                ->icon(Icons::svg('play'))
+                ->route('atrium.cortex.run')
+                ->group('Cortex')
+                ->sort(30)
+                ->authorize(fn (Request $request): bool => RunnableAgents::any($request->user())),
+
+            NavItem::make(__('cortex::cortex.tools'))
+                ->icon(Icons::svg('wrench-screwdriver'))
+                ->route('atrium.cortex.tools.index')
+                ->group('Cortex')
+                ->sort(40),
+
+            NavItem::make(__('cortex::cortex.servers'))
+                ->icon(Icons::svg('server-stack'))
+                ->route('atrium.cortex.servers.index')
+                ->group('Cortex')
+                ->sort(50),
         ];
     }
 
@@ -107,24 +176,35 @@ class CortexPlugin extends Plugin
             ]);
     }
 
+    /**
+     * Virtual agents and concrete agents, each only to those who may list
+     * them, and each result only when its page would open.
+     */
     public function search(): ?SearchSource
     {
         return SearchSource::make('cortex')
             ->label(__('cortex::cortex.label'))
-            ->using(function (string $query): array {
-                $agents = VirtualAgent::query()
+            ->authorize(static fn (Request $request): bool => ScreenAccess::allowsFor($request->user(), 'viewAny', VirtualAgent::class)
+                || ScreenAccess::allowsFor($request->user(), 'viewAny', ConcreteAgentOverride::class))
+            ->using(static function (string $query): array {
+                $user = auth()->user();
+
+                $agents = ! ScreenAccess::allowsFor($user, 'viewAny', VirtualAgent::class) ? [] : VirtualAgent::query()
                     ->where(fn (Builder $builder): Builder => $builder->where('name', 'like', '%'.$query.'%')->orWhere('slug', 'like', '%'.$query.'%'))
                     ->limit(5)
                     ->get()
+                    ->filter(fn (VirtualAgent $agent): bool => ScreenAccess::allowsFor($user, 'view', $agent))
                     ->map(fn (VirtualAgent $agent): SearchResult => SearchResult::make(
                         $agent->name,
                         route('atrium.cortex.virtual-agents.edit', $agent->slug),
                     )->subtitle($agent->slug)->group(__('cortex::cortex.virtual_agents')))
+                    ->values()
                     ->all();
 
-                $concrete = collect(app(AgentRegistry::class)->names())
+                $concrete = ! ScreenAccess::allowsFor($user, 'viewAny', ConcreteAgentOverride::class) ? [] : collect(app(AgentRegistry::class)->names())
                     ->filter(fn (string $name): bool => str_contains(strtolower($name), strtolower($query)))
                     ->take(5)
+                    ->filter(fn (string $name): bool => ScreenAccess::allowsFor($user, 'view', ConcreteAgentOverride::query()->firstOrNew(['agent' => $name])))
                     ->map(fn (string $name): SearchResult => SearchResult::make(
                         $name,
                         route('atrium.cortex.concrete-agents.show', $name),

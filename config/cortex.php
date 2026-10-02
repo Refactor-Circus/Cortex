@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use JayI\Cortex\Features\CortexSupportFeature;
 use JayI\Cortex\Models\ConcreteAgentOverride;
 use JayI\Cortex\Models\ConcreteAgentOverrideVersion;
 use JayI\Cortex\Models\McpInstruction;
@@ -82,6 +83,33 @@ return [
         */
 
         'enabled' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Atrium
+    |--------------------------------------------------------------------------
+    |
+    | features: Features that must all be on for Cortex to appear in Atrium
+    |           at all - its navigation, search, settings and pages (which
+    |           answer 404 otherwise). Atrium asks its feature resolver, so
+    |           Pennant (through jayi/pennantplus) or any other flag system
+    |           decides.
+    |
+    |           CortexSupportFeature is on until its global value is set, and
+    |           only its global value counts. Swap in a subclass to change
+    |           that, or your own feature names. Feature classes that do not
+    |           exist (without jayi/pennantplus) are skipped, so nothing is
+    |           checked until Pennant is installed. Empty always shows Cortex.
+    |
+    | Individual pages and controls are still shown per the policies above.
+    |
+    */
+
+    'atrium' => [
+        'features' => [
+            CortexSupportFeature::class,
+        ],
     ],
 
     /*

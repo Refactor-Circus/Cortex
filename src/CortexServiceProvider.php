@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace JayI\Cortex;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use JayI\Atrium\Facades\Atrium;
 use JayI\Cortex\Agents\AgentRegistry;
 use JayI\Cortex\Agents\ConcreteAgentOverrides;
 use JayI\Cortex\Atrium\CortexPlugin;
+use JayI\Cortex\Http\Ui\ScreenAccess;
 use JayI\Cortex\Mcp\CortexServer;
 use JayI\Cortex\Mcp\McpInstructionOverrides;
 use JayI\Cortex\Mcp\McpServerRegistry;
@@ -83,6 +85,10 @@ class CortexServiceProvider extends ServiceProvider
         $this->registerMcpServers();
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'cortex');
+
+        // @cortexCan('update', $agent) ... @endcortexCan: the screens' own
+        // policy check, so a control shows only when its action is allowed.
+        Blade::if('cortexCan', ScreenAccess::allows(...));
 
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'cortex');
 

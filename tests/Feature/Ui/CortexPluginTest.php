@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use JayI\Atrium\Navigation\NavItem;
 use JayI\Atrium\Plugins\PluginRegistry;
 use JayI\Cortex\Atrium\CortexPlugin;
+use JayI\Cortex\Tests\Fixtures\OrphanedSupportFeature;
 
 it('registers itself with atrium', function (): void {
     expect(app(PluginRegistry::class)->has('cortex'))->toBeTrue();
@@ -37,4 +38,17 @@ it('offers a settings panel', function (): void {
 it('offers no widgets', function (): void {
     // Cortex contributes pages, not dashboard widgets.
     expect(app(CortexPlugin::class)->widgets())->toBe([]);
+});
+
+it('gives every navigation item an icon', function (): void {
+    foreach (app(CortexPlugin::class)->navigation() as $item) {
+        expect($item->icon)->toContain('<svg');
+    }
+});
+
+it('skips a feature class whose parent is not installed rather than failing', function (): void {
+    // As CortexSupportFeature is without jayi/pennantplus.
+    config()->set('cortex.atrium.features', [OrphanedSupportFeature::class, 'App\\Features\\Missing', 'plain-feature']);
+
+    expect(app(CortexPlugin::class)->features())->toBe(['plain-feature']);
 });

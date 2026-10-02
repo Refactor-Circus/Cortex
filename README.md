@@ -116,6 +116,21 @@ Atrium owns the path, the middleware and the authorization gate, so there is not
 
 Setting it to `false` removes Cortex from the dashboard and leaves the JSON API serving.
 
+Each page, action and control is checked against the same policies as the API: a navigation item, button, form or card shows only when its action would be allowed, and the action answers `403` otherwise. Views ask with `@cortexCan('update', $agent)`, the same check the controllers make. See [Policies](docs/policies.md#the-dashboard).
+
+The screens follow Atrium's screen conventions: actions are icon buttons with their label as tooltip, states (override or code, published, locked) are status dots with a `data-status` attribute, and every navigation item has an icon. `JayI\Cortex\Atrium\Badges` maps each state to its colour.
+
+To switch Cortex in the dashboard on and off as a whole - navigation, search, settings and pages, which answer `404` while it is off - install [jayi/pennantplus](https://github.com/jayjfletcher/PennantPlus). `JayI\Cortex\Features\CortexSupportFeature` is on until its global value is set, and only its global value counts:
+
+```php
+use JayI\Cortex\Features\CortexSupportFeature;
+use Laravel\Pennant\Feature;
+
+Feature::for(null)->deactivate(CortexSupportFeature::class);
+```
+
+The features checked are listed in `cortex.atrium.features`; point it at a subclass or your own feature names, or empty it to always show Cortex. Without jayi/pennantplus the class cannot load and is skipped, so nothing is checked.
+
 > **Authentication.** The pages are server-rendered under Atrium's path (`/atrium/cortex/...` by default) behind its `web` middleware and `viewAtrium` gate, so they authenticate the way the rest of your application does. Without a `viewAtrium` gate, Atrium allows only the `local` environment.
 
 ## Registering Tools

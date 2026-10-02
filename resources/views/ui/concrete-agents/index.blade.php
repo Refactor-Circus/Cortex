@@ -19,39 +19,51 @@
 
                 @foreach ($agents as $agent)
                     @php($published = $agent['override']?->publishedVersion?->version)
+                    @php($subject = \JayI\Cortex\Http\Ui\ScreenAccess::concreteAgent($agent['name'], $agent['override']))
 
                     <x-atrium::table.row>
                         <x-atrium::table.cell>
-                            <a class="font-medium underline-offset-2 hover:underline"
-                               href="{{ route('atrium.cortex.concrete-agents.show', $agent['name']) }}"><code class="text-xs">{{ $agent['name'] }}</code></a>
-                        </x-atrium::table.cell>
-                        <x-atrium::table.cell>
-                            @if ($published !== null)
-                                <x-atrium::badge variant="success">{{ __('cortex::cortex.override', ['version' => $published]) }}</x-atrium::badge>
+                            @cortexCan('view', $subject)
+                                <a class="font-medium underline-offset-2 hover:underline"
+                                   href="{{ route('atrium.cortex.concrete-agents.show', $agent['name']) }}"><code class="text-xs">{{ $agent['name'] }}</code></a>
                             @else
-                                <x-atrium::badge>{{ __('cortex::cortex.from_code') }}</x-atrium::badge>
-                            @endif
-                        </x-atrium::table.cell>
-                        <x-atrium::table.cell>
-                            @if (! $agent['tools_overridable'])
-                                <x-atrium::badge>{{ __('cortex::cortex.locked') }}</x-atrium::badge>
-                            @elseif ($agent['override']?->tools !== null)
-                                <x-atrium::badge variant="success">{{ __('cortex::cortex.overridden') }}</x-atrium::badge>
-                            @else
-                                <x-atrium::badge>{{ __('cortex::cortex.from_code') }}</x-atrium::badge>
-                            @endif
-                            <span class="ml-1 text-xs opacity-75">{{ count($agent['tools']) }}</span>
+                                <code class="text-xs">{{ $agent['name'] }}</code>
+                            @endcortexCan
                         </x-atrium::table.cell>
                         <x-atrium::table.cell>
                             <div class="flex items-center gap-2">
-                                <x-atrium::button size="sm" variant="outline"
-                                                  :href="route('atrium.cortex.concrete-agents.show', $agent['name'])">
-                                    {{ __('cortex::cortex.manage') }}
-                                </x-atrium::button>
-                                <x-atrium::button size="sm" variant="outline"
-                                                  :href="route('atrium.cortex.run', ['agent' => 'concrete:'.$agent['name']])">
-                                    {{ __('cortex::cortex.run') }}
-                                </x-atrium::button>
+                                @if ($published !== null)
+                                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('overridden')" :label="__('cortex::cortex.override', ['version' => $published])" data-status="overridden" />
+                                    <span class="text-xs opacity-75">v{{ $published }}</span>
+                                @else
+                                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('from_code')" :label="__('cortex::cortex.from_code')" data-status="from_code" />
+                                @endif
+                            </div>
+                        </x-atrium::table.cell>
+                        <x-atrium::table.cell>
+                            <div class="flex items-center gap-2">
+                                @if (! $agent['tools_overridable'])
+                                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('locked')" :label="__('cortex::cortex.locked')" data-status="locked" />
+                                @elseif ($agent['override']?->tools !== null)
+                                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('overridden')" :label="__('cortex::cortex.overridden')" data-status="overridden" />
+                                @else
+                                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('from_code')" :label="__('cortex::cortex.from_code')" data-status="from_code" />
+                                @endif
+                                <span class="text-xs opacity-75">{{ count($agent['tools']) }}</span>
+                            </div>
+                        </x-atrium::table.cell>
+                        <x-atrium::table.cell>
+                            <div class="flex items-center gap-2">
+                                @cortexCan('view', $subject)
+                                    <x-atrium::icon-button icon="pencil-square" :label="__('cortex::cortex.manage')" size="sm" variant="outline"
+                                                           :href="route('atrium.cortex.concrete-agents.show', $agent['name'])"
+                                                           data-testid="manage-{{ $agent['name'] }}" />
+                                @endcortexCan
+                                @cortexCan('run', $subject)
+                                    <x-atrium::icon-button icon="play" :label="__('cortex::cortex.run')" size="sm" variant="outline"
+                                                           :href="route('atrium.cortex.run', ['agent' => 'concrete:'.$agent['name']])"
+                                                           data-testid="run-{{ $agent['name'] }}" />
+                                @endcortexCan
                             </div>
                         </x-atrium::table.cell>
                     </x-atrium::table.row>

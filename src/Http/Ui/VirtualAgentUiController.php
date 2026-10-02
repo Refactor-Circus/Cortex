@@ -15,12 +15,17 @@ use JayI\Cortex\Actions\ListToolsAction;
 use JayI\Cortex\Actions\ListVirtualAgentsAction;
 use JayI\Cortex\Actions\UpdateVirtualAgentAction;
 use JayI\Cortex\Agents\AgentRegistry;
+use JayI\Cortex\Http\Ui\Concerns\AuthorizesScreens;
 use JayI\Cortex\Models\VirtualAgent;
 
 final class VirtualAgentUiController
 {
+    use AuthorizesScreens;
+
     public function index(Request $request): View
     {
+        $this->authorizeScreen('viewAny', VirtualAgent::class);
+
         /** @var view-string $view */
         $view = 'cortex::ui.virtual-agents.index';
 
@@ -31,6 +36,8 @@ final class VirtualAgentUiController
 
     public function create(): View
     {
+        $this->authorizeScreen('create', VirtualAgent::class);
+
         /** @var view-string $view */
         $view = 'cortex::ui.virtual-agents.form';
 
@@ -39,6 +46,8 @@ final class VirtualAgentUiController
 
     public function store(Request $request): RedirectResponse
     {
+        $this->authorizeScreen('create', VirtualAgent::class);
+
         $data = $this->validated($request, CreateVirtualAgentAction::rules());
 
         app(CreateVirtualAgentAction::class)->execute($data);
@@ -50,18 +59,22 @@ final class VirtualAgentUiController
 
     public function edit(VirtualAgent $agent): View
     {
+        $this->authorizeScreen('view', $agent);
+
         /** @var view-string $view */
         $view = 'cortex::ui.virtual-agents.form';
 
         return view($view, [
             ...$this->formData($agent),
             'agent' => $agent->load(['publishedVersion', 'subAgents']),
-            'versions' => $agent->versions()->orderByDesc('version')->get(),
+            'versions' => $agent->versions()->chaperone('virtualAgent')->orderByDesc('version')->get(),
         ]);
     }
 
     public function update(Request $request, VirtualAgent $agent): RedirectResponse
     {
+        $this->authorizeScreen('update', $agent);
+
         $data = $this->validated($request, UpdateVirtualAgentAction::rules());
 
         app(UpdateVirtualAgentAction::class)->execute($agent, $data);
@@ -73,6 +86,8 @@ final class VirtualAgentUiController
 
     public function destroy(VirtualAgent $agent): RedirectResponse
     {
+        $this->authorizeScreen('delete', $agent);
+
         app(DeleteVirtualAgentAction::class)->execute($agent);
 
         return redirect()

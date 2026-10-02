@@ -14,12 +14,19 @@ use JayI\Cortex\Actions\PublishConcreteAgentVersionAction;
 use JayI\Cortex\Actions\ShowConcreteAgentAction;
 use JayI\Cortex\Actions\UpdateConcreteAgentToolsAction;
 use JayI\Cortex\Agents\AgentRegistry;
+use JayI\Cortex\Http\Ui\Concerns\AuthorizesScreens;
+use JayI\Cortex\Models\ConcreteAgentOverride;
+use JayI\Cortex\Models\ConcreteAgentOverrideVersion;
 use JayI\Cortex\Tools\ToolRegistry;
 
 final class ConcreteAgentUiController
 {
+    use AuthorizesScreens;
+
     public function index(): View
     {
+        $this->authorizeScreen('viewAny', ConcreteAgentOverride::class);
+
         /** @var view-string $view */
         $view = 'cortex::ui.concrete-agents.index';
 
@@ -32,13 +39,16 @@ final class ConcreteAgentUiController
 
         $details = app(ShowConcreteAgentAction::class)->execute($agent);
 
+        $this->authorizeScreen('view', ScreenAccess::concreteAgent($agent, $details['override']));
+
         /** @var view-string $view */
         $view = 'cortex::ui.concrete-agents.show';
 
         return view($view, [
             'agent' => $details,
             'override' => $details['override'],
-            'versions' => $details['override']?->versions()->orderByDesc('version')->get() ?? collect(),
+            'subject' => ScreenAccess::concreteAgent($agent, $details['override']),
+            'versions' => $details['override']?->versions()->chaperone('concreteAgentOverride')->orderByDesc('version')->get() ?? collect(),
             'availableTools' => $this->availableTools($details['default_tools']),
         ]);
     }
@@ -46,6 +56,8 @@ final class ConcreteAgentUiController
     public function store(Request $request, string $agent): RedirectResponse
     {
         $this->assertRegistered($agent);
+
+        $this->authorizeScreen('create', ConcreteAgentOverrideVersion::class, [ScreenAccess::concreteAgent($agent, $this->override($agent))]);
 
         $data = $request->validate(CreateConcreteAgentVersionAction::rules());
 
@@ -60,9 +72,11 @@ final class ConcreteAgentUiController
     {
         $this->assertRegistered($agent);
 
-        $override = app(ShowConcreteAgentAction::class)->execute($agent)['override'];
+        $override = $this->override($agent);
 
         abort_if($override === null, 404);
+
+        $this->authorizeScreen('publish', $override->versions()->where('version', $version)->firstOrFail());
 
         app(PublishConcreteAgentVersionAction::class)->execute($override, $version);
 
@@ -78,6 +92,8 @@ final class ConcreteAgentUiController
     public function tools(Request $request, string $agent): RedirectResponse
     {
         $this->assertRegistered($agent);
+
+        $this->authorizeScreen('update', ScreenAccess::concreteAgent($agent, $this->override($agent)));
 
         $request->merge([
             'tools' => $request->boolean('use_code_tools') ? null : array_values((array) $request->input('tools', [])),
@@ -97,15 +113,25 @@ final class ConcreteAgentUiController
     {
         $this->assertRegistered($agent);
 
-        $override = app(ShowConcreteAgentAction::class)->execute($agent)['override'];
+        $override = $this->override($agent);
 
         abort_if($override === null, 404);
+
+        $this->authorizeScreen('delete', $override);
 
         app(DeleteConcreteAgentOverrideAction::class)->execute($override);
 
         return redirect()
             ->route('atrium.cortex.concrete-agents.show', $agent)
             ->with('status', __('cortex::cortex.override_removed'));
+    }
+
+    /**
+     * The agent's override row, or null when it has none.
+     */
+    private function override(string $agent): ?ConcreteAgentOverride
+    {
+        return ConcreteAgentOverride::query()->where('agent', $agent)->first();
     }
 
     private function assertRegistered(string $agent): void

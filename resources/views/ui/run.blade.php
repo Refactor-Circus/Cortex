@@ -18,7 +18,7 @@
                                          :value="$input ?? null" rows="6" required />
 
                 <div>
-                    <x-atrium::button type="submit" data-testid="run-agent">{{ __('cortex::cortex.run') }}</x-atrium::button>
+                    <x-atrium::icon-button icon="play" :label="__('cortex::cortex.run')" variant="primary" type="submit" data-testid="run-agent" />
                 </div>
             </form>
         </x-atrium::card>

@@ -1,11 +1,25 @@
 @php($editing = $agent !== null)
 @php($settings = (array) ($agent?->settings ?? []))
+{{-- The form saves through `update` when editing, `create` otherwise; without
+     it the agent is shown read-only. --}}
+@php($maySave = $editing ? \JayI\Cortex\Http\Ui\ScreenAccess::allows('update', $agent) : \JayI\Cortex\Http\Ui\ScreenAccess::allows('create', \JayI\Cortex\Models\VirtualAgent::class))
 
 {{-- Provider and model options are assembled server-side so a value saved
      earlier stays selectable even when the provider no longer lists it.
      Alpine only handles swapping the model when the provider changes. --}}
 <x-atrium::layout :title="$editing ? __('cortex::cortex.edit_virtual_agent') : __('cortex::cortex.new_virtual_agent')">
-    <x-atrium::page-header :title="$editing ? __('cortex::cortex.edit_virtual_agent') : __('cortex::cortex.new_virtual_agent')" />
+    <x-atrium::page-header :title="$editing ? __('cortex::cortex.edit_virtual_agent') : __('cortex::cortex.new_virtual_agent')">
+        <x-slot:actions>
+            @if ($editing)
+                @cortexCan('run', $agent)
+                    <x-atrium::icon-button icon="play" :label="__('cortex::cortex.run')" variant="outline"
+                                           :href="route('atrium.cortex.run', ['agent' => 'virtual:'.$agent->slug])" data-testid="run-agent-link" />
+                @endcortexCan
+            @endif
+            <x-atrium::icon-button icon="arrow-left" :label="__('cortex::cortex.back_to_virtual_agents')" variant="ghost"
+                                   :href="route('atrium.cortex.virtual-agents.index')" data-testid="back" />
+        </x-slot:actions>
+    </x-atrium::page-header>
 
     <div class="mt-5 flex max-w-2xl flex-col gap-5" x-data="{ expanded: null }">
         @include('cortex::ui.partials.status')
@@ -22,6 +36,8 @@
                 @if ($editing)
                     @method('PUT')
                 @endif
+
+                <fieldset class="flex flex-col gap-4" @disabled(! $maySave)>
 
                 <x-atrium::form.input name="name" :label="__('cortex::cortex.name')" :value="$agent?->name" required />
 
@@ -110,14 +126,19 @@
                     </x-atrium::section>
                 @endif
 
-                <div class="flex items-center gap-2">
-                    <x-atrium::button type="submit" data-testid="save-agent">{{ __('cortex::cortex.save') }}</x-atrium::button>
-                    <x-atrium::button variant="ghost" :href="route('atrium.cortex.virtual-agents.index')">{{ __('cortex::cortex.cancel') }}</x-atrium::button>
-                </div>
+                </fieldset>
+
+                @if ($maySave)
+                    <div class="flex items-center gap-2">
+                        <x-atrium::icon-button icon="check" :label="__('cortex::cortex.save')" variant="primary" type="submit" data-testid="save-agent" />
+                        <x-atrium::icon-button icon="x-mark" :label="__('cortex::cortex.cancel')" variant="ghost"
+                                               :href="route('atrium.cortex.virtual-agents.index')" data-testid="cancel" />
+                    </div>
+                @endif
             </form>
         </x-atrium::card>
 
-        @if ($editing)
+        @if ($editing && \JayI\Cortex\Http\Ui\ScreenAccess::allows('viewAny', \JayI\Cortex\Models\VirtualAgentVersion::class, [$agent]))
             @include('cortex::ui.partials.versions', [
                 'versions' => $versions,
                 'publishedVersion' => $agent->publishedVersion?->version,
