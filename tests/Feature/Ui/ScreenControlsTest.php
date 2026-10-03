@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Auth\GenericUser;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use JayI\Atrium\Navigation\NavigationRegistry;
 use JayI\Atrium\Navigation\NavItem;
@@ -101,14 +102,32 @@ it('shows each navigation item only with the ability its page needs', function (
     expect(screenNavigation(screenUser()))->toBe(['Tools', 'Servers'])
         ->and(screenNavigation(screenUser(['virtual-agents.viewAny'])))->toContain('Virtual agents')
         ->and(screenNavigation(screenUser(['concrete-agents.viewAny'])))->toContain('Concrete agents')
-        ->and(screenNavigation(screenUser(['concrete-agents.run'])))->toContain('Run agent');
+        ->and(screenNavigation(screenUser(['concrete-agents.viewAny'])))->toContain('Run agent')
+        ->and(screenNavigation(screenUser(['virtual-agents.viewAny'])))->toContain('Run agent');
 });
 
-it('shows the run item to someone who may run only a virtual agent', function (): void {
+it('builds the navigation without querying agents', function (): void {
+    screenAgent();
+    $user = screenUser(['virtual-agents.viewAny']);
+
+    DB::enableQueryLog();
+    DB::flushQueryLog();
+
+    $labels = screenNavigation($user);
+    $agentQueries = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'cortex_'));
+
+    expect($labels)->toContain('Run agent')
+        ->and($agentQueries)->toBeEmpty();
+});
+
+it('shows an empty run page to someone who may see agents but run none', function (): void {
     screenAgent();
 
-    expect(screenNavigation(screenUser()))->not->toContain('Run agent')
-        ->and(screenNavigation(screenUser(['virtual-agents.run'])))->toContain('Run agent');
+    $this->actingAs(screenUser(['virtual-agents.viewAny']))
+        ->get(route('atrium.cortex.run'))
+        ->assertOk()
+        ->assertSee(screenTestId('no-runnable-agents'), false)
+        ->assertDontSee(screenTestId('run-agent'), false);
 });
 
 it('refuses each page without the ability behind it', function (string $route, array $parameters): void {
@@ -256,7 +275,7 @@ it('offers to run only the agents the viewer may run, and refuses the others', f
     DbAgent::fake(['Hi back.']);
     screenAgent();
 
-    $this->actingAs(screenUser(['concrete-agents.run']))
+    $this->actingAs(screenUser(['concrete-agents.viewAny', 'concrete-agents.run']))
         ->get(route('atrium.cortex.run'))
         ->assertOk()
         ->assertSee('concrete:echo-agent', false)

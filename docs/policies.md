@@ -83,7 +83,7 @@ The Atrium pages ask the same questions, through `JayI\Cortex\Http\Ui\ScreenAcce
 | --- | --- |
 | Virtual agents | `viewAny` on `VirtualAgent::class` |
 | Concrete agents | `viewAny` on `ConcreteAgentOverride::class` |
-| Run agent | `run` on at least one virtual agent or concrete agent; the page offers only those |
+| Run agent | `viewAny` on either kind of agent; the page offers only the agents the user may `run`, and says so when there are none |
 | Tools, Servers | always, as `GET /tools` and `GET /servers` check no policy |
 
 A tool description or server instruction page with no override yet is checked against an unsaved override, as a concrete agent page is, so it opens before the first version exists. A virtual agent page shown to someone with `view` but not `update` is read-only.

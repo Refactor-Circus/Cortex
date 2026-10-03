@@ -17,7 +17,6 @@ use JayI\Cortex\Agents\AgentRegistry;
 use JayI\Cortex\Http\Ui\ConcreteAgentUiController;
 use JayI\Cortex\Http\Ui\McpInstructionUiController;
 use JayI\Cortex\Http\Ui\RunAgentUiController;
-use JayI\Cortex\Http\Ui\RunnableAgents;
 use JayI\Cortex\Http\Ui\ScreenAccess;
 use JayI\Cortex\Http\Ui\ServerUiController;
 use JayI\Cortex\Http\Ui\ToolDescriptionUiController;
@@ -106,7 +105,7 @@ class CortexPlugin extends Plugin
                 ->route('atrium.cortex.run')
                 ->group('Cortex')
                 ->sort(30)
-                ->authorize(fn (Request $request): bool => RunnableAgents::any($request->user())),
+                ->authorize(fn (Request $request): bool => self::mayViewAgents($request->user())),
 
             NavItem::make(__('cortex::cortex.tools'))
                 ->icon(Icons::svg('wrench-screwdriver'))
@@ -214,5 +213,16 @@ class CortexPlugin extends Plugin
 
                 return [...$agents, ...$concrete];
             });
+    }
+
+    /**
+     * Whether a user may see either kind of agent: enough to open the run
+     * page, which then offers only the agents they may run (possibly none).
+     * Asked of the classes, so building the navigation runs no queries.
+     */
+    public static function mayViewAgents(mixed $user): bool
+    {
+        return ScreenAccess::allowsFor($user, 'viewAny', VirtualAgent::class)
+            || ScreenAccess::allowsFor($user, 'viewAny', ConcreteAgentOverride::class);
     }
 }

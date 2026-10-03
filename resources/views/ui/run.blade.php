@@ -2,6 +2,9 @@
     <x-atrium::page-header :title="__('cortex::cortex.run_agent')" />
 
     <div class="mt-5 flex max-w-2xl flex-col gap-5">
+        @if ($agents === [])
+            <x-atrium::empty-state :title="__('cortex::cortex.no_runnable_agents')" data-testid="no-runnable-agents" />
+        @else
         <x-atrium::card>
             <form method="POST" action="{{ route('atrium.cortex.run.store') }}" class="flex flex-col gap-4">
                 @csrf
@@ -22,6 +25,7 @@
                 </div>
             </form>
         </x-atrium::card>
+        @endif
 
         @if ($result)
             <x-atrium::card :title="__('cortex::cortex.response')">

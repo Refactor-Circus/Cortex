@@ -36,28 +36,6 @@ final class RunnableAgents
     }
 
     /**
-     * Whether a user may run at least one agent, stopping at the first.
-     */
-    public static function any(mixed $user): bool
-    {
-        $overrides = ConcreteAgentOverride::query()->get()->keyBy('agent');
-
-        foreach (app(AgentRegistry::class)->names() as $name) {
-            if (ScreenAccess::allowsFor($user, 'run', ScreenAccess::concreteAgent($name, $overrides->get($name)))) {
-                return true;
-            }
-        }
-
-        foreach (VirtualAgent::query()->lazy() as $agent) {
-            if (ScreenAccess::allowsFor($user, 'run', $agent)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Whether a user may run the agent an option names.
      */
     public static function allows(mixed $user, string $option): bool

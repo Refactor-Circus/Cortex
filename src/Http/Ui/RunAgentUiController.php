@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use JayI\Cortex\Actions\RunConcreteAgentAction;
 use JayI\Cortex\Actions\RunVirtualAgentAction;
+use JayI\Cortex\Atrium\CortexPlugin;
 use JayI\Cortex\Models\VirtualAgent;
 
 /**
@@ -20,9 +21,9 @@ final class RunAgentUiController
 {
     public function create(Request $request): View
     {
-        $options = RunnableAgents::for($request->user());
+        abort_unless(CortexPlugin::mayViewAgents($request->user()), 403);
 
-        abort_if($options === [], 403);
+        $options = RunnableAgents::for($request->user());
 
         /** @var view-string $view */
         $view = 'cortex::ui.run';

@@ -52,6 +52,7 @@ return [
     'edit_virtual_agent' => 'Edit virtual agent',
     'back_to_virtual_agents' => 'Back to virtual agents',
     'no_agents' => 'No virtual agents yet.',
+    'no_runnable_agents' => 'There are no agents you may run.',
     'agent_created' => 'Virtual agent created.',
     'agent_updated' => 'Virtual agent updated.',
     'agent_deleted' => 'Virtual agent deleted.',

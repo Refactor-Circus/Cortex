@@ -29,6 +29,7 @@
 
 ### Changed
 
+- The Run agent navigation item and page follow `viewAny` on either kind of agent, so building the dashboard navigation no longer queries every agent; the page lists the agents the user may run, or says there are none.
 - The Atrium screens follow Atrium's screen conventions: actions, tabs and back links are icon buttons (the label is the tooltip and accessible name), states are status dots carrying `data-status`, and every navigation item has a Heroicons icon. Tool tag filters are linked badges. Requires `jayi/atrium` at f5eb488 or later.
 - The dashboard pages now authorize: before, they ran actions without asking the policies the API asks.
 
