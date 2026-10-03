@@ -243,7 +243,7 @@ Virtual agent create/update payloads accept `instructions` (the prompt; required
     "slug": "coordinator",
     "instructions": "Coordinate the support team.",
     "provider": "anthropic",
-    "model": "claude-sonnet-5",
+    "model": "claude-sonnet-5-5",
     "settings": {"temperature": 0.3, "max_steps": 10},
     "tools": ["search"],
     "sub_agents": ["researcher"],
