@@ -17,6 +17,7 @@ seeders:
 
 workbench:
   start: '/atrium'
+  user: admin@example.com
   install: true
   health: false
   discovers:
