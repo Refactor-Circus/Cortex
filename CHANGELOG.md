@@ -43,6 +43,7 @@
 
 ### Fixed
 
+- The Atrium screens' utilities that Atrium's stylesheet lacks are generated into `resources/css/atrium.css` and added through Atrium's style hook, so they take effect.
 - Agents calling an MCP tool whose `handle()` type-hints its own `Laravel\Mcp\Request` subclass now pass their arguments to it. Previously laravel/ai's `McpServerTool` bound the arguments only as the base request, so such tools, including Cortex's own MCP tools, received an empty request and failed validation.
 
 

@@ -8,6 +8,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use JayI\Atrium\Assets\StyleRegistry;
 use JayI\Atrium\Facades\Atrium;
 use JayI\Cortex\Agents\AgentRegistry;
 use JayI\Cortex\Agents\ConcreteAgentOverrides;
@@ -85,6 +86,12 @@ class CortexServiceProvider extends ServiceProvider
         $this->registerMcpServers();
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'cortex');
+
+        // Utilities the Atrium screens use that Atrium's stylesheet lacks.
+        $this->callAfterResolving(StyleRegistry::class, fn (StyleRegistry $styles): StyleRegistry => $styles->css(
+            (string) file_get_contents(__DIR__.'/../resources/css/atrium.css'),
+            'cortex',
+        ));
 
         // @cortexCan('update', $agent) ... @endcortexCan: the screens' own
         // policy check, so a control shows only when its action is allowed.

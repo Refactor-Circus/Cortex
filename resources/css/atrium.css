@@ -1,0 +1,35 @@
+/*
+ * Utilities Cortex's Atrium screens use that Atrium's precompiled stylesheet
+ * lacks, added to the dashboard with Atrium::css(). Generated with Atrium's
+ * Tailwind build and theme (colours stay on Atrium's theme variables), and
+ * kept complete by tests/Feature/Ui/StylesTest.php.
+ */
+.max-h-80 {
+  max-height: calc(var(--spacing, 0.25rem) * 80);
+}
+.max-w-2xl {
+  max-width: var(--container-2xl, 42rem);
+}
+.font-mono {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace);
+}
+.underline-offset-2 {
+  text-underline-offset: 2px;
+}
+@media (hover: hover) {
+  .hover\:underline:hover {
+    text-decoration-line: underline;
+  }
+}
+@media (width >= 64rem) {
+  .lg\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.dark\:bg-surface-dark-alt\/50:where(.dark, .dark *) {
+  background-color: color-mix(in srgb, oklch(27.4% 0.006 286.033) 50%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-surface-dark-alt, var(--color-zinc-800)) 50%, transparent);
+  }
+}
