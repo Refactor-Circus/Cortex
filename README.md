@@ -69,7 +69,7 @@ return [
         'stale' => 86400,
     ],
     'providers' => [
-        // 'anthropic' => ['claude-sonnet-5', 'claude-opus-4-8'],
+        // 'anthropic' => ['claude-sonnet-5-5', 'claude-opus-5-5'],
     ],
     'tools' => [
         // 'search' => \App\Ai\Tools\SearchTool::class,
@@ -274,7 +274,7 @@ The dashboard's virtual agent form and `GET /cortex/providers` offer the same pr
 
 ```php
 'providers' => [
-    'anthropic' => ['claude-sonnet-5', 'claude-opus-4-8'],
+    'anthropic' => ['claude-sonnet-5-5', 'claude-opus-5-5'],
 ],
 ```
 
