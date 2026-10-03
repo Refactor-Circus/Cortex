@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Actions\CreateConcreteAgentVersionAction;
-use JayI\Cortex\Actions\DeleteConcreteAgentOverrideAction;
-use JayI\Cortex\Actions\UpdateConcreteAgentToolsAction;
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Models\ConcreteAgentOverride;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\DeleteConcreteAgentOverrideAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
+use JayI\Cortex\Domains\Tool\Support\ToolName;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
 use JayI\Cortex\Tests\Fixtures\EchoCortexTool;
 use JayI\Cortex\Tests\Fixtures\EchoTool;
 use JayI\Cortex\Tests\Fixtures\PlainAgent;
-use JayI\Cortex\Tools\ToolName;
-use JayI\Cortex\Tools\ToolRegistry;
 
 beforeEach(function () {
     app(AgentRegistry::class)->register('echo-agent', EchoAgent::class);
@@ -67,7 +67,7 @@ it('resolves an overridden toolset from code tools and registered tools', functi
 });
 
 it('skips override names that match no tool', function () {
-    ConcreteAgentOverride::query()->create(['agent' => 'echo-agent', 'tools' => ['EchoTool', 'gone']]);
+    ConcreteAgentOverrideModel::query()->create(['agent' => 'echo-agent', 'tools' => ['EchoTool', 'gone']]);
 
     expect(echoAgentToolNames())->toBe(['EchoTool']);
 });
@@ -101,7 +101,7 @@ it('uses code for an agent class that is not registered', function () {
     // Overrides are keyed by registered name, so a row under the class's
     // derived name does nothing while the class is registered as another.
     app()->forgetInstance(AgentRegistry::class);
-    ConcreteAgentOverride::query()->create(['agent' => 'echo-agent', 'tools' => []]);
+    ConcreteAgentOverrideModel::query()->create(['agent' => 'echo-agent', 'tools' => []]);
 
     expect(echoAgentToolNames())->toBe(['EchoTool'])
         ->and(echoAgentInstructions())->toBe('Echo everything back.');

@@ -51,7 +51,7 @@ Create `agent-os/specs/2026-08-07-1231-mcp-server-instructions/`:
 
 - `src/Mcp/Concerns/HasVersionedInstructions.php` — override `createContext()`: `$context = parent::createContext();` then `nameFor(static::class)` → `McpInstructionOverrides::for($name)` → mutate `$context->instructions` if non-null. Code comment noting dependency on `ServerContext::$instructions` staying public non-readonly.
 - `src/Mcp/Server.php` — `abstract class Server extends \Laravel\Mcp\Server { use HasVersionedInstructions; }` (mirror `src/Tools/Tool.php` docblock style)
-- `src/Mcp/CortexServer.php` — re-base onto `JayI\Cortex\Mcp\Server`
+- `src/Mcp/CortexServer.php` — re-base onto `JayI\Cortex\Domains\McpServer\Support\Server`
 - Tests: `tests/Feature/ServerBaseTest.php` — mirror `ToolBaseTest`: publish override for `'cortex'`, assert `createContext()->instructions` equals override; equals `#[Instructions]` text when unpublished/draft-only
 
 ## Task 6: Actions + resources
@@ -87,7 +87,7 @@ Resources (`src/Http/Resources/`):
 
 - Base `src/Mcp/Requests/ServerMcpRequest.php` — memoized `instruction()` via `firstOrFail()`; `server()` throws `(new ModelNotFoundException)->setModel(McpInstruction::class)` when registry misses → `Response::error('Not found.')` via base persist
 - Concrete MCP requests (all rule `'server' => ['required','string']`, reuse Actions + Resources, `data` envelope per `mcp-responses` standard): `ListServersMcpRequest`, `ShowServerInstructionsMcpRequest`, `ListServerInstructionVersionsMcpRequest` (structuredCollection), `CreateServerInstructionVersionMcpRequest` (`...CreateMcpInstructionVersionAction::rules()`), `PublishServerInstructionVersionMcpRequest` (`version` required integer min:1), `DeleteServerInstructionsMcpRequest` (copy `DeletePromptMcpRequest` response shape exactly — check at implementation)
-- Tool shells (`src/Mcp/Tools/`, extend `JayI\Cortex\Tools\Tool`, `#[Description]`, `->description()` on every schema field): `ListServersTool`, `ShowServerInstructionsTool`, `ListServerInstructionVersionsTool`, `CreateServerInstructionVersionTool` (server, content, publish), `PublishServerInstructionVersionTool` (server, version), `DeleteServerInstructionsTool`
+- Tool shells (`src/Mcp/Tools/`, extend `JayI\Cortex\Domains\Tool\Support\Tool`, `#[Description]`, `->description()` on every schema field): `ListServersTool`, `ShowServerInstructionsTool`, `ListServerInstructionVersionsTool`, `CreateServerInstructionVersionTool` (server, content, publish), `PublishServerInstructionVersionTool` (server, version), `DeleteServerInstructionsTool`
 - `src/Mcp/CortexServer.php`: append `// MCP servers` group with six tools to `$tools`; extend `#[Instructions]` text to mention server-instruction management
 - Tests: `tests/Feature/Mcp/ServerInstructionToolsTest.php` — parity per `testing/mcp-http-parity.md` via `CortexServer::tool(ToolClass::class, $args)`: mutation payloads equal HTTP `data`, list empty case, `ListServersTool` contains cortex entry, not-found errors
 
@@ -103,7 +103,7 @@ Resources (`src/Http/Resources/`):
 
 - `npm run sdk:build` (Scramble export → `sdk/openapi.json` + `sdk/src/schema.d.ts`) — verify six new paths present
 - `npm run build` (Vite → committed `public/app.js` + `public/app.css`)
-- README: server-instructions section (endpoints, MCP tools, registry usage `Cortex::servers()->register()`, extending `JayI\Cortex\Mcp\Server` / using trait)
+- README: server-instructions section (endpoints, MCP tools, registry usage `Cortex::servers()->register()`, extending `JayI\Cortex\Domains\McpServer\Support\Server` / using trait)
 - Run `package-generate-skill` flow (public API changed)
 
 ## Verification

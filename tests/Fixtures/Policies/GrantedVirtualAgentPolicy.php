@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace JayI\Cortex\Tests\Fixtures\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use JayI\Cortex\Models\VirtualAgent;
-use JayI\Cortex\Policies\VirtualAgentPolicy;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy;
 
 /**
  * Each ability only for users granted "virtual-agents.{ability}".
@@ -25,22 +25,22 @@ final class GrantedVirtualAgentPolicy extends VirtualAgentPolicy
         return $this->granted($user, 'create');
     }
 
-    public function view(?Authenticatable $user, VirtualAgent $agent): bool
+    public function view(?Authenticatable $user, VirtualAgentModel $agent): bool
     {
         return $this->granted($user, 'view');
     }
 
-    public function update(?Authenticatable $user, VirtualAgent $agent): bool
+    public function update(?Authenticatable $user, VirtualAgentModel $agent): bool
     {
         return $this->granted($user, 'update');
     }
 
-    public function delete(?Authenticatable $user, VirtualAgent $agent): bool
+    public function delete(?Authenticatable $user, VirtualAgentModel $agent): bool
     {
         return $this->granted($user, 'delete');
     }
 
-    public function run(?Authenticatable $user, VirtualAgent $agent): bool
+    public function run(?Authenticatable $user, VirtualAgentModel $agent): bool
     {
         return $this->granted($user, 'run');
     }

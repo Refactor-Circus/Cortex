@@ -45,7 +45,7 @@
                             </div>
                         </x-atrium::table.cell>
                         <x-atrium::table.cell>
-                            @cortexCan('view', \JayI\Cortex\Http\Ui\ScreenAccess::toolDescription($tool['name'], $descriptions->get($tool['name'])))
+                            @cortexCan('view', \JayI\Cortex\Atrium\ScreenAccess::toolDescription($tool['name'], $descriptions->get($tool['name'])))
                                 <x-atrium::icon-button icon="document-text" :label="__('cortex::cortex.description')" size="sm" variant="outline"
                                                        :href="route('atrium.cortex.tools.description', $tool['name'])"
                                                        data-testid="description-{{ $tool['name'] }}" />

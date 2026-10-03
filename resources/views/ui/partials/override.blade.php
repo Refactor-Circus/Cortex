@@ -44,7 +44,7 @@
     </x-atrium::card>
     @endcortexCan
 
-    @if ($override && \JayI\Cortex\Http\Ui\ScreenAccess::allows('delete', $override))
+    @if ($override && \JayI\Cortex\Atrium\ScreenAccess::allows('delete', $override))
         <x-atrium::card :title="__('cortex::cortex.remove_override')">
             <form method="POST" action="{{ $destroyRoute }}"
                   onsubmit="return confirm(@js(__('cortex::cortex.confirm_delete')))">

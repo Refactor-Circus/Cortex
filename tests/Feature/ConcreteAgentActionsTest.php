@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use JayI\Cortex\Actions\CreateConcreteAgentVersionAction;
-use JayI\Cortex\Actions\ListConcreteAgentsAction;
-use JayI\Cortex\Actions\ListConcreteAgentVersionsAction;
-use JayI\Cortex\Actions\PublishConcreteAgentVersionAction;
-use JayI\Cortex\Actions\RunConcreteAgentAction;
-use JayI\Cortex\Actions\ShowConcreteAgentAction;
-use JayI\Cortex\Actions\UpdateConcreteAgentToolsAction;
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Models\ConcreteAgentOverride;
-use JayI\Cortex\Models\VirtualAgent;
-use JayI\Cortex\Runtime\AgentFactory;
-use JayI\Cortex\Runtime\DbAgent;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentsAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentVersionsAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\PublishConcreteAgentVersionAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\RunConcreteAgentAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use JayI\Cortex\Domains\VirtualAgent\Services\AgentFactory;
+use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
 use JayI\Cortex\Tests\Fixtures\EchoCortexTool;
-use JayI\Cortex\Tools\ToolRegistry;
 
 beforeEach(function () {
     app(AgentRegistry::class)->register('echo-agent', EchoAgent::class);
@@ -39,7 +39,7 @@ it('lists agents with their override', function () {
 
     $agents = app(ListConcreteAgentsAction::class)->execute();
 
-    expect($agents[0]['override'])->toBeInstanceOf(ConcreteAgentOverride::class)
+    expect($agents[0]['override'])->toBeInstanceOf(ConcreteAgentOverrideModel::class)
         ->and($agents[0]['override']?->publishedVersion?->version)->toBe(1)
         ->and($agents[0]['instructions'])->toBe('Overridden.');
 });
@@ -75,7 +75,7 @@ it('numbers versions and publishes on request', function () {
     app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', ['content' => 'v1']);
     $second = app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', ['content' => 'v2']);
 
-    $override = ConcreteAgentOverride::query()->where('agent', 'echo-agent')->firstOrFail();
+    $override = ConcreteAgentOverrideModel::query()->where('agent', 'echo-agent')->firstOrFail();
 
     expect($second->version)->toBe(2)
         ->and($override->published_version_id)->toBeNull()
@@ -96,7 +96,7 @@ it('runs a concrete agent', function () {
 });
 
 it('attaches concrete sub-agents to a virtual agent', function () {
-    $agent = VirtualAgent::factory()->published()->create(['concrete_sub_agents' => ['echo-agent']]);
+    $agent = VirtualAgentModel::factory()->published()->create(['concrete_sub_agents' => ['echo-agent']]);
 
     $tools = [...app(AgentFactory::class)->make($agent)->tools()];
 
@@ -105,8 +105,8 @@ it('attaches concrete sub-agents to a virtual agent', function () {
 });
 
 it('names virtual sub-agents by their slug', function () {
-    $parent = VirtualAgent::factory()->published()->create();
-    $parent->subAgents()->attach(VirtualAgent::factory()->published()->create(['slug' => 'researcher', 'description' => 'Finds things.']));
+    $parent = VirtualAgentModel::factory()->published()->create();
+    $parent->subAgents()->attach(VirtualAgentModel::factory()->published()->create(['slug' => 'researcher', 'description' => 'Finds things.']));
 
     $tools = [...app(AgentFactory::class)->make($parent->fresh())->tools()];
 

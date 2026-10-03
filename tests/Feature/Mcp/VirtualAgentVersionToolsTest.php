@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Illuminate\Testing\Fluent\AssertableJson;
-use JayI\Cortex\Mcp\Tools\CreateVirtualAgentVersionTool;
-use JayI\Cortex\Mcp\Tools\ListVirtualAgentVersionsTool;
-use JayI\Cortex\Mcp\Tools\PublishVirtualAgentVersionTool;
-use JayI\Cortex\Mcp\Tools\ShowVirtualAgentVersionTool;
-use JayI\Cortex\Models\VirtualAgent;
+use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentVersionTool;
+use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\ListVirtualAgentVersionsTool;
+use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\PublishVirtualAgentVersionTool;
+use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentVersionTool;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 it('creates a version with parity to the http payload', function () {
-    VirtualAgent::factory()->published('v1')->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published('v1')->create(['slug' => 'helper']);
 
     $mcp = mcpTool(CreateVirtualAgentVersionTool::class, ['slug' => 'helper', 'content' => 'v2'])->assertOk();
 
@@ -20,7 +20,7 @@ it('creates a version with parity to the http payload', function () {
 });
 
 it('lists versions in a data envelope', function () {
-    VirtualAgent::factory()->published('v1')->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published('v1')->create(['slug' => 'helper']);
 
     mcpTool(ListVirtualAgentVersionsTool::class, ['slug' => 'helper'])
         ->assertOk()
@@ -33,7 +33,7 @@ it('lists versions in a data envelope', function () {
 });
 
 it('shows a version', function () {
-    VirtualAgent::factory()->published('v1')->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published('v1')->create(['slug' => 'helper']);
 
     mcpTool(ShowVirtualAgentVersionTool::class, ['slug' => 'helper', 'version' => 1])
         ->assertOk()
@@ -41,7 +41,7 @@ it('shows a version', function () {
 });
 
 it('publishes a version', function () {
-    $agent = VirtualAgent::factory()->published('v1')->create(['slug' => 'helper']);
+    $agent = VirtualAgentModel::factory()->published('v1')->create(['slug' => 'helper']);
     mcpTool(CreateVirtualAgentVersionTool::class, ['slug' => 'helper', 'content' => 'v2']);
 
     mcpTool(PublishVirtualAgentVersionTool::class, ['slug' => 'helper', 'version' => 2])
@@ -57,7 +57,7 @@ it('publishes a version', function () {
 });
 
 it('errors not found for unknown agents and versions', function () {
-    VirtualAgent::factory()->published()->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published()->create(['slug' => 'helper']);
 
     mcpTool(ShowVirtualAgentVersionTool::class, ['slug' => 'missing', 'version' => 1])->assertHasErrors(['Not found.']);
     mcpTool(PublishVirtualAgentVersionTool::class, ['slug' => 'helper', 'version' => 9])->assertHasErrors(['Not found.']);

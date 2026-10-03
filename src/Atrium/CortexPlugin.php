@@ -7,26 +7,25 @@ namespace JayI\Cortex\Atrium;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use JayI\Atrium\Navigation\NavItem;
-use JayI\Atrium\Plugins\Plugin;
-use JayI\Atrium\Search\SearchResult;
-use JayI\Atrium\Search\SearchSource;
-use JayI\Atrium\Settings\SettingsPanel;
+use JayI\Atrium\Domains\Navigation\Data\NavItem;
+use JayI\Atrium\Domains\Plugins\Support\Plugin;
+use JayI\Atrium\Domains\Search\Data\SearchResult;
+use JayI\Atrium\Domains\Search\Data\SearchSource;
+use JayI\Atrium\Domains\Settings\Data\SettingsPanel;
 use JayI\Atrium\Support\Icons;
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Http\Ui\ConcreteAgentUiController;
-use JayI\Cortex\Http\Ui\McpInstructionUiController;
-use JayI\Cortex\Http\Ui\RunAgentUiController;
-use JayI\Cortex\Http\Ui\ScreenAccess;
-use JayI\Cortex\Http\Ui\ServerUiController;
-use JayI\Cortex\Http\Ui\ToolDescriptionUiController;
-use JayI\Cortex\Http\Ui\ToolUiController;
-use JayI\Cortex\Http\Ui\VirtualAgentUiController;
-use JayI\Cortex\Http\Ui\VirtualAgentVersionUiController;
-use JayI\Cortex\Mcp\McpServerRegistry;
-use JayI\Cortex\Models\ConcreteAgentOverride;
-use JayI\Cortex\Models\VirtualAgent;
-use JayI\Cortex\Tools\ToolRegistry;
+use JayI\Cortex\Atrium\Http\Controllers\ConcreteAgentUiController;
+use JayI\Cortex\Atrium\Http\Controllers\McpInstructionUiController;
+use JayI\Cortex\Atrium\Http\Controllers\RunAgentUiController;
+use JayI\Cortex\Atrium\Http\Controllers\ServerUiController;
+use JayI\Cortex\Atrium\Http\Controllers\ToolDescriptionUiController;
+use JayI\Cortex\Atrium\Http\Controllers\ToolUiController;
+use JayI\Cortex\Atrium\Http\Controllers\VirtualAgentUiController;
+use JayI\Cortex\Atrium\Http\Controllers\VirtualAgentVersionUiController;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use Throwable;
 
 /**
@@ -91,14 +90,14 @@ class CortexPlugin extends Plugin
                 ->route('atrium.cortex.virtual-agents.index')
                 ->group('Cortex')
                 ->sort(10)
-                ->authorize(fn (Request $request): bool => ScreenAccess::allowsFor($request->user(), 'viewAny', VirtualAgent::class)),
+                ->authorize(fn (Request $request): bool => ScreenAccess::allowsFor($request->user(), 'viewAny', VirtualAgentModel::class)),
 
             NavItem::make(__('cortex::cortex.concrete_agents'))
                 ->icon(Icons::svg('cpu-chip'))
                 ->route('atrium.cortex.concrete-agents.index')
                 ->group('Cortex')
                 ->sort(20)
-                ->authorize(fn (Request $request): bool => ScreenAccess::allowsFor($request->user(), 'viewAny', ConcreteAgentOverride::class)),
+                ->authorize(fn (Request $request): bool => ScreenAccess::allowsFor($request->user(), 'viewAny', ConcreteAgentOverrideModel::class)),
 
             NavItem::make(__('cortex::cortex.run_agent'))
                 ->icon(Icons::svg('play'))
@@ -183,27 +182,27 @@ class CortexPlugin extends Plugin
     {
         return SearchSource::make('cortex')
             ->label(__('cortex::cortex.label'))
-            ->authorize(static fn (Request $request): bool => ScreenAccess::allowsFor($request->user(), 'viewAny', VirtualAgent::class)
-                || ScreenAccess::allowsFor($request->user(), 'viewAny', ConcreteAgentOverride::class))
+            ->authorize(static fn (Request $request): bool => ScreenAccess::allowsFor($request->user(), 'viewAny', VirtualAgentModel::class)
+                || ScreenAccess::allowsFor($request->user(), 'viewAny', ConcreteAgentOverrideModel::class))
             ->using(static function (string $query): array {
                 $user = auth()->user();
 
-                $agents = ! ScreenAccess::allowsFor($user, 'viewAny', VirtualAgent::class) ? [] : VirtualAgent::query()
+                $agents = ! ScreenAccess::allowsFor($user, 'viewAny', VirtualAgentModel::class) ? [] : VirtualAgentModel::query()
                     ->where(fn (Builder $builder): Builder => $builder->where('name', 'like', '%'.$query.'%')->orWhere('slug', 'like', '%'.$query.'%'))
                     ->limit(5)
                     ->get()
-                    ->filter(fn (VirtualAgent $agent): bool => ScreenAccess::allowsFor($user, 'view', $agent))
-                    ->map(fn (VirtualAgent $agent): SearchResult => SearchResult::make(
+                    ->filter(fn (VirtualAgentModel $agent): bool => ScreenAccess::allowsFor($user, 'view', $agent))
+                    ->map(fn (VirtualAgentModel $agent): SearchResult => SearchResult::make(
                         $agent->name,
                         route('atrium.cortex.virtual-agents.edit', $agent->slug),
                     )->subtitle($agent->slug)->group(__('cortex::cortex.virtual_agents')))
                     ->values()
                     ->all();
 
-                $concrete = ! ScreenAccess::allowsFor($user, 'viewAny', ConcreteAgentOverride::class) ? [] : collect(app(AgentRegistry::class)->names())
+                $concrete = ! ScreenAccess::allowsFor($user, 'viewAny', ConcreteAgentOverrideModel::class) ? [] : collect(app(AgentRegistry::class)->names())
                     ->filter(fn (string $name): bool => str_contains(strtolower($name), strtolower($query)))
                     ->take(5)
-                    ->filter(fn (string $name): bool => ScreenAccess::allowsFor($user, 'view', ConcreteAgentOverride::query()->firstOrNew(['agent' => $name])))
+                    ->filter(fn (string $name): bool => ScreenAccess::allowsFor($user, 'view', ConcreteAgentOverrideModel::query()->firstOrNew(['agent' => $name])))
                     ->map(fn (string $name): SearchResult => SearchResult::make(
                         $name,
                         route('atrium.cortex.concrete-agents.show', $name),
@@ -222,7 +221,7 @@ class CortexPlugin extends Plugin
      */
     public static function mayViewAgents(mixed $user): bool
     {
-        return ScreenAccess::allowsFor($user, 'viewAny', VirtualAgent::class)
-            || ScreenAccess::allowsFor($user, 'viewAny', ConcreteAgentOverride::class);
+        return ScreenAccess::allowsFor($user, 'viewAny', VirtualAgentModel::class)
+            || ScreenAccess::allowsFor($user, 'viewAny', ConcreteAgentOverrideModel::class);
     }
 }

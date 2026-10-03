@@ -3,22 +3,22 @@
 declare(strict_types=1);
 
 use Illuminate\Testing\Fluent\AssertableJson;
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Mcp\Tools\CreateVirtualAgentTool;
-use JayI\Cortex\Mcp\Tools\DeleteVirtualAgentTool;
-use JayI\Cortex\Mcp\Tools\ListToolsTool;
-use JayI\Cortex\Mcp\Tools\ListVirtualAgentsTool;
-use JayI\Cortex\Mcp\Tools\ShowVirtualAgentTool;
-use JayI\Cortex\Mcp\Tools\UpdateVirtualAgentTool;
-use JayI\Cortex\Models\VirtualAgent;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use JayI\Cortex\Domains\Tool\Mcp\Tools\ListToolsTool;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
+use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentTool;
+use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\DeleteVirtualAgentTool;
+use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\ListVirtualAgentsTool;
+use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentTool;
+use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\UpdateVirtualAgentTool;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
 use JayI\Cortex\Tests\Fixtures\EchoTool;
-use JayI\Cortex\Tools\ToolRegistry;
 
 it('creates a virtual agent with parity to the http payload', function () {
     app(ToolRegistry::class)->register('echo', EchoTool::class);
     app(AgentRegistry::class)->register('echo-agent', EchoAgent::class);
-    VirtualAgent::factory()->create(['slug' => 'researcher']);
+    VirtualAgentModel::factory()->create(['slug' => 'researcher']);
 
     $mcp = mcpTool(CreateVirtualAgentTool::class, [
         'name' => 'Coordinator',
@@ -51,7 +51,7 @@ it('validates create input against the registries', function () {
 });
 
 it('lists virtual agents in a data envelope', function () {
-    VirtualAgent::factory()->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->create(['slug' => 'helper']);
 
     mcpTool(ListVirtualAgentsTool::class)
         ->assertOk()
@@ -64,7 +64,7 @@ it('lists virtual agents in a data envelope', function () {
 });
 
 it('shows a virtual agent by slug', function () {
-    VirtualAgent::factory()->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->create(['slug' => 'helper']);
 
     mcpTool(ShowVirtualAgentTool::class, ['slug' => 'helper'])
         ->assertOk()
@@ -78,8 +78,8 @@ it('errors not found for unknown slugs', function () {
 
 it('updates a virtual agent with sync semantics and versions changed instructions', function () {
     app(ToolRegistry::class)->register('echo', EchoTool::class);
-    $agent = VirtualAgent::factory()->published('v1')->create(['slug' => 'helper', 'tools' => ['old']]);
-    $agent->subAgents()->attach(VirtualAgent::factory()->create());
+    $agent = VirtualAgentModel::factory()->published('v1')->create(['slug' => 'helper', 'tools' => ['old']]);
+    $agent->subAgents()->attach(VirtualAgentModel::factory()->create());
 
     mcpTool(UpdateVirtualAgentTool::class, [
         'slug' => 'helper',
@@ -94,8 +94,8 @@ it('updates a virtual agent with sync semantics and versions changed instruction
 });
 
 it('rejects circular sub-agent updates', function () {
-    $a = VirtualAgent::factory()->create(['slug' => 'agent-a']);
-    $b = VirtualAgent::factory()->create(['slug' => 'agent-b']);
+    $a = VirtualAgentModel::factory()->create(['slug' => 'agent-a']);
+    $b = VirtualAgentModel::factory()->create(['slug' => 'agent-b']);
     $a->subAgents()->attach($b);
 
     mcpTool(UpdateVirtualAgentTool::class, [
@@ -105,13 +105,13 @@ it('rejects circular sub-agent updates', function () {
 });
 
 it('deletes a virtual agent', function () {
-    VirtualAgent::factory()->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->create(['slug' => 'helper']);
 
     mcpTool(DeleteVirtualAgentTool::class, ['slug' => 'helper'])
         ->assertOk()
         ->assertSee('Virtual agent deleted.');
 
-    expect(VirtualAgent::query()->count())->toBe(0);
+    expect(VirtualAgentModel::query()->count())->toBe(0);
 });
 
 it('lists registered tools with parity to the http payload', function () {

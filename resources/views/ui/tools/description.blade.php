@@ -9,7 +9,7 @@
     @include('cortex::ui.partials.override', [
         'override' => $description,
         'subject' => $subject,
-        'versionClass' => \JayI\Cortex\Models\ToolDescriptionVersion::class,
+        'versionClass' => \JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel::class,
         'fallback' => $codeDescription,
         'versions' => $versions,
         'storeRoute' => route('atrium.cortex.tools.description.store', $tool),

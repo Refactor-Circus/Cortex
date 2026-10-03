@@ -4,14 +4,14 @@ Cortex registers a policy for each of its models from `cortex.policies`, and the
 
 ```php
 'policies' => [
-    VirtualAgent::class => \JayI\Cortex\Policies\VirtualAgentPolicy::class,
-    VirtualAgentVersion::class => \JayI\Cortex\Policies\VirtualAgentVersionPolicy::class,
-    ConcreteAgentOverride::class => \JayI\Cortex\Policies\ConcreteAgentOverridePolicy::class,
-    ConcreteAgentOverrideVersion::class => \JayI\Cortex\Policies\ConcreteAgentOverrideVersionPolicy::class,
-    ToolDescription::class => \JayI\Cortex\Policies\ToolDescriptionPolicy::class,
-    ToolDescriptionVersion::class => \JayI\Cortex\Policies\ToolDescriptionVersionPolicy::class,
-    McpInstruction::class => \JayI\Cortex\Policies\McpInstructionPolicy::class,
-    McpInstructionVersion::class => \JayI\Cortex\Policies\McpInstructionVersionPolicy::class,
+    VirtualAgentModel::class => \JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy::class,
+    VirtualAgentVersionModel::class => \JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentVersionPolicy::class,
+    ConcreteAgentOverrideModel::class => \JayI\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverridePolicy::class,
+    ConcreteAgentOverrideVersionModel::class => \JayI\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverrideVersionPolicy::class,
+    ToolDescriptionModel::class => \JayI\Cortex\Domains\Tool\Policies\ToolDescriptionPolicy::class,
+    ToolDescriptionVersionModel::class => \JayI\Cortex\Domains\Tool\Policies\ToolDescriptionVersionPolicy::class,
+    McpInstructionModel::class => \JayI\Cortex\Domains\McpServer\Policies\McpInstructionPolicy::class,
+    McpInstructionVersionModel::class => \JayI\Cortex\Domains\McpServer\Policies\McpInstructionVersionPolicy::class,
 ],
 ```
 
@@ -30,33 +30,33 @@ Calls are checked as the authenticated user, or as a guest when nobody is signed
 
 | Endpoint | MCP tool | Ability | Subject |
 | --- | --- | --- | --- |
-| `GET /virtual-agents` | `list-virtual-agents-tool` | `viewAny` | `VirtualAgent::class` |
-| `POST /virtual-agents` | `create-virtual-agent-tool` | `create` | `VirtualAgent::class` |
+| `GET /virtual-agents` | `list-virtual-agents-tool` | `viewAny` | `VirtualAgentModel::class` |
+| `POST /virtual-agents` | `create-virtual-agent-tool` | `create` | `VirtualAgentModel::class` |
 | `GET /virtual-agents/{slug}` | `show-virtual-agent-tool` | `view` | the agent |
 | `PATCH /virtual-agents/{slug}` | `update-virtual-agent-tool` | `update` | the agent |
 | `DELETE /virtual-agents/{slug}` | `delete-virtual-agent-tool` | `delete` | the agent |
 | `POST /virtual-agents/{slug}/run` | `run-virtual-agent-tool` | `run` | the agent |
-| `GET /virtual-agents/{slug}/versions` | `list-virtual-agent-versions-tool` | `viewAny` | `[VirtualAgentVersion::class, $agent]` |
-| `POST /virtual-agents/{slug}/versions` | `create-virtual-agent-version-tool` | `create` | `[VirtualAgentVersion::class, $agent]` |
+| `GET /virtual-agents/{slug}/versions` | `list-virtual-agent-versions-tool` | `viewAny` | `[VirtualAgentVersionModel::class, $agent]` |
+| `POST /virtual-agents/{slug}/versions` | `create-virtual-agent-version-tool` | `create` | `[VirtualAgentVersionModel::class, $agent]` |
 | `GET /virtual-agents/{slug}/versions/{version}` | `show-virtual-agent-version-tool` | `view` | the version |
 | `POST /virtual-agents/{slug}/versions/{version}/publish` | `publish-virtual-agent-version-tool` | `publish` | the version |
-| `GET /concrete-agents` | `list-concrete-agents-tool` | `viewAny` | `ConcreteAgentOverride::class` |
+| `GET /concrete-agents` | `list-concrete-agents-tool` | `viewAny` | `ConcreteAgentOverrideModel::class` |
 | `GET /concrete-agents/{agent}` | `show-concrete-agent-tool` | `view` | the override |
 | `POST /concrete-agents/{agent}/run` | `run-concrete-agent-tool` | `run` | the override |
 | `PUT /concrete-agents/{agent}/tools` | `update-concrete-agent-tools-tool` | `update` | the override |
 | `DELETE /concrete-agents/{agent}/override` | `delete-concrete-agent-override-tool` | `delete` | the override |
-| `GET /concrete-agents/{agent}/versions` | `list-concrete-agent-versions-tool` | `viewAny` | `[ConcreteAgentOverrideVersion::class, $override]` |
-| `POST /concrete-agents/{agent}/versions` | `create-concrete-agent-version-tool` | `create` | `[ConcreteAgentOverrideVersion::class, $override]` |
+| `GET /concrete-agents/{agent}/versions` | `list-concrete-agent-versions-tool` | `viewAny` | `[ConcreteAgentOverrideVersionModel::class, $override]` |
+| `POST /concrete-agents/{agent}/versions` | `create-concrete-agent-version-tool` | `create` | `[ConcreteAgentOverrideVersionModel::class, $override]` |
 | `POST /concrete-agents/{agent}/versions/{version}/publish` | `publish-concrete-agent-version-tool` | `publish` | the version |
 | `GET /tools/{tool}/description` | | `view` | the override |
 | `DELETE /tools/{tool}/description` | | `delete` | the override |
-| `GET /tools/{tool}/description/versions` | | `viewAny` | `[ToolDescriptionVersion::class, $description]` |
-| `POST /tools/{tool}/description/versions` | | `create` | `[ToolDescriptionVersion::class, $description]` |
+| `GET /tools/{tool}/description/versions` | | `viewAny` | `[ToolDescriptionVersionModel::class, $description]` |
+| `POST /tools/{tool}/description/versions` | | `create` | `[ToolDescriptionVersionModel::class, $description]` |
 | `POST /tools/{tool}/description/versions/{version}/publish` | | `publish` | the version |
 | `GET /servers/{server}/instructions` | `show-server-instructions-tool` | `view` | the override |
 | `DELETE /servers/{server}/instructions` | `delete-server-instructions-tool` | `delete` | the override |
-| `GET /servers/{server}/instructions/versions` | `list-server-instruction-versions-tool` | `viewAny` | `[McpInstructionVersion::class, $instruction]` |
-| `POST /servers/{server}/instructions/versions` | `create-server-instruction-version-tool` | `create` | `[McpInstructionVersion::class, $instruction]` |
+| `GET /servers/{server}/instructions/versions` | `list-server-instruction-versions-tool` | `viewAny` | `[McpInstructionVersionModel::class, $instruction]` |
+| `POST /servers/{server}/instructions/versions` | `create-server-instruction-version-tool` | `create` | `[McpInstructionVersionModel::class, $instruction]` |
 | `POST /servers/{server}/instructions/versions/{version}/publish` | `publish-server-instruction-version-tool` | `publish` | the version |
 
 Creating the first version of a tool description, server instruction or concrete agent override also creates the override. That call is checked against an unsaved override for that tool, server or agent, so your policy sees `$description->tool`, `$instruction->server` or `$override->agent` either way. Showing, running or setting the tools of a concrete agent with no override row is checked the same way.
@@ -67,22 +67,22 @@ An HTTP call that is refused returns `403`. An MCP call that is refused returns 
 
 ## The dashboard
 
-The Atrium pages ask the same questions, through `JayI\Cortex\Http\Ui\ScreenAccess`: each page and each action checks the ability and subject in the table above and answers `403` when refused, and each control on a page - a navigation item, button, form or card - is shown only when its action would be allowed. Views ask with the `@cortexCan` Blade conditional, which is the same check:
+The Atrium pages ask the same questions, through `JayI\Cortex\Atrium\ScreenAccess`: each page and each action checks the ability and subject in the table above and answers `403` when refused, and each control on a page - a navigation item, button, form or card - is shown only when its action would be allowed. Views ask with the `@cortexCan` Blade conditional, which is the same check:
 
 ```blade
 @cortexCan('update', $agent)
     ...
 @endcortexCan
 
-@cortexCan('create', \JayI\Cortex\Models\VirtualAgentVersion::class, [$agent])
+@cortexCan('create', \JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel::class, [$agent])
     ...
 @endcortexCan
 ```
 
 | Navigation item | Shown when |
 | --- | --- |
-| Virtual agents | `viewAny` on `VirtualAgent::class` |
-| Concrete agents | `viewAny` on `ConcreteAgentOverride::class` |
+| Virtual agents | `viewAny` on `VirtualAgentModel::class` |
+| Concrete agents | `viewAny` on `ConcreteAgentOverrideModel::class` |
 | Run agent | `viewAny` on either kind of agent; the page offers only the agents the user may `run`, and says so when there are none |
 | Tools, Servers | always, as `GET /tools` and `GET /servers` check no policy |
 
@@ -96,13 +96,13 @@ A tool description or server instruction page with no override yet is checked ag
   namespace App\Policies;
 
   use Illuminate\Contracts\Auth\Authenticatable;
-  use JayI\Cortex\Models\VirtualAgent;
-  use JayI\Cortex\Policies\VirtualAgentPolicy as CortexVirtualAgentPolicy;
+  use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+  use JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy as CortexVirtualAgentPolicy;
 
   class VirtualAgentPolicy extends CortexVirtualAgentPolicy
   {
       // Only prompt editors may change agents, or add and publish prompt versions.
-      public function update(?Authenticatable $user, VirtualAgent $agent): bool
+      public function update(?Authenticatable $user, VirtualAgentModel $agent): bool
       {
           return $user?->can('edit-prompts') ?? false;
       }
@@ -111,7 +111,7 @@ A tool description or server instruction page with no override yet is checked ag
 
   ```php
   'policies' => [
-      VirtualAgent::class => App\Policies\VirtualAgentPolicy::class,
+      VirtualAgentModel::class => App\Policies\VirtualAgentPolicy::class,
       // ...
   ],
   ```

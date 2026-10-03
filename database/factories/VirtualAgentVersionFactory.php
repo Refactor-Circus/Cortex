@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace JayI\Cortex\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use JayI\Cortex\Models\VirtualAgent;
-use JayI\Cortex\Models\VirtualAgentVersion;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
 
 /**
- * @extends Factory<VirtualAgentVersion>
+ * @extends Factory<VirtualAgentVersionModel>
  */
 final class VirtualAgentVersionFactory extends Factory
 {
-    protected $model = VirtualAgentVersion::class;
+    protected $model = VirtualAgentVersionModel::class;
 
     /**
      * @return array<string, mixed>
@@ -21,7 +21,7 @@ final class VirtualAgentVersionFactory extends Factory
     public function definition(): array
     {
         return [
-            'virtual_agent_id' => VirtualAgent::factory(),
+            'virtual_agent_id' => VirtualAgentModel::factory(),
             'version' => 1,
             'content' => fake()->paragraph(),
         ];

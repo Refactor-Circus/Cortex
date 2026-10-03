@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Models\ConcreteAgentOverride;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
 use JayI\Cortex\Tests\Fixtures\PlainAgent;
 
@@ -57,7 +57,7 @@ it('creates and publishes a prompt version', function (): void {
         'publish' => true,
     ])->assertRedirect(route('atrium.cortex.concrete-agents.show', 'echo-agent'));
 
-    $override = ConcreteAgentOverride::query()->where('agent', 'echo-agent')->firstOrFail();
+    $override = ConcreteAgentOverrideModel::query()->where('agent', 'echo-agent')->firstOrFail();
 
     expect($override->publishedVersion?->content)->toBe('A better prompt.');
 
@@ -74,7 +74,7 @@ it('publishes an older version', function (): void {
 
     $this->post(route('atrium.cortex.concrete-agents.publish', ['echo-agent', 1]))->assertRedirect();
 
-    expect(ConcreteAgentOverride::query()->firstOrFail()->publishedVersion?->content)->toBe('v1');
+    expect(ConcreteAgentOverrideModel::query()->firstOrFail()->publishedVersion?->content)->toBe('v1');
 });
 
 it('saves the checked tools as an override and resets to code', function (): void {
@@ -83,11 +83,11 @@ it('saves the checked tools as an override and resets to code', function (): voi
     $this->put(route('atrium.cortex.concrete-agents.tools', 'echo-agent'), ['tools' => []])
         ->assertRedirect(route('atrium.cortex.concrete-agents.show', 'echo-agent'));
 
-    expect(ConcreteAgentOverride::query()->firstOrFail()->tools)->toBe([]);
+    expect(ConcreteAgentOverrideModel::query()->firstOrFail()->tools)->toBe([]);
 
     $this->put(route('atrium.cortex.concrete-agents.tools', 'echo-agent'), ['tools' => ['EchoTool']]);
 
-    expect(ConcreteAgentOverride::query()->firstOrFail()->tools)->toBe(['EchoTool']);
+    expect(ConcreteAgentOverrideModel::query()->firstOrFail()->tools)->toBe(['EchoTool']);
 
     $this->get(route('atrium.cortex.concrete-agents.show', 'echo-agent'))
         ->assertOk()
@@ -95,7 +95,7 @@ it('saves the checked tools as an override and resets to code', function (): voi
 
     $this->put(route('atrium.cortex.concrete-agents.tools', 'echo-agent'), ['tools' => ['EchoTool'], 'use_code_tools' => '1']);
 
-    expect(ConcreteAgentOverride::query()->firstOrFail()->tools)->toBeNull();
+    expect(ConcreteAgentOverrideModel::query()->firstOrFail()->tools)->toBeNull();
 });
 
 it('removes the overrides', function (): void {
@@ -105,7 +105,7 @@ it('removes the overrides', function (): void {
 
     $this->delete(route('atrium.cortex.concrete-agents.destroy', 'echo-agent'))->assertRedirect();
 
-    expect(ConcreteAgentOverride::query()->count())->toBe(0);
+    expect(ConcreteAgentOverrideModel::query()->count())->toBe(0);
 });
 
 it('warns when an agent cannot be overridden', function (): void {

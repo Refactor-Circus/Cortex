@@ -5,35 +5,35 @@ declare(strict_types=1);
 use Illuminate\Cache\RedisStore;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Cache;
-use JayI\Cortex\Actions\CreateConcreteAgentVersionAction;
-use JayI\Cortex\Actions\CreateMcpInstructionVersionAction;
-use JayI\Cortex\Actions\CreateToolDescriptionVersionAction;
-use JayI\Cortex\Actions\CreateVirtualAgentVersionAction;
-use JayI\Cortex\Actions\DeleteMcpInstructionAction;
-use JayI\Cortex\Actions\DeleteToolDescriptionAction;
-use JayI\Cortex\Actions\PublishConcreteAgentVersionAction;
-use JayI\Cortex\Actions\PublishMcpInstructionVersionAction;
-use JayI\Cortex\Actions\PublishToolDescriptionVersionAction;
-use JayI\Cortex\Actions\PublishVirtualAgentVersionAction;
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Mcp\McpInstructionOverrides;
-use JayI\Cortex\Models\ConcreteAgentOverride;
-use JayI\Cortex\Models\McpInstruction;
-use JayI\Cortex\Models\ToolDescription;
-use JayI\Cortex\Models\VirtualAgent;
-use JayI\Cortex\Runtime\AgentFactory;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\PublishConcreteAgentVersionAction;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use JayI\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
+use JayI\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
+use JayI\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
+use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use JayI\Cortex\Domains\McpServer\Services\McpInstructionOverrides;
+use JayI\Cortex\Domains\Tool\Actions\CreateToolDescriptionVersionAction;
+use JayI\Cortex\Domains\Tool\Actions\DeleteToolDescriptionAction;
+use JayI\Cortex\Domains\Tool\Actions\PublishToolDescriptionVersionAction;
+use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
+use JayI\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\PublishVirtualAgentVersionAction;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use JayI\Cortex\Domains\VirtualAgent\Services\AgentFactory;
 use JayI\Cortex\Support\PublicationCache;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
 use JayI\Cortex\Tests\Fixtures\EchoTool;
-use JayI\Cortex\Tools\ToolRegistry;
 
-function freshAgentInstructions(VirtualAgent $agent): string
+function freshAgentInstructions(VirtualAgentModel $agent): string
 {
     return app(AgentFactory::class)->make($agent->fresh(['publishedVersion', 'subAgents']))->instructions();
 }
 
 it('caches the published prompt until a new version is published', function () {
-    $agent = VirtualAgent::factory()->create();
+    $agent = VirtualAgentModel::factory()->create();
     app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'v1 instructions', 'publish' => true]);
 
     expect(freshAgentInstructions($agent))->toBe('v1 instructions');
@@ -65,7 +65,7 @@ it('caches concrete agent overrides until one is published', function () {
     expect($freshInstructions())->toBe('first');
 
     // Direct write bypassing the actions: cache keeps serving the old map.
-    $override = ConcreteAgentOverride::query()->where('agent', 'echo-agent')->firstOrFail();
+    $override = ConcreteAgentOverrideModel::query()->where('agent', 'echo-agent')->firstOrFail();
     $rogue = $override->versions()->create(['version' => 2, 'content' => 'rogue']);
     $override->published_version_id = $rogue->getKey();
     $override->save();
@@ -92,7 +92,7 @@ it('caches the tool description override map until a version is published', func
     expect($freshDescription())->toBe('first');
 
     // Direct write bypassing the actions: cache keeps serving the old map.
-    $description = ToolDescription::query()->where('tool', 'echo')->firstOrFail();
+    $description = ToolDescriptionModel::query()->where('tool', 'echo')->firstOrFail();
     $rogue = $description->versions()->create(['version' => 2, 'content' => 'rogue']);
     $description->published_version_id = $rogue->getKey();
     $description->save();
@@ -107,7 +107,7 @@ it('caches the tool description override map until a version is published', func
 it('reads straight from the database when caching is disabled', function () {
     config()->set('cortex.cache.enabled', false);
 
-    $agent = VirtualAgent::factory()->create();
+    $agent = VirtualAgentModel::factory()->create();
     app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'v1 instructions', 'publish' => true]);
 
     expect(freshAgentInstructions($agent))->toBe('v1 instructions');
@@ -129,7 +129,7 @@ it('invalidates the override map when an override is deleted', function () {
     app()->forgetScopedInstances();
     expect((string) $registry->get('echo')->description())->toBe('override');
 
-    app(DeleteToolDescriptionAction::class)->execute(ToolDescription::query()->where('tool', 'echo')->firstOrFail());
+    app(DeleteToolDescriptionAction::class)->execute(ToolDescriptionModel::query()->where('tool', 'echo')->firstOrFail());
 
     app()->forgetScopedInstances();
     expect((string) $registry->get('echo')->description())->toBe('Echoes back the given message.');
@@ -147,7 +147,7 @@ it('caches the mcp instruction override map until a version is published', funct
     expect($freshInstructions())->toBe('first');
 
     // Direct write bypassing the actions: cache keeps serving the old map.
-    $instruction = McpInstruction::query()->where('server', 'cortex')->firstOrFail();
+    $instruction = McpInstructionModel::query()->where('server', 'cortex')->firstOrFail();
     $rogue = $instruction->versions()->create(['version' => 2, 'content' => 'rogue']);
     $instruction->published_version_id = $rogue->getKey();
     $instruction->save();
@@ -201,7 +201,7 @@ it('invalidates the mcp instruction map when an override is deleted', function (
     app()->forgetScopedInstances();
     expect(app(McpInstructionOverrides::class)->for('cortex'))->toBe('override');
 
-    app(DeleteMcpInstructionAction::class)->execute(McpInstruction::query()->where('server', 'cortex')->firstOrFail());
+    app(DeleteMcpInstructionAction::class)->execute(McpInstructionModel::query()->where('server', 'cortex')->firstOrFail());
 
     app()->forgetScopedInstances();
     expect(app(McpInstructionOverrides::class)->for('cortex'))->toBeNull();

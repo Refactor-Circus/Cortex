@@ -8,15 +8,12 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-use JayI\Atrium\Assets\StyleRegistry;
 use JayI\Atrium\Facades\Atrium;
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Agents\ConcreteAgentOverrides;
+use JayI\Atrium\Support\StyleRegistry;
 use JayI\Cortex\Atrium\CortexPlugin;
-use JayI\Cortex\Http\Ui\ScreenAccess;
+use JayI\Cortex\Atrium\ScreenAccess;
+use JayI\Cortex\Domains\DomainServiceProvider;
 use JayI\Cortex\Mcp\CortexServer;
-use JayI\Cortex\Mcp\McpInstructionOverrides;
-use JayI\Cortex\Mcp\McpServerRegistry;
 use Laravel\Mcp\Facades\Mcp;
 use Laravel\Mcp\Request as McpRequest;
 
@@ -29,17 +26,7 @@ class CortexServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/cortex.php', 'cortex');
 
-        $this->app->singleton(Tools\ToolRegistry::class);
-
-        $this->app->scoped(Tools\ToolDescriptionOverrides::class);
-
-        $this->app->singleton(McpServerRegistry::class);
-
-        $this->app->scoped(McpInstructionOverrides::class);
-
-        $this->app->singleton(AgentRegistry::class);
-
-        $this->app->scoped(ConcreteAgentOverrides::class);
+        $this->app->register(DomainServiceProvider::class);
 
         $this->app->singleton(Cortex::class);
 
@@ -78,8 +65,6 @@ class CortexServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
-
-        $this->loadRoutesFrom(__DIR__.'/../routes/cortex.php');
 
         $this->registerAtriumPlugin();
 

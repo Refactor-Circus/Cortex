@@ -3,35 +3,35 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\DB;
-use JayI\Cortex\Actions\CreateVirtualAgentVersionAction;
-use JayI\Cortex\Actions\RunVirtualAgentAction;
-use JayI\Cortex\Exceptions\CircularAgentReferenceException;
-use JayI\Cortex\Exceptions\ToolNotFoundException;
-use JayI\Cortex\Exceptions\VirtualAgentNotPublishedException;
+use JayI\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
+use JayI\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\RunVirtualAgentAction;
+use JayI\Cortex\Domains\VirtualAgent\Exceptions\CircularAgentReferenceException;
+use JayI\Cortex\Domains\VirtualAgent\Exceptions\VirtualAgentNotPublishedException;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use JayI\Cortex\Domains\VirtualAgent\Services\AgentFactory;
+use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
 use JayI\Cortex\Facades\Cortex;
-use JayI\Cortex\Models\VirtualAgent;
-use JayI\Cortex\Runtime\AgentFactory;
-use JayI\Cortex\Runtime\DbAgent;
 use JayI\Cortex\Tests\Fixtures\EchoTool;
-use JayI\Cortex\Tools\ToolRegistry;
 
 it('builds an agent from its published prompt version', function () {
-    $agent = VirtualAgent::factory()->published('Published.')->create();
+    $agent = VirtualAgentModel::factory()->published('Published.')->create();
     app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'Draft.']);
 
     expect((string) app(AgentFactory::class)->make($agent->fresh())->instructions())->toBe('Published.');
 });
 
 it('throws when the agent has no published version', function () {
-    $agent = VirtualAgent::factory()->create();
+    $agent = VirtualAgentModel::factory()->create();
 
     app(AgentFactory::class)->make($agent);
 })->throws(VirtualAgentNotPublishedException::class);
 
 it('resolves registered tools and sub-agents onto the runtime agent', function () {
     app(ToolRegistry::class)->register('echo', EchoTool::class);
-    $agent = VirtualAgent::factory()->published()->create(['tools' => ['echo']]);
-    $agent->subAgents()->attach(VirtualAgent::factory()->published()->create(['slug' => 'researcher']));
+    $agent = VirtualAgentModel::factory()->published()->create(['tools' => ['echo']]);
+    $agent->subAgents()->attach(VirtualAgentModel::factory()->published()->create(['slug' => 'researcher']));
 
     $tools = iterator_to_array(collect(app(AgentFactory::class)->make($agent)->tools())->getIterator());
 
@@ -42,14 +42,14 @@ it('resolves registered tools and sub-agents onto the runtime agent', function (
 });
 
 it('throws for unregistered tool names', function () {
-    $agent = VirtualAgent::factory()->published()->create(['tools' => ['missing']]);
+    $agent = VirtualAgentModel::factory()->published()->create(['tools' => ['missing']]);
 
     app(AgentFactory::class)->make($agent);
 })->throws(ToolNotFoundException::class);
 
 it('guards against circular sub-agent graphs at build time', function () {
-    $a = VirtualAgent::factory()->published()->create();
-    $b = VirtualAgent::factory()->published()->create();
+    $a = VirtualAgentModel::factory()->published()->create();
+    $b = VirtualAgentModel::factory()->published()->create();
     $a->subAgents()->attach($b);
     DB::table('cortex_virtual_agent_sub_agents')->insert([
         'virtual_agent_id' => $b->getKey(),
@@ -60,7 +60,7 @@ it('guards against circular sub-agent graphs at build time', function () {
 })->throws(CircularAgentReferenceException::class);
 
 it('exposes provider, model, and settings to the ai sdk', function () {
-    $agent = VirtualAgent::factory()->published()->create([
+    $agent = VirtualAgentModel::factory()->published()->create([
         'provider' => 'anthropic',
         'model' => 'claude-sonnet-5',
         'settings' => ['temperature' => 0.3, 'max_steps' => 5, 'max_tokens' => 1000, 'top_p' => 0.9],
@@ -77,7 +77,7 @@ it('exposes provider, model, and settings to the ai sdk', function () {
 });
 
 it('offers itself to a parent agent under its slug and description', function () {
-    $agent = VirtualAgent::factory()->published()->create(['slug' => 'researcher', 'description' => 'Finds things.']);
+    $agent = VirtualAgentModel::factory()->published()->create(['slug' => 'researcher', 'description' => 'Finds things.']);
 
     $runtime = app(AgentFactory::class)->make($agent);
 
@@ -87,7 +87,7 @@ it('offers itself to a parent agent under its slug and description', function ()
 
 it('runs an agent through the run action', function () {
     DbAgent::fake(['Hello from the agent.']);
-    $agent = VirtualAgent::factory()->published()->create();
+    $agent = VirtualAgentModel::factory()->published()->create();
 
     $response = app(RunVirtualAgentAction::class)->execute($agent, 'Hi');
 
@@ -97,7 +97,7 @@ it('runs an agent through the run action', function () {
 
 it('runs an agent through the manager by slug', function () {
     DbAgent::fake(['Managed.']);
-    VirtualAgent::factory()->published()->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published()->create(['slug' => 'helper']);
 
     expect(Cortex::runVirtualAgent('helper', 'Hi')->text)->toBe('Managed.');
 });

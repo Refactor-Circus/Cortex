@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace JayI\Cortex;
 
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Mcp\McpServerRegistry;
-use JayI\Cortex\Models\VirtualAgent;
-use JayI\Cortex\Runtime\AgentFactory;
-use JayI\Cortex\Runtime\DbAgent;
-use JayI\Cortex\Tools\ToolRegistry;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use JayI\Cortex\Domains\VirtualAgent\Services\AgentFactory;
+use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Responses\AgentResponse;
 
@@ -40,7 +40,7 @@ class Cortex
     public function virtualAgent(string $slug): DbAgent
     {
         return $this->factory->make(
-            VirtualAgent::query()->where('slug', $slug)->firstOrFail(),
+            VirtualAgentModel::query()->where('slug', $slug)->firstOrFail(),
         );
     }
 

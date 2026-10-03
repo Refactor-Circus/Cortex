@@ -10,6 +10,14 @@ This repository is a Laravel package. Keep the package focused, idiomatic, and e
 - Prefer explicit Laravel package code over helper abstractions unless the extension point is real.
 - Keep tests focused on observable package behavior through public APIs, service provider wiring, commands, routes, published resources, and documentation promises.
 
+## Layout
+
+The package follows the mono domain-module layout, described in `agent-os/standards/backend/domain-modules.md`. Code lives in `src/Domains/{VirtualAgent,ConcreteAgent,Tool,McpServer}` (namespace `JayI\Cortex\Domains\{Domain}`), each with its own `{Domain}ServiceProvider` registered by `Domains\DomainServiceProvider`. Models are named `{Entity}Model`. The Atrium screens span every domain and live in `src/Atrium`; package-wide pieces (`Cortex`, the facade, contracts, base requests, `Mcp\CortexServer`, `Support\`) stay at the top level. `config/cortex.php` stays one file.
+
+## Layout
+
+The package follows the mono domain-module layout, described in `agent-os/standards/backend/domain-modules.md`. Code lives in `src/Domains/{VirtualAgent,ConcreteAgent,Tool,McpServer}` (namespace `JayI\Cortex\Domains\{Domain}`), each with its own `{Domain}ServiceProvider` registered by `Domains\DomainServiceProvider`. Models are named `{Entity}Model`. The Atrium screens span every domain and live in `src/Atrium`; package-wide pieces (`Cortex`, the facade, contracts, base requests, `Mcp\CortexServer`, `Support\`) stay at the top level. `config/cortex.php` stays one file.
+
 ## Quick Commands
 
 - Full validation: `composer test`

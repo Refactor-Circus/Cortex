@@ -79,7 +79,7 @@ return [
         // 'triage' => \App\Ai\Agents\TriageAgent::class,
     ],
     'policies' => [
-        // VirtualAgent::class => VirtualAgentPolicy::class, ... one entry per Cortex model
+        // VirtualAgentModel::class => VirtualAgentPolicy::class, ... one entry per Cortex model
     ],
 ];
 ```
@@ -120,10 +120,10 @@ Each page, action and control is checked against the same policies as the API: a
 
 The screens follow Atrium's screen conventions: actions are icon buttons with their label as tooltip, states (override or code, published, locked) are status dots with a `data-status` attribute, and every navigation item has an icon. `JayI\Cortex\Atrium\Badges` maps each state to its colour.
 
-To switch Cortex in the dashboard on and off as a whole - navigation, search, settings and pages, which answer `404` while it is off - install [jayi/pennantplus](https://github.com/jayjfletcher/PennantPlus). `JayI\Cortex\Features\CortexSupportFeature` is on until its global value is set, and only its global value counts:
+To switch Cortex in the dashboard on and off as a whole - navigation, search, settings and pages, which answer `404` while it is off - install [jayi/pennantplus](https://github.com/jayjfletcher/PennantPlus). `JayI\Cortex\Atrium\Features\CortexSupportFeature` is on until its global value is set, and only its global value counts:
 
 ```php
-use JayI\Cortex\Features\CortexSupportFeature;
+use JayI\Cortex\Atrium\Features\CortexSupportFeature;
 use Laravel\Pennant\Feature;
 
 Feature::for(null)->deactivate(CortexSupportFeature::class);
@@ -166,14 +166,14 @@ Tags are kebab-cased. `GET /cortex/tools?tag=catalog` and the `list-tools-tool` 
 
 ### Tool Description Overrides
 
-A tool's code-declared description can be overridden without a deploy: each tool has an optional, immutably versioned description with a published pointer — same model as agent prompts. Manage overrides from the dashboard or the API (`/cortex/tools/{tool}/description`). Extend `JayI\Cortex\Tools\Tool` (or use the `JayI\Cortex\Tools\Concerns\HasVersionedDescription` trait on an existing MCP tool) so the tool also serves its published override when used directly outside Cortex.
+A tool's code-declared description can be overridden without a deploy: each tool has an optional, immutably versioned description with a published pointer — same model as agent prompts. Manage overrides from the dashboard or the API (`/cortex/tools/{tool}/description`). Extend `JayI\Cortex\Domains\Tool\Support\Tool` (or use the `JayI\Cortex\Domains\Tool\Concerns\HasVersionedDescription` trait on an existing MCP tool) so the tool also serves its published override when used directly outside Cortex.
 
 ## Concrete Agents
 
-A concrete agent is a `Laravel\Ai\Contracts\Agent` class. Extend `JayI\Cortex\Agents\Agent` and declare the prompt and toolset in `defaultInstructions()` and `defaultTools()`:
+A concrete agent is a `Laravel\Ai\Contracts\Agent` class. Extend `JayI\Cortex\Domains\ConcreteAgent\Support\Agent` and declare the prompt and toolset in `defaultInstructions()` and `defaultTools()`:
 
 ```php
-use JayI\Cortex\Agents\Agent;
+use JayI\Cortex\Domains\ConcreteAgent\Support\Agent;
 
 class TriageAgent extends Agent
 {
@@ -202,9 +202,9 @@ Wherever the agent runs — your own `TriageAgent::make()->prompt(...)`, the API
 - **Prompt:** versioned and publishable, like tool descriptions. Removing the override restores the code prompt.
 - **Tools:** a replacement list picked from the class's own tools (by the name the model sees) and the registered Cortex tools (by registered name). Clearing it restores the code toolset. Names that no longer resolve are skipped at run time.
 
-Mark an agent `#[JayI\Cortex\Agents\Attributes\LockedTools]` when its safety depends on the exact tools it holds. Cortex still manages its prompt, but rejects toolset overrides (clearing one is still allowed) and ignores any saved earlier. The dashboard shows its toolset as locked, and the API reports `tools_overridable: false`.
+Mark an agent `#[JayI\Cortex\Domains\ConcreteAgent\Support\LockedTools]` when its safety depends on the exact tools it holds. Cortex still manages its prompt, but rejects toolset overrides (clearing one is still allowed) and ignores any saved earlier. The dashboard shows its toolset as locked, and the API reports `tools_overridable: false`.
 
-Agents that cannot change their base class can use the `JayI\Cortex\Agents\Concerns\HasCortexOverrides` trait instead. Registered agents without it are still listed, runnable and usable as sub-agents, but ignore overrides.
+Agents that cannot change their base class can use the `JayI\Cortex\Domains\ConcreteAgent\Concerns\HasCortexOverrides` trait instead. Registered agents without it are still listed, runnable and usable as sub-agents, but ignore overrides.
 
 ## API
 
@@ -314,7 +314,7 @@ use JayI\Cortex\Facades\Cortex;
 Cortex::servers()->register('support', \App\Mcp\SupportServer::class);
 ```
 
-For the published override to actually be served to MCP clients, the server class must extend `JayI\Cortex\Mcp\Server` (or use the `JayI\Cortex\Mcp\Concerns\HasVersionedInstructions` trait if it cannot change its base class). Unregistered servers, and servers with no published version, keep serving their code-declared instructions.
+For the published override to actually be served to MCP clients, the server class must extend `JayI\Cortex\Domains\McpServer\Support\Server` (or use the `JayI\Cortex\Domains\McpServer\Concerns\HasVersionedInstructions` trait if it cannot change its base class). Unregistered servers, and servers with no published version, keep serving their code-declared instructions.
 
 ## Events
 
@@ -326,10 +326,10 @@ For the published override to actually be served to MCP clients, the server clas
 
 ## Testing Your Integration
 
-Fake agent responses with the Laravel AI SDK's testing helpers. Virtual agents all run through `JayI\Cortex\Runtime\DbAgent`; concrete agents are faked through their own class:
+Fake agent responses with the Laravel AI SDK's testing helpers. Virtual agents all run through `JayI\Cortex\Domains\VirtualAgent\Support\DbAgent`; concrete agents are faked through their own class:
 
 ```php
-use JayI\Cortex\Runtime\DbAgent;
+use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
 
 DbAgent::fake(['Canned response.']);
 TriageAgent::fake(['Canned triage.']);

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Exceptions\AgentNotFoundException;
+use JayI\Cortex\Domains\ConcreteAgent\Exceptions\AgentNotFoundException;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
 use JayI\Cortex\Tests\Fixtures\EchoTool;
 use JayI\Cortex\Tests\Fixtures\PlainAgent;

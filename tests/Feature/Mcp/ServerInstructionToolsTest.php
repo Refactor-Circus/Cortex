@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Illuminate\Testing\Fluent\AssertableJson;
-use JayI\Cortex\Mcp\McpServerRegistry;
-use JayI\Cortex\Mcp\Tools\CreateServerInstructionVersionTool;
-use JayI\Cortex\Mcp\Tools\DeleteServerInstructionsTool;
-use JayI\Cortex\Mcp\Tools\ListServerInstructionVersionsTool;
-use JayI\Cortex\Mcp\Tools\ListServersTool;
-use JayI\Cortex\Mcp\Tools\PublishServerInstructionVersionTool;
-use JayI\Cortex\Mcp\Tools\ShowServerInstructionsTool;
-use JayI\Cortex\Models\McpInstruction;
+use JayI\Cortex\Domains\McpServer\Mcp\Tools\CreateServerInstructionVersionTool;
+use JayI\Cortex\Domains\McpServer\Mcp\Tools\DeleteServerInstructionsTool;
+use JayI\Cortex\Domains\McpServer\Mcp\Tools\ListServerInstructionVersionsTool;
+use JayI\Cortex\Domains\McpServer\Mcp\Tools\ListServersTool;
+use JayI\Cortex\Domains\McpServer\Mcp\Tools\PublishServerInstructionVersionTool;
+use JayI\Cortex\Domains\McpServer\Mcp\Tools\ShowServerInstructionsTool;
+use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
 use JayI\Cortex\Tests\Fixtures\EchoServer;
 
 beforeEach(function () {
@@ -71,7 +71,7 @@ it('lists instruction versions newest first with parity to the http payload', fu
 });
 
 it('lists zero instruction versions without erroring', function () {
-    McpInstruction::query()->create(['server' => 'echo']);
+    McpInstructionModel::query()->create(['server' => 'echo']);
 
     mcpTool(ListServerInstructionVersionsTool::class, ['server' => 'echo'])
         ->assertOk()
@@ -100,7 +100,7 @@ it('deletes an instruction override', function () {
         ->assertOk()
         ->assertSee('Server instructions override deleted.');
 
-    expect(McpInstruction::query()->count())->toBe(0);
+    expect(McpInstructionModel::query()->count())->toBe(0);
 });
 
 it('errors not found for unregistered servers', function () {

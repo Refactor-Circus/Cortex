@@ -1,7 +1,7 @@
 <x-atrium::layout :title="__('cortex::cortex.virtual_agents')">
     <x-atrium::page-header :title="__('cortex::cortex.virtual_agents')">
         <x-slot:actions>
-            @cortexCan('create', \JayI\Cortex\Models\VirtualAgent::class)
+            @cortexCan('create', \JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel::class)
                 <x-atrium::icon-button icon="plus" :label="__('cortex::cortex.new_virtual_agent')" variant="primary"
                                        :href="route('atrium.cortex.virtual-agents.create')" data-testid="new-agent" />
             @endcortexCan

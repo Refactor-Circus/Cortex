@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Mcp\McpServerRegistry;
-use JayI\Cortex\Models\McpInstruction;
-use JayI\Cortex\Models\McpInstructionVersion;
+use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
 use JayI\Cortex\Tests\Fixtures\EchoServer;
 use Laravel\Mcp\Server\Transport\FakeTransporter;
 
@@ -20,7 +20,7 @@ it('creates an instruction version for a registered server', function () {
         ->assertJsonPath('data.version', 1)
         ->assertJsonPath('data.content', 'Echo, but instructed better.');
 
-    expect(McpInstruction::query()->where('server', 'echo')->exists())->toBeTrue();
+    expect(McpInstructionModel::query()->where('server', 'echo')->exists())->toBeTrue();
 });
 
 it('rejects instruction versions for unregistered servers', function () {
@@ -73,12 +73,12 @@ it('deletes an override and its versions', function () {
     $this->deleteJson(route('cortex.servers.instructions.destroy', ['server' => 'echo']))
         ->assertNoContent();
 
-    expect(McpInstruction::query()->count())->toBe(0)
-        ->and(McpInstructionVersion::query()->count())->toBe(0);
+    expect(McpInstructionModel::query()->count())->toBe(0)
+        ->and(McpInstructionVersionModel::query()->count())->toBe(0);
 });
 
 it('keeps versions immutable', function () {
-    $version = McpInstructionVersion::factory()->create();
+    $version = McpInstructionVersionModel::factory()->create();
 
     $version->update(['content' => 'rewritten']);
 })->throws(LogicException::class, 'immutable');

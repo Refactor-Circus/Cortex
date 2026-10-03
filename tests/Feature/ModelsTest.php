@@ -2,17 +2,20 @@
 
 declare(strict_types=1);
 
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\QueryException;
-use JayI\Cortex\Models\ConcreteAgentOverride;
-use JayI\Cortex\Models\ConcreteAgentOverrideVersion;
-use JayI\Cortex\Models\McpInstruction;
-use JayI\Cortex\Models\McpInstructionVersion;
-use JayI\Cortex\Models\VirtualAgent;
-use JayI\Cortex\Models\VirtualAgentVersion;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
+use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
 
 it('relates virtual agents to versions and a published version', function () {
-    $agent = VirtualAgent::factory()->create();
-    $version = VirtualAgentVersion::factory()->for($agent, 'virtualAgent')->create(['version' => 1]);
+    $agent = VirtualAgentModel::factory()->create();
+    $version = VirtualAgentVersionModel::factory()->for($agent, 'virtualAgent')->create(['version' => 1]);
 
     $agent->published_version_id = $version->getKey();
     $agent->save();
@@ -23,28 +26,28 @@ it('relates virtual agents to versions and a published version', function () {
 });
 
 it('enforces virtual agent version immutability', function () {
-    $version = VirtualAgentVersion::factory()->create();
+    $version = VirtualAgentVersionModel::factory()->create();
 
     $version->update(['content' => 'changed']);
 })->throws(LogicException::class, 'Virtual agent prompt versions are immutable.');
 
 it('enforces one version number per virtual agent', function () {
-    $agent = VirtualAgent::factory()->create();
+    $agent = VirtualAgentModel::factory()->create();
 
-    VirtualAgentVersion::factory()->for($agent, 'virtualAgent')->create(['version' => 1]);
-    VirtualAgentVersion::factory()->for($agent, 'virtualAgent')->create(['version' => 1]);
+    VirtualAgentVersionModel::factory()->for($agent, 'virtualAgent')->create(['version' => 1]);
+    VirtualAgentVersionModel::factory()->for($agent, 'virtualAgent')->create(['version' => 1]);
 })->throws(QueryException::class);
 
 it('deletes versions when the virtual agent is deleted', function () {
-    $agent = VirtualAgent::factory()->published()->create();
+    $agent = VirtualAgentModel::factory()->published()->create();
 
     $agent->delete();
 
-    expect(VirtualAgentVersion::query()->count())->toBe(0);
+    expect(VirtualAgentVersionModel::query()->count())->toBe(0);
 });
 
 it('casts agent settings and tools to arrays', function () {
-    $agent = VirtualAgent::factory()->create([
+    $agent = VirtualAgentModel::factory()->create([
         'settings' => ['temperature' => 0.5],
         'tools' => ['echo'],
     ]);
@@ -55,15 +58,15 @@ it('casts agent settings and tools to arrays', function () {
 });
 
 it('defaults agent tools and concrete sub-agents to empty arrays', function () {
-    $agent = VirtualAgent::query()->create(['name' => 'Helper', 'slug' => 'helper']);
+    $agent = VirtualAgentModel::query()->create(['name' => 'Helper', 'slug' => 'helper']);
 
     expect($agent->refresh()->tools)->toBe([])
         ->and($agent->concrete_sub_agents)->toBe([]);
 });
 
 it('relates agents to sub-agents in both directions', function () {
-    $parent = VirtualAgent::factory()->create();
-    $child = VirtualAgent::factory()->create();
+    $parent = VirtualAgentModel::factory()->create();
+    $child = VirtualAgentModel::factory()->create();
 
     $parent->subAgents()->attach($child);
 
@@ -72,8 +75,8 @@ it('relates agents to sub-agents in both directions', function () {
 });
 
 it('detaches sub-agent links when an agent is deleted', function () {
-    $parent = VirtualAgent::factory()->create();
-    $child = VirtualAgent::factory()->create();
+    $parent = VirtualAgentModel::factory()->create();
+    $child = VirtualAgentModel::factory()->create();
     $parent->subAgents()->attach($child);
 
     $child->delete();
@@ -82,8 +85,8 @@ it('detaches sub-agent links when an agent is deleted', function () {
 });
 
 it('relates mcp instructions to versions and a published version', function () {
-    $instruction = McpInstruction::factory()->create();
-    $version = McpInstructionVersion::factory()->for($instruction, 'mcpInstruction')->create(['version' => 1]);
+    $instruction = McpInstructionModel::factory()->create();
+    $version = McpInstructionVersionModel::factory()->for($instruction, 'mcpInstruction')->create(['version' => 1]);
 
     $instruction->published_version_id = $version->getKey();
     $instruction->save();
@@ -94,30 +97,30 @@ it('relates mcp instructions to versions and a published version', function () {
 });
 
 it('enforces mcp instruction version immutability', function () {
-    $version = McpInstructionVersion::factory()->create();
+    $version = McpInstructionVersionModel::factory()->create();
 
     $version->update(['content' => 'changed']);
 })->throws(LogicException::class, 'MCP server instruction versions are immutable.');
 
 it('enforces one version number per mcp instruction', function () {
-    $instruction = McpInstruction::factory()->create();
+    $instruction = McpInstructionModel::factory()->create();
 
-    McpInstructionVersion::factory()->for($instruction, 'mcpInstruction')->create(['version' => 1]);
-    McpInstructionVersion::factory()->for($instruction, 'mcpInstruction')->create(['version' => 1]);
+    McpInstructionVersionModel::factory()->for($instruction, 'mcpInstruction')->create(['version' => 1]);
+    McpInstructionVersionModel::factory()->for($instruction, 'mcpInstruction')->create(['version' => 1]);
 })->throws(QueryException::class);
 
 it('deletes versions when the mcp instruction is deleted', function () {
-    $instruction = McpInstruction::factory()->create();
-    McpInstructionVersion::factory()->for($instruction, 'mcpInstruction')->create(['version' => 1]);
+    $instruction = McpInstructionModel::factory()->create();
+    McpInstructionVersionModel::factory()->for($instruction, 'mcpInstruction')->create(['version' => 1]);
 
     $instruction->delete();
 
-    expect(McpInstructionVersion::query()->count())->toBe(0);
+    expect(McpInstructionVersionModel::query()->count())->toBe(0);
 });
 
 it('relates concrete agent overrides to versions and a published version', function () {
-    $override = ConcreteAgentOverride::factory()->create(['tools' => ['echo']]);
-    $version = ConcreteAgentOverrideVersion::factory()->for($override, 'concreteAgentOverride')->create(['version' => 1]);
+    $override = ConcreteAgentOverrideModel::factory()->create(['tools' => ['echo']]);
+    $version = ConcreteAgentOverrideVersionModel::factory()->for($override, 'concreteAgentOverride')->create(['version' => 1]);
 
     $override->published_version_id = $version->getKey();
     $override->save();
@@ -128,16 +131,38 @@ it('relates concrete agent overrides to versions and a published version', funct
 });
 
 it('enforces concrete agent override version immutability', function () {
-    $version = ConcreteAgentOverrideVersion::factory()->create();
+    $version = ConcreteAgentOverrideVersionModel::factory()->create();
 
     $version->update(['content' => 'changed']);
 })->throws(LogicException::class, 'Concrete agent prompt versions are immutable.');
 
 it('deletes versions when the concrete agent override is deleted', function () {
-    $override = ConcreteAgentOverride::factory()->create();
-    ConcreteAgentOverrideVersion::factory()->for($override, 'concreteAgentOverride')->create(['version' => 1]);
+    $override = ConcreteAgentOverrideModel::factory()->create();
+    ConcreteAgentOverrideVersionModel::factory()->for($override, 'concreteAgentOverride')->create(['version' => 1]);
 
     $override->delete();
 
-    expect(ConcreteAgentOverrideVersion::query()->count())->toBe(0);
+    expect(ConcreteAgentOverrideVersionModel::query()->count())->toBe(0);
+});
+
+it('keeps the class names the models were stored under before they moved', function (string $old, string $model): void {
+    expect(Relation::getMorphedModel($old))->toBe($model)
+        ->and((new $model)->getMorphClass())->toBe($old);
+})->with([
+    ['JayI\\Cortex\\Models\\VirtualAgent', VirtualAgentModel::class],
+    ['JayI\\Cortex\\Models\\VirtualAgentVersion', VirtualAgentVersionModel::class],
+    ['JayI\\Cortex\\Models\\ConcreteAgentOverride', ConcreteAgentOverrideModel::class],
+    ['JayI\\Cortex\\Models\\ConcreteAgentOverrideVersion', ConcreteAgentOverrideVersionModel::class],
+    ['JayI\\Cortex\\Models\\ToolDescription', ToolDescriptionModel::class],
+    ['JayI\\Cortex\\Models\\ToolDescriptionVersion', ToolDescriptionVersionModel::class],
+    ['JayI\\Cortex\\Models\\McpInstruction', McpInstructionModel::class],
+    ['JayI\\Cortex\\Models\\McpInstructionVersion', McpInstructionVersionModel::class],
+]);
+
+it('resolves a polymorphic value stored under an old class name', function (): void {
+    $agent = VirtualAgentModel::factory()->create();
+
+    $class = Relation::getMorphedModel('JayI\\Cortex\\Models\\VirtualAgent');
+
+    expect($class::query()->find($agent->getKey())?->is($agent))->toBeTrue();
 });

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace JayI\Cortex\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use JayI\Cortex\Models\McpInstruction;
+use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
 
 /**
- * @extends Factory<McpInstruction>
+ * @extends Factory<McpInstructionModel>
  */
 final class McpInstructionFactory extends Factory
 {
-    protected $model = McpInstruction::class;
+    protected $model = McpInstructionModel::class;
 
     /**
      * @return array<string, mixed>

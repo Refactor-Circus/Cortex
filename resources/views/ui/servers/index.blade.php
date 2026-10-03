@@ -17,7 +17,7 @@
                     <x-atrium::table.row>
                         <x-atrium::table.cell><code class="text-xs">{{ $server['name'] }}</code></x-atrium::table.cell>
                         <x-atrium::table.cell>
-                            @cortexCan('view', \JayI\Cortex\Http\Ui\ScreenAccess::serverInstruction($server['name'], $instructions->get($server['name'])))
+                            @cortexCan('view', \JayI\Cortex\Atrium\ScreenAccess::serverInstruction($server['name'], $instructions->get($server['name'])))
                                 <x-atrium::icon-button icon="document-text" :label="__('cortex::cortex.instructions')" size="sm" variant="outline"
                                                        :href="route('atrium.cortex.servers.instructions', $server['name'])"
                                                        data-testid="instructions-{{ $server['name'] }}" />

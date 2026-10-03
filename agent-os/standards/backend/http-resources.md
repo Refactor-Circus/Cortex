@@ -1,6 +1,6 @@
 # HTTP Resources
 
-All payloads — HTTP and MCP — serialize through `src/Http/Resources`:
+All payloads — HTTP and MCP — serialize through JSON resources: a model's resource sits beside the model in `src/Domains/{Domain}/Resources`, payloads with no model behind them in `src/Domains/{Domain}/Http/Resources` (or `src/Http/Resources` when shared, like `AgentRunResource`):
 
 ```php
 /**

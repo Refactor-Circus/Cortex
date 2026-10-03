@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace JayI\Cortex\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use JayI\Cortex\Models\ToolDescription;
-use JayI\Cortex\Models\ToolDescriptionVersion;
+use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 
 /**
- * @extends Factory<ToolDescriptionVersion>
+ * @extends Factory<ToolDescriptionVersionModel>
  */
 final class ToolDescriptionVersionFactory extends Factory
 {
-    protected $model = ToolDescriptionVersion::class;
+    protected $model = ToolDescriptionVersionModel::class;
 
     /**
      * @return array<string, mixed>
@@ -21,7 +21,7 @@ final class ToolDescriptionVersionFactory extends Factory
     public function definition(): array
     {
         return [
-            'tool_description_id' => ToolDescription::factory(),
+            'tool_description_id' => ToolDescriptionModel::factory(),
             'version' => 1,
             'content' => fake()->paragraph(),
         ];

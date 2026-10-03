@@ -22,7 +22,7 @@
     @include('cortex::ui.partials.override', [
         'override' => $override,
         'subject' => $subject,
-        'versionClass' => \JayI\Cortex\Models\ConcreteAgentOverrideVersion::class,
+        'versionClass' => \JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel::class,
         'fallback' => $agent['default_instructions'],
         'liveTitle' => __('cortex::cortex.live_prompt'),
         'versions' => $versions,
@@ -48,7 +48,7 @@
                 @endif
             </div>
 
-            @php($mayUpdateTools = \JayI\Cortex\Http\Ui\ScreenAccess::allows('update', $subject))
+            @php($mayUpdateTools = \JayI\Cortex\Atrium\ScreenAccess::allows('update', $subject))
 
             <form method="POST" action="{{ route('atrium.cortex.concrete-agents.tools', $agent['name']) }}" class="flex flex-col gap-4">
                 @csrf

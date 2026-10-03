@@ -5,50 +5,50 @@ declare(strict_types=1);
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
-use JayI\Cortex\Actions\CreateConcreteAgentVersionAction;
-use JayI\Cortex\Actions\CreateMcpInstructionVersionAction;
-use JayI\Cortex\Actions\CreateToolDescriptionVersionAction;
-use JayI\Cortex\Actions\CreateVirtualAgentAction;
-use JayI\Cortex\Actions\CreateVirtualAgentVersionAction;
-use JayI\Cortex\Actions\DeleteConcreteAgentOverrideAction;
-use JayI\Cortex\Actions\DeleteMcpInstructionAction;
-use JayI\Cortex\Actions\DeleteToolDescriptionAction;
-use JayI\Cortex\Actions\DeleteVirtualAgentAction;
-use JayI\Cortex\Actions\ListConcreteAgentsAction;
-use JayI\Cortex\Actions\ListConcreteAgentVersionsAction;
-use JayI\Cortex\Actions\ListMcpInstructionVersionsAction;
-use JayI\Cortex\Actions\ListMcpServersAction;
-use JayI\Cortex\Actions\ListProvidersAction;
-use JayI\Cortex\Actions\ListToolDescriptionVersionsAction;
-use JayI\Cortex\Actions\ListToolsAction;
-use JayI\Cortex\Actions\ListVirtualAgentsAction;
-use JayI\Cortex\Actions\ListVirtualAgentVersionsAction;
-use JayI\Cortex\Actions\PublishConcreteAgentVersionAction;
-use JayI\Cortex\Actions\PublishMcpInstructionVersionAction;
-use JayI\Cortex\Actions\PublishToolDescriptionVersionAction;
-use JayI\Cortex\Actions\PublishVirtualAgentVersionAction;
-use JayI\Cortex\Actions\RunConcreteAgentAction;
-use JayI\Cortex\Actions\RunVirtualAgentAction;
-use JayI\Cortex\Actions\ShowConcreteAgentAction;
-use JayI\Cortex\Actions\ShowMcpInstructionAction;
-use JayI\Cortex\Actions\ShowToolDescriptionAction;
-use JayI\Cortex\Actions\ShowVirtualAgentAction;
-use JayI\Cortex\Actions\ShowVirtualAgentVersionAction;
-use JayI\Cortex\Actions\UpdateConcreteAgentToolsAction;
-use JayI\Cortex\Actions\UpdateVirtualAgentAction;
-use JayI\Cortex\Agents\AgentRegistry;
 use JayI\Cortex\Contracts\ActionFinishedEvent;
 use JayI\Cortex\Contracts\ActionStartingEvent;
 use JayI\Cortex\Contracts\ModelLifecycleEvent;
-use JayI\Cortex\Events\Action\VirtualAgentCreatedActionEvent;
-use JayI\Cortex\Events\Action\VirtualAgentCreatingActionEvent;
-use JayI\Cortex\Events\Action\VirtualAgentRanActionEvent;
-use JayI\Cortex\Events\Action\VirtualAgentVersionPublishedActionEvent;
-use JayI\Cortex\Events\Action\VirtualAgentVersionPublishingActionEvent;
-use JayI\Cortex\Events\Model\VirtualAgentCreatingEvent;
-use JayI\Cortex\Events\Model\VirtualAgentVersionCreatedEvent;
-use JayI\Cortex\Models\VirtualAgent;
-use JayI\Cortex\Runtime\DbAgent;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\DeleteConcreteAgentOverrideAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentsAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentVersionsAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\PublishConcreteAgentVersionAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\RunConcreteAgentAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use JayI\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
+use JayI\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
+use JayI\Cortex\Domains\McpServer\Actions\ListMcpInstructionVersionsAction;
+use JayI\Cortex\Domains\McpServer\Actions\ListMcpServersAction;
+use JayI\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
+use JayI\Cortex\Domains\McpServer\Actions\ShowMcpInstructionAction;
+use JayI\Cortex\Domains\Tool\Actions\CreateToolDescriptionVersionAction;
+use JayI\Cortex\Domains\Tool\Actions\DeleteToolDescriptionAction;
+use JayI\Cortex\Domains\Tool\Actions\ListToolDescriptionVersionsAction;
+use JayI\Cortex\Domains\Tool\Actions\ListToolsAction;
+use JayI\Cortex\Domains\Tool\Actions\PublishToolDescriptionVersionAction;
+use JayI\Cortex\Domains\Tool\Actions\ShowToolDescriptionAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\DeleteVirtualAgentAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\ListProvidersAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentsAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentVersionsAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\PublishVirtualAgentVersionAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\RunVirtualAgentAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentVersionAction;
+use JayI\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
+use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentCreatedActionEvent;
+use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentCreatingActionEvent;
+use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentCreatingEvent;
+use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentRanActionEvent;
+use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionCreatedEvent;
+use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishedActionEvent;
+use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishingActionEvent;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
 
 /**
@@ -72,15 +72,15 @@ function recordEvents(string $kind): ArrayObject
 it('fires every lifecycle event of an agent', function (): void {
     $seen = recordEvents(ModelLifecycleEvent::class);
 
-    $agent = VirtualAgent::factory()->create();
+    $agent = VirtualAgentModel::factory()->create();
     $agent->name = 'Renamed';
     $agent->save();
-    VirtualAgent::query()->find($agent->id);
+    VirtualAgentModel::query()->find($agent->id);
     $agent->replicate();
     $agent->delete();
 
     $hooks = collect($seen)
-        ->filter(fn (ModelLifecycleEvent $event): bool => $event->model() instanceof VirtualAgent)
+        ->filter(fn (ModelLifecycleEvent $event): bool => $event->model() instanceof VirtualAgentModel)
         ->map(fn (ModelLifecycleEvent $event): string => $event->hook())
         ->unique()
         ->values()
@@ -105,10 +105,10 @@ it('fires the lifecycle events of versions and overrides', function (): void {
         ->unique();
 
     expect($models)->toContain(
-        'VirtualAgent.creating', 'VirtualAgent.created', 'VirtualAgent.updated', 'VirtualAgentVersion.created',
-        'ToolDescription.created', 'ToolDescription.updated', 'ToolDescriptionVersion.created',
-        'McpInstruction.created', 'McpInstruction.updated', 'McpInstructionVersion.created',
-        'ConcreteAgentOverride.created', 'ConcreteAgentOverride.updated', 'ConcreteAgentOverrideVersion.created',
+        'VirtualAgentModel.creating', 'VirtualAgentModel.created', 'VirtualAgentModel.updated', 'VirtualAgentVersionModel.created',
+        'ToolDescriptionModel.created', 'ToolDescriptionModel.updated', 'ToolDescriptionVersionModel.created',
+        'McpInstructionModel.created', 'McpInstructionModel.updated', 'McpInstructionVersionModel.created',
+        'ConcreteAgentOverrideModel.created', 'ConcreteAgentOverrideModel.updated', 'ConcreteAgentOverrideVersionModel.created',
     );
 });
 
@@ -126,10 +126,10 @@ it('carries the model on the event', function (): void {
 it('lets a creating listener stop an agent being created', function (): void {
     Event::listen(VirtualAgentCreatingEvent::class, fn (): bool => false);
 
-    $agent = new VirtualAgent(['name' => 'Helper', 'slug' => 'helper']);
+    $agent = new VirtualAgentModel(['name' => 'Helper', 'slug' => 'helper']);
 
     expect($agent->save())->toBeFalse()
-        ->and(VirtualAgent::query()->count())->toBe(0);
+        ->and(VirtualAgentModel::query()->count())->toBe(0);
 });
 
 it('starts and finishes every action once, in order', function (): void {
@@ -192,7 +192,7 @@ it('starts and finishes every action once, in order', function (): void {
 });
 
 it('gives every action exactly one start and one finish event', function (): void {
-    $actions = glob(dirname(__DIR__, 2).'/src/Actions/*Action.php') ?: [];
+    $actions = glob(dirname(__DIR__, 2).'/src/Domains/*/Actions/*Action.php') ?: [];
 
     $unpaired = [];
 
@@ -201,7 +201,7 @@ it('gives every action exactly one start and one finish event', function (): voi
         preg_match_all('/([A-Za-z]+ActionEvent)::dispatch/', $source, $matches);
 
         $kinds = array_map(
-            fn (string $event): string => is_subclass_of('JayI\\Cortex\\Events\\Action\\'.$event, ActionStartingEvent::class) ? 'start' : 'finish',
+            fn (string $event): string => is_subclass_of('JayI\\Cortex\\Domains\\'.basename(dirname($path, 2)).'\\Events\\'.$event, ActionStartingEvent::class) ? 'start' : 'finish',
             $matches[1],
         );
 
@@ -218,7 +218,7 @@ it('gives every action exactly one start and one finish event', function (): voi
 
 it('carries the input on the start event and the result on the finish event', function (): void {
     DbAgent::fake(['Hello.']);
-    $agent = VirtualAgent::factory()->published()->create();
+    $agent = VirtualAgentModel::factory()->published()->create();
 
     Event::fake([VirtualAgentRanActionEvent::class]);
 
@@ -234,7 +234,7 @@ it('starts before the work and finishes only once it is committed', function ():
     $agentsAtStart = null;
 
     Event::listen(VirtualAgentCreatingActionEvent::class, function () use (&$agentsAtStart): void {
-        $agentsAtStart = VirtualAgent::query()->count();
+        $agentsAtStart = VirtualAgentModel::query()->count();
     });
 
     $finished = recordEvents(VirtualAgentCreatedActionEvent::class);
@@ -251,7 +251,7 @@ it('starts before the work and finishes only once it is committed', function ():
 });
 
 it('starts a failed action but never finishes it', function (): void {
-    $agent = VirtualAgent::factory()->published()->create();
+    $agent = VirtualAgentModel::factory()->published()->create();
 
     $starts = recordEvents(VirtualAgentVersionPublishingActionEvent::class);
     $stops = recordEvents(VirtualAgentVersionPublishedActionEvent::class);

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Models\VirtualAgent;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
 use JayI\Cortex\Tests\Fixtures\EchoTool;
-use JayI\Cortex\Tools\ToolRegistry;
 
 it('lists virtual agents', function () {
-    VirtualAgent::factory()->published()->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published()->create(['slug' => 'helper']);
 
     $this->getJson(route('cortex.virtual-agents.index'))
         ->assertOk()
@@ -21,7 +21,7 @@ it('lists virtual agents', function () {
 it('creates a virtual agent with its prompt, tools, and sub-agents', function () {
     app(ToolRegistry::class)->register('echo', EchoTool::class);
     app(AgentRegistry::class)->register('echo-agent', EchoAgent::class);
-    VirtualAgent::factory()->create(['slug' => 'researcher']);
+    VirtualAgentModel::factory()->create(['slug' => 'researcher']);
 
     $this->postJson(route('cortex.virtual-agents.store'), [
         'name' => 'Coordinator',
@@ -61,7 +61,7 @@ it('rejects unregistered tools and concrete sub-agents', function () {
 });
 
 it('shows a virtual agent', function () {
-    VirtualAgent::factory()->published('Help.')->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published('Help.')->create(['slug' => 'helper']);
 
     $this->getJson(route('cortex.virtual-agents.show', 'helper'))
         ->assertOk()
@@ -76,8 +76,8 @@ it('returns 404 for unknown virtual agents', function () {
 
 it('updates a virtual agent with sync semantics and versions changed instructions', function () {
     app(ToolRegistry::class)->register('echo', EchoTool::class);
-    $agent = VirtualAgent::factory()->published('v1')->create(['slug' => 'helper', 'tools' => ['old']]);
-    $agent->subAgents()->attach(VirtualAgent::factory()->create());
+    $agent = VirtualAgentModel::factory()->published('v1')->create(['slug' => 'helper', 'tools' => ['old']]);
+    $agent->subAgents()->attach(VirtualAgentModel::factory()->create());
 
     $this->patchJson(route('cortex.virtual-agents.update', 'helper'), [
         'instructions' => 'v2',
@@ -92,9 +92,9 @@ it('updates a virtual agent with sync semantics and versions changed instruction
 });
 
 it('rejects circular sub-agent updates', function () {
-    $a = VirtualAgent::factory()->create(['slug' => 'agent-a']);
-    VirtualAgent::factory()->create(['slug' => 'agent-b']);
-    $a->subAgents()->attach(VirtualAgent::query()->where('slug', 'agent-b')->firstOrFail());
+    $a = VirtualAgentModel::factory()->create(['slug' => 'agent-a']);
+    VirtualAgentModel::factory()->create(['slug' => 'agent-b']);
+    $a->subAgents()->attach(VirtualAgentModel::query()->where('slug', 'agent-b')->firstOrFail());
 
     $this->patchJson(route('cortex.virtual-agents.update', 'agent-b'), [
         'sub_agents' => ['agent-a'],
@@ -102,9 +102,9 @@ it('rejects circular sub-agent updates', function () {
 });
 
 it('deletes a virtual agent', function () {
-    VirtualAgent::factory()->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->create(['slug' => 'helper']);
 
     $this->deleteJson(route('cortex.virtual-agents.destroy', 'helper'))->assertNoContent();
 
-    expect(VirtualAgent::query()->count())->toBe(0);
+    expect(VirtualAgentModel::query()->count())->toBe(0);
 });

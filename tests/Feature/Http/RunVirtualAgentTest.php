@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Models\VirtualAgent;
-use JayI\Cortex\Runtime\DbAgent;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
 
 it('runs an agent and returns text with usage', function () {
     DbAgent::fake(['Hello from the agent.']);
-    VirtualAgent::factory()->published()->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published()->create(['slug' => 'helper']);
 
     $this->postJson(route('cortex.virtual-agents.run', 'helper'), ['input' => 'Hi'])
         ->assertOk()
@@ -18,7 +18,7 @@ it('runs an agent and returns text with usage', function () {
 });
 
 it('validates run input', function () {
-    VirtualAgent::factory()->published()->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published()->create(['slug' => 'helper']);
 
     $this->postJson(route('cortex.virtual-agents.run', 'helper'), [])
         ->assertUnprocessable()

@@ -7,16 +7,16 @@ use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use JayI\Atrium\Navigation\NavigationRegistry;
-use JayI\Atrium\Navigation\NavItem;
-use JayI\Atrium\Search\SearchSource;
-use JayI\Cortex\Agents\AgentRegistry;
+use JayI\Atrium\Domains\Navigation\Data\NavItem;
+use JayI\Atrium\Domains\Navigation\Services\NavigationRegistry;
+use JayI\Atrium\Domains\Search\Data\SearchSource;
 use JayI\Cortex\Atrium\CortexPlugin;
-use JayI\Cortex\Models\ConcreteAgentOverride;
-use JayI\Cortex\Models\McpInstruction;
-use JayI\Cortex\Models\ToolDescription;
-use JayI\Cortex\Models\VirtualAgent;
-use JayI\Cortex\Runtime\DbAgent;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
 use JayI\Cortex\Tests\Fixtures\EchoServer;
 use JayI\Cortex\Tests\Fixtures\EchoTool;
@@ -35,10 +35,10 @@ beforeEach(function (): void {
 
     Gate::define('viewAtrium', fn (mixed $user = null): bool => true);
 
-    Gate::policy(VirtualAgent::class, GrantedVirtualAgentPolicy::class);
-    Gate::policy(ConcreteAgentOverride::class, GrantedConcreteAgentOverridePolicy::class);
-    Gate::policy(ToolDescription::class, GrantedToolDescriptionPolicy::class);
-    Gate::policy(McpInstruction::class, GrantedMcpInstructionPolicy::class);
+    Gate::policy(VirtualAgentModel::class, GrantedVirtualAgentPolicy::class);
+    Gate::policy(ConcreteAgentOverrideModel::class, GrantedConcreteAgentOverridePolicy::class);
+    Gate::policy(ToolDescriptionModel::class, GrantedToolDescriptionPolicy::class);
+    Gate::policy(McpInstructionModel::class, GrantedMcpInstructionPolicy::class);
 
     config()->set('cortex.tools', ['echo' => EchoTool::class]);
     config()->set('cortex.mcp.servers', ['echo-server' => EchoServer::class]);
@@ -75,9 +75,9 @@ function screenNavigation(?GenericUser $user): array
     return array_values(array_map(fn (NavItem $item): string => $item->label, $items));
 }
 
-function screenAgent(): VirtualAgent
+function screenAgent(): VirtualAgentModel
 {
-    $agent = VirtualAgent::factory()->published('First.')->create(['name' => 'Helper', 'slug' => 'helper']);
+    $agent = VirtualAgentModel::factory()->published('First.')->create(['name' => 'Helper', 'slug' => 'helper']);
     $agent->versions()->create(['version' => 2, 'content' => 'Second.']);
 
     return $agent;
@@ -86,9 +86,9 @@ function screenAgent(): VirtualAgent
 /**
  * The echo agent's override: v1 published, v2 a draft.
  */
-function screenOverride(): ConcreteAgentOverride
+function screenOverride(): ConcreteAgentOverrideModel
 {
-    $override = ConcreteAgentOverride::query()->create(['agent' => 'echo-agent']);
+    $override = ConcreteAgentOverrideModel::query()->create(['agent' => 'echo-agent']);
     $published = $override->versions()->create(['version' => 1, 'content' => 'Override prompt.']);
     $override->versions()->create(['version' => 2, 'content' => 'Draft.']);
 
@@ -200,7 +200,7 @@ it('refuses virtual agent changes without their abilities', function (): void {
     $this->post(route('atrium.cortex.virtual-agents.versions.publish', ['helper', 2]))->assertForbidden();
     $this->delete(route('atrium.cortex.virtual-agents.destroy', 'helper'))->assertForbidden();
 
-    expect(VirtualAgent::query()->count())->toBe(1)
+    expect(VirtualAgentModel::query()->count())->toBe(1)
         ->and($agent->fresh()?->name)->toBe('Helper')
         ->and($agent->fresh()?->publishedVersion?->version)->toBe(1);
 });
@@ -212,7 +212,7 @@ it('allows virtual agent changes with their abilities', function (): void {
     $this->post(route('atrium.cortex.virtual-agents.versions.publish', ['helper', 2]))->assertRedirect();
     $this->delete(route('atrium.cortex.virtual-agents.destroy', 'helper'))->assertRedirect();
 
-    expect(VirtualAgent::query()->count())->toBe(0);
+    expect(VirtualAgentModel::query()->count())->toBe(0);
 });
 
 it('lists concrete agents without the controls the viewer may not use', function (): void {
@@ -268,7 +268,7 @@ it('refuses concrete agent changes without their abilities', function (): void {
     $this->put(route('atrium.cortex.concrete-agents.tools', 'echo-agent'), ['tools' => []])->assertForbidden();
     $this->delete(route('atrium.cortex.concrete-agents.destroy', 'echo-agent'))->assertForbidden();
 
-    expect(ConcreteAgentOverride::query()->sole()->versions()->count())->toBe(2);
+    expect(ConcreteAgentOverrideModel::query()->sole()->versions()->count())->toBe(2);
 });
 
 it('offers to run only the agents the viewer may run, and refuses the others', function (): void {
@@ -300,7 +300,7 @@ it('shows tool descriptions only to those who may view them', function (): void 
 
     $this->post(route('atrium.cortex.tools.description.store', 'echo'), ['content' => 'New.'])->assertForbidden();
 
-    expect(ToolDescription::query()->count())->toBe(0);
+    expect(ToolDescriptionModel::query()->count())->toBe(0);
 
     $this->actingAs(screenUser(['tool-descriptions.view', 'tool-descriptions.update']))
         ->get(route('atrium.cortex.tools.description', 'echo'))
@@ -323,7 +323,7 @@ it('shows server instructions only to those who may view them', function (): voi
 
     $this->post(route('atrium.cortex.servers.instructions.store', 'echo-server'), ['content' => 'New.'])->assertForbidden();
 
-    expect(McpInstruction::query()->count())->toBe(0);
+    expect(McpInstructionModel::query()->count())->toBe(0);
 });
 
 it('searches only what the searcher may list', function (): void {

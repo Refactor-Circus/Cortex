@@ -44,7 +44,7 @@
                                                        data-testid="hide-{{ $version->version }}" />
                             </span>
 
-                            @if (! $isPublished && \JayI\Cortex\Http\Ui\ScreenAccess::allows('publish', $version))
+                            @if (! $isPublished && \JayI\Cortex\Atrium\ScreenAccess::allows('publish', $version))
                                 <form method="POST" action="{{ $publishRoute($version->version) }}">
                                     @csrf
                                     <x-atrium::icon-button icon="check-badge" :label="__('cortex::cortex.publish')" size="sm" variant="outline" type="submit"

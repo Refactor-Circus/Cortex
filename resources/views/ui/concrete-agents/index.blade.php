@@ -19,7 +19,7 @@
 
                 @foreach ($agents as $agent)
                     @php($published = $agent['override']?->publishedVersion?->version)
-                    @php($subject = \JayI\Cortex\Http\Ui\ScreenAccess::concreteAgent($agent['name'], $agent['override']))
+                    @php($subject = \JayI\Cortex\Atrium\ScreenAccess::concreteAgent($agent['name'], $agent['override']))
 
                     <x-atrium::table.row>
                         <x-atrium::table.cell>

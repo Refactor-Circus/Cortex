@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Actions\ListMcpServersAction;
 use JayI\Cortex\Cortex;
-use JayI\Cortex\Exceptions\McpServerNotFoundException;
+use JayI\Cortex\Domains\McpServer\Actions\ListMcpServersAction;
+use JayI\Cortex\Domains\McpServer\Exceptions\McpServerNotFoundException;
+use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
 use JayI\Cortex\Mcp\CortexServer;
-use JayI\Cortex\Mcp\McpServerRegistry;
-use JayI\Cortex\Models\McpInstruction;
 use JayI\Cortex\Support\PublicationCache;
 use JayI\Cortex\Tests\Fixtures\EchoServer;
 use JayI\Cortex\Tests\Fixtures\PlainServer;
@@ -71,7 +71,7 @@ it('lists servers with effective instructions', function () {
     $registry = app(McpServerRegistry::class);
     $registry->register('echo', EchoServer::class);
 
-    $instruction = McpInstruction::query()->create(['server' => 'echo']);
+    $instruction = McpInstructionModel::query()->create(['server' => 'echo']);
     $version = $instruction->versions()->create(['version' => 1, 'content' => 'Published echo instructions.']);
     $instruction->published_version_id = $version->getKey();
     $instruction->save();

@@ -1,6 +1,6 @@
 # Action Classes
 
-All behavior flows through `src/Actions/*Action.php`. No exceptions — every HTTP endpoint and MCP tool delegates to an action.
+All behavior flows through `src/Domains/{Domain}/Actions/*Action.php`. No exceptions — every HTTP endpoint and MCP tool delegates to an action.
 
 ```php
 final class CreatePromptAction

@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Exceptions\ToolNotFoundException;
-use JayI\Cortex\Mcp\Tools\ListToolsTool;
-use JayI\Cortex\Models\VirtualAgent;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use JayI\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
+use JayI\Cortex\Domains\Tool\Mcp\Tools\ListToolsTool;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
 use JayI\Cortex\Tests\Fixtures\EchoMcpTool;
 use JayI\Cortex\Tests\Fixtures\EchoTool;
-use JayI\Cortex\Tools\ToolRegistry;
 
 beforeEach(function (): void {
     config()->set('cortex.tool_tags.namespaces', []);
@@ -107,7 +107,7 @@ describe('dashboard', function (): void {
     });
 
     it('offers tag filters in the virtual agent tool picker', function (): void {
-        VirtualAgent::factory()->published()->create(['slug' => 'helper', 'tools' => ['echo']]);
+        VirtualAgentModel::factory()->published()->create(['slug' => 'helper', 'tools' => ['echo']]);
 
         $this->get(route('atrium.cortex.virtual-agents.edit', 'helper'))
             ->assertOk()

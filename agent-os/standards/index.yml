@@ -1,6 +1,8 @@
 # Agent OS Standards Index
 
 backend:
+  domain-modules:
+    description: "src/Domains/{Domain} layout, domain providers, *Model naming, morph aliases for moved models"
   action-transactions:
     description: DB::transaction on every write; return models with relations eager-loaded
   actions:

@@ -18,7 +18,7 @@
 ### Runtime override machinery (consumption side)
 
 - **Location:** `src/Tools/ToolDescriptionOverrides.php` (scoped, memoized map), `src/Tools/Concerns/HasVersionedDescription.php` (trait: prefer override else parent), `src/Tools/Tool.php` (abstract base carrying trait), `src/Support/PublicationCache.php`, `src/Tools/ToolRegistry.php`
-- **Relevance:** Template for `McpInstructionOverrides`, `HasVersionedInstructions`, `JayI\Cortex\Mcp\Server`, `McpServerRegistry`.
+- **Relevance:** Template for `McpInstructionOverrides`, `HasVersionedInstructions`, `JayI\Cortex\Domains\McpServer\Support\Server`, `McpServerRegistry`.
 - **Key patterns:** Scoped container binding (Octane-safe memoization); `PublicationCache` key-per-feature; registry lazy config load with string-key naming.
 
 ### Prompt version MCP tools (MCP layer template)

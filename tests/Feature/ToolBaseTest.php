@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Mcp\Tools\CreateVirtualAgentTool;
-use JayI\Cortex\Models\ToolDescription;
+use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
+use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentTool;
 use JayI\Cortex\Support\PublicationCache;
 use JayI\Cortex\Tests\Fixtures\EchoCortexTool;
-use JayI\Cortex\Tools\ToolRegistry;
 
 function publishToolDescriptionOverride(string $tool, string $content): void
 {
-    $description = ToolDescription::query()->create(['tool' => $tool]);
+    $description = ToolDescriptionModel::query()->create(['tool' => $tool]);
     $version = $description->versions()->create(['version' => 1, 'content' => $content]);
 
     $description->published_version_id = $version->getKey();

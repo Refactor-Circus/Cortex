@@ -1,6 +1,6 @@
 # Runtime Exceptions
 
-Runtime failures get dedicated exception classes in `src/Exceptions` — unlike action-layer guards, which throw field-keyed `ValidationException`:
+Runtime failures get dedicated exception classes in their domain's `Exceptions` directory (`src/Domains/{Domain}/Exceptions`) — unlike action-layer guards, which throw field-keyed `ValidationException`:
 
 ```php
 final class PromptNotPublishedException extends RuntimeException

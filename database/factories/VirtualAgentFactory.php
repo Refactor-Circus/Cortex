@@ -6,14 +6,14 @@ namespace JayI\Cortex\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use JayI\Cortex\Models\VirtualAgent;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 /**
- * @extends Factory<VirtualAgent>
+ * @extends Factory<VirtualAgentModel>
  */
 final class VirtualAgentFactory extends Factory
 {
-    protected $model = VirtualAgent::class;
+    protected $model = VirtualAgentModel::class;
 
     /**
      * @return array<string, mixed>
@@ -37,7 +37,7 @@ final class VirtualAgentFactory extends Factory
      */
     public function published(string $content = 'You are a helpful assistant.'): self
     {
-        return $this->afterCreating(function (VirtualAgent $agent) use ($content): void {
+        return $this->afterCreating(function (VirtualAgentModel $agent) use ($content): void {
             $version = $agent->versions()->create(['version' => 1, 'content' => $content]);
 
             $agent->published_version_id = (string) $version->getKey();

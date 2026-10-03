@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Features\CortexSupportFeature;
-use JayI\Cortex\Models\ConcreteAgentOverride;
-use JayI\Cortex\Models\ConcreteAgentOverrideVersion;
-use JayI\Cortex\Models\McpInstruction;
-use JayI\Cortex\Models\McpInstructionVersion;
-use JayI\Cortex\Models\ToolDescription;
-use JayI\Cortex\Models\ToolDescriptionVersion;
-use JayI\Cortex\Models\VirtualAgent;
-use JayI\Cortex\Models\VirtualAgentVersion;
-use JayI\Cortex\Policies\ConcreteAgentOverridePolicy;
-use JayI\Cortex\Policies\ConcreteAgentOverrideVersionPolicy;
-use JayI\Cortex\Policies\McpInstructionPolicy;
-use JayI\Cortex\Policies\McpInstructionVersionPolicy;
-use JayI\Cortex\Policies\ToolDescriptionPolicy;
-use JayI\Cortex\Policies\ToolDescriptionVersionPolicy;
-use JayI\Cortex\Policies\VirtualAgentPolicy;
-use JayI\Cortex\Policies\VirtualAgentVersionPolicy;
+use JayI\Cortex\Atrium\Features\CortexSupportFeature;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
+use JayI\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverridePolicy;
+use JayI\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverrideVersionPolicy;
+use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use JayI\Cortex\Domains\McpServer\Policies\McpInstructionPolicy;
+use JayI\Cortex\Domains\McpServer\Policies\McpInstructionVersionPolicy;
+use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
+use JayI\Cortex\Domains\Tool\Policies\ToolDescriptionPolicy;
+use JayI\Cortex\Domains\Tool\Policies\ToolDescriptionVersionPolicy;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
+use JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy;
+use JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentVersionPolicy;
 
 return [
 
@@ -54,14 +54,14 @@ return [
     */
 
     'policies' => [
-        VirtualAgent::class => VirtualAgentPolicy::class,
-        VirtualAgentVersion::class => VirtualAgentVersionPolicy::class,
-        ConcreteAgentOverride::class => ConcreteAgentOverridePolicy::class,
-        ConcreteAgentOverrideVersion::class => ConcreteAgentOverrideVersionPolicy::class,
-        ToolDescription::class => ToolDescriptionPolicy::class,
-        ToolDescriptionVersion::class => ToolDescriptionVersionPolicy::class,
-        McpInstruction::class => McpInstructionPolicy::class,
-        McpInstructionVersion::class => McpInstructionVersionPolicy::class,
+        VirtualAgentModel::class => VirtualAgentPolicy::class,
+        VirtualAgentVersionModel::class => VirtualAgentVersionPolicy::class,
+        ConcreteAgentOverrideModel::class => ConcreteAgentOverridePolicy::class,
+        ConcreteAgentOverrideVersionModel::class => ConcreteAgentOverrideVersionPolicy::class,
+        ToolDescriptionModel::class => ToolDescriptionPolicy::class,
+        ToolDescriptionVersionModel::class => ToolDescriptionVersionPolicy::class,
+        McpInstructionModel::class => McpInstructionPolicy::class,
+        McpInstructionVersionModel::class => McpInstructionVersionPolicy::class,
     ],
 
     /*
@@ -233,7 +233,7 @@ return [
     |
     | Class-based agents to manage in Cortex. Each class must implement
     | Laravel\Ai\Contracts\Agent. Registered agents can be run and attached
-    | to virtual agents as sub-agents. Extend JayI\Cortex\Agents\Agent (or
+    | to virtual agents as sub-agents. Extend JayI\Cortex\Domains\ConcreteAgent\Support\Agent (or
     | use the HasCortexOverrides trait) so the prompt and toolset published
     | in Cortex replace the ones declared in code. String keys set the
     | agent's registered name; unkeyed entries derive it from the class

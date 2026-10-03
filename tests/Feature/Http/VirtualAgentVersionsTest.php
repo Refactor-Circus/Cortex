@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Models\VirtualAgent;
+use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 it('creates a version without publishing it by default', function () {
-    VirtualAgent::factory()->published('v1')->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published('v1')->create(['slug' => 'helper']);
 
     $this->postJson(route('cortex.virtual-agents.versions.store', 'helper'), ['content' => 'v2'])
         ->assertCreated()
@@ -17,7 +17,7 @@ it('creates a version without publishing it by default', function () {
 });
 
 it('lists versions newest first', function () {
-    VirtualAgent::factory()->published('v1')->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published('v1')->create(['slug' => 'helper']);
     $this->postJson(route('cortex.virtual-agents.versions.store', 'helper'), ['content' => 'v2']);
 
     $this->getJson(route('cortex.virtual-agents.versions.index', 'helper'))
@@ -27,7 +27,7 @@ it('lists versions newest first', function () {
 });
 
 it('shows a version', function () {
-    VirtualAgent::factory()->published('v1')->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published('v1')->create(['slug' => 'helper']);
 
     $this->getJson(route('cortex.virtual-agents.versions.show', ['helper', 1]))
         ->assertOk()
@@ -37,7 +37,7 @@ it('shows a version', function () {
 });
 
 it('publishes a version', function () {
-    VirtualAgent::factory()->published('v1')->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->published('v1')->create(['slug' => 'helper']);
     $this->postJson(route('cortex.virtual-agents.versions.store', 'helper'), ['content' => 'v2']);
 
     $this->postJson(route('cortex.virtual-agents.versions.publish', ['helper', 2]))
@@ -47,7 +47,7 @@ it('publishes a version', function () {
 });
 
 it('validates version content', function () {
-    VirtualAgent::factory()->create(['slug' => 'helper']);
+    VirtualAgentModel::factory()->create(['slug' => 'helper']);
 
     $this->postJson(route('cortex.virtual-agents.versions.store', 'helper'), [])
         ->assertJsonValidationErrors(['content']);

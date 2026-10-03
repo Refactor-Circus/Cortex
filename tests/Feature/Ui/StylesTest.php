@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use JayI\Atrium\Assets\StyleRegistry;
+use JayI\Atrium\Support\StyleRegistry;
 use Symfony\Component\Finder\Finder;
 
 /**

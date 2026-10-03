@@ -3,17 +3,17 @@
 declare(strict_types=1);
 
 use Illuminate\Testing\Fluent\AssertableJson;
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Mcp\Tools\CreateConcreteAgentVersionTool;
-use JayI\Cortex\Mcp\Tools\DeleteConcreteAgentOverrideTool;
-use JayI\Cortex\Mcp\Tools\ListConcreteAgentsTool;
-use JayI\Cortex\Mcp\Tools\ListConcreteAgentVersionsTool;
-use JayI\Cortex\Mcp\Tools\PublishConcreteAgentVersionTool;
-use JayI\Cortex\Mcp\Tools\RunConcreteAgentTool;
-use JayI\Cortex\Mcp\Tools\ShowConcreteAgentTool;
-use JayI\Cortex\Mcp\Tools\UpdateConcreteAgentToolsTool;
-use JayI\Cortex\Models\ConcreteAgentOverride;
-use JayI\Cortex\Models\ConcreteAgentOverrideVersion;
+use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\CreateConcreteAgentVersionTool;
+use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\DeleteConcreteAgentOverrideTool;
+use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\ListConcreteAgentsTool;
+use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\ListConcreteAgentVersionsTool;
+use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\PublishConcreteAgentVersionTool;
+use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\RunConcreteAgentTool;
+use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\ShowConcreteAgentTool;
+use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\UpdateConcreteAgentToolsTool;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
 
 beforeEach(function () {
@@ -77,7 +77,7 @@ it('sets and clears the toolset override', function () {
 
     mcpTool(UpdateConcreteAgentToolsTool::class, ['agent' => 'echo-agent', 'tools' => null])->assertOk();
 
-    expect(ConcreteAgentOverride::query()->where('agent', 'echo-agent')->value('tools'))->toBeNull();
+    expect(ConcreteAgentOverrideModel::query()->where('agent', 'echo-agent')->value('tools'))->toBeNull();
 });
 
 it('rejects unknown tools in the override', function () {
@@ -92,8 +92,8 @@ it('deletes every override of an agent', function () {
         ->assertOk()
         ->assertSee('Concrete agent overrides deleted.');
 
-    expect(ConcreteAgentOverride::query()->count())->toBe(0)
-        ->and(ConcreteAgentOverrideVersion::query()->count())->toBe(0);
+    expect(ConcreteAgentOverrideModel::query()->count())->toBe(0)
+        ->and(ConcreteAgentOverrideVersionModel::query()->count())->toBe(0);
 });
 
 it('errors not found deleting a missing override', function () {

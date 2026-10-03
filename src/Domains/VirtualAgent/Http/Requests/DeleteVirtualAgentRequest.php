@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace JayI\Cortex\Domains\VirtualAgent\Http\Requests;
+
+use Illuminate\Http\Response;
+use JayI\Cortex\Domains\VirtualAgent\Actions\DeleteVirtualAgentAction;
+
+final class DeleteVirtualAgentRequest extends VirtualAgentRequest
+{
+    public function authorize(): bool
+    {
+        return $this->allows('delete', $this->agent());
+    }
+
+    public function persist(): Response
+    {
+        app(DeleteVirtualAgentAction::class)->execute($this->agent());
+
+        return response()->noContent();
+    }
+}

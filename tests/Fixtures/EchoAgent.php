@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace JayI\Cortex\Tests\Fixtures;
 
-use JayI\Cortex\Agents\Agent;
+use JayI\Cortex\Domains\ConcreteAgent\Support\Agent;
 
 /**
  * A concrete agent whose prompt and toolset Cortex can override.

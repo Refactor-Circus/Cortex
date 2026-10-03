@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
 use JayI\Cortex\Mcp\CortexServer;
-use JayI\Cortex\Mcp\McpServerRegistry;
-use JayI\Cortex\Models\McpInstruction;
 use JayI\Cortex\Support\PublicationCache;
 use JayI\Cortex\Tests\Fixtures\EchoServer;
 use JayI\Cortex\Tests\Fixtures\PlainServer;
@@ -12,7 +12,7 @@ use Laravel\Mcp\Server\Transport\FakeTransporter;
 
 function publishServerInstructionOverride(string $server, string $content): void
 {
-    $instruction = McpInstruction::query()->create(['server' => $server]);
+    $instruction = McpInstructionModel::query()->create(['server' => $server]);
     $version = $instruction->versions()->create(['version' => 1, 'content' => $content]);
 
     $instruction->published_version_id = $version->getKey();
@@ -40,7 +40,7 @@ it('serves the published override in the server context', function () {
 });
 
 it('keeps serving code-declared instructions while a version is only drafted', function () {
-    $instruction = McpInstruction::query()->create(['server' => 'cortex']);
+    $instruction = McpInstructionModel::query()->create(['server' => 'cortex']);
     $instruction->versions()->create(['version' => 1, 'content' => 'Draft instructions.']);
 
     $context = (new CortexServer(new FakeTransporter))->createContext();

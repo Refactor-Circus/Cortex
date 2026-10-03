@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Models\ToolDescription;
-use JayI\Cortex\Models\ToolDescriptionVersion;
+use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
 use JayI\Cortex\Tests\Fixtures\EchoTool;
-use JayI\Cortex\Tools\ToolRegistry;
 
 beforeEach(function () {
     app(ToolRegistry::class)->register('echo', EchoTool::class);
@@ -19,7 +19,7 @@ it('creates a description version for a registered tool', function () {
         ->assertJsonPath('data.version', 1)
         ->assertJsonPath('data.content', 'Echo, but described better.');
 
-    expect(ToolDescription::query()->where('tool', 'echo')->exists())->toBeTrue();
+    expect(ToolDescriptionModel::query()->where('tool', 'echo')->exists())->toBeTrue();
 });
 
 it('rejects description versions for unregistered tools', function () {
@@ -72,12 +72,12 @@ it('deletes an override and its versions', function () {
     $this->deleteJson(route('cortex.tools.description.destroy', ['tool' => 'echo']))
         ->assertNoContent();
 
-    expect(ToolDescription::query()->count())->toBe(0)
-        ->and(ToolDescriptionVersion::query()->count())->toBe(0);
+    expect(ToolDescriptionModel::query()->count())->toBe(0)
+        ->and(ToolDescriptionVersionModel::query()->count())->toBe(0);
 });
 
 it('keeps versions immutable', function () {
-    $version = ToolDescriptionVersion::factory()->create();
+    $version = ToolDescriptionVersionModel::factory()->create();
 
     $version->update(['content' => 'rewritten']);
 })->throws(LogicException::class, 'immutable');

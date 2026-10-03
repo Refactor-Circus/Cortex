@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use JayI\Atrium\Navigation\NavItem;
-use JayI\Atrium\Plugins\PluginRegistry;
+use JayI\Atrium\Domains\Navigation\Data\NavItem;
+use JayI\Atrium\Domains\Plugins\Services\PluginRegistry;
 use JayI\Cortex\Atrium\CortexPlugin;
 use JayI\Cortex\Tests\Fixtures\OrphanedSupportFeature;
 

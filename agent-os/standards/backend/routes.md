@@ -1,6 +1,6 @@
 # Route Conventions
 
-All API routes live in `routes/cortex.php` inside one group:
+Each domain's API routes live in its `src/Domains/{Domain}/routes.php`, loaded by the domain provider's `loadApiRoutesFrom()` inside one shared group:
 
 ```php
 Route::prefix($prefix)->middleware($middleware)->name('cortex.')->group(...);

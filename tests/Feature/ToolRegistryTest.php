@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Actions\ListToolsAction;
 use JayI\Cortex\Cortex;
-use JayI\Cortex\Exceptions\ToolNotFoundException;
+use JayI\Cortex\Domains\Tool\Actions\ListToolsAction;
+use JayI\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
 use JayI\Cortex\Tests\Fixtures\EchoMcpTool;
 use JayI\Cortex\Tests\Fixtures\EchoTool;
-use JayI\Cortex\Tools\ToolRegistry;
 use Laravel\Ai\Tools\McpServerTool;
 
 it('registers and resolves tools at runtime', function () {

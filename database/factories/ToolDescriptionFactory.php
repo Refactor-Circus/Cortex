@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace JayI\Cortex\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use JayI\Cortex\Models\ToolDescription;
+use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 
 /**
- * @extends Factory<ToolDescription>
+ * @extends Factory<ToolDescriptionModel>
  */
 final class ToolDescriptionFactory extends Factory
 {
-    protected $model = ToolDescription::class;
+    protected $model = ToolDescriptionModel::class;
 
     /**
      * @return array<string, mixed>

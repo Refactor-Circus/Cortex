@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Models\ConcreteAgentOverride;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
 
 beforeEach(function () {
@@ -78,7 +78,7 @@ it('sets and clears the toolset override', function () {
         ->assertOk()
         ->assertJsonPath('data.tools', null);
 
-    expect(ConcreteAgentOverride::query()->where('agent', 'echo-agent')->value('tools'))->toBeNull();
+    expect(ConcreteAgentOverrideModel::query()->where('agent', 'echo-agent')->value('tools'))->toBeNull();
 });
 
 it('rejects unknown tools and a missing tools key', function () {
@@ -95,7 +95,7 @@ it('deletes the override', function () {
 
     $this->deleteJson(route('cortex.concrete-agents.override.destroy', 'echo-agent'))->assertNoContent();
 
-    expect(ConcreteAgentOverride::query()->count())->toBe(0);
+    expect(ConcreteAgentOverrideModel::query()->count())->toBe(0);
 });
 
 it('runs a concrete agent', function () {

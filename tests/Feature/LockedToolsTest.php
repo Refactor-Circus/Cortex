@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
-use JayI\Cortex\Actions\CreateConcreteAgentVersionAction;
-use JayI\Cortex\Agents\AgentRegistry;
-use JayI\Cortex\Mcp\Tools\UpdateConcreteAgentToolsTool;
-use JayI\Cortex\Models\ConcreteAgentOverride;
+use JayI\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\UpdateConcreteAgentToolsTool;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
+use JayI\Cortex\Domains\Tool\Support\ToolName;
 use JayI\Cortex\Tests\Fixtures\EchoCortexTool;
 use JayI\Cortex\Tests\Fixtures\LockedEchoAgent;
-use JayI\Cortex\Tools\ToolName;
-use JayI\Cortex\Tools\ToolRegistry;
 
 beforeEach(function (): void {
     app(AgentRegistry::class)->register('locked-echo', LockedEchoAgent::class);
@@ -26,7 +26,7 @@ it('reports a locked agent as prompt-overridable but not tool-overridable', func
 
 it('keeps the code toolset even when an override row holds tools', function (): void {
     // A row saved before the class was locked must not leak back in.
-    ConcreteAgentOverride::query()->create(['agent' => 'locked-echo', 'tools' => ['echo-cortex']]);
+    ConcreteAgentOverrideModel::query()->create(['agent' => 'locked-echo', 'tools' => ['echo-cortex']]);
 
     $tools = array_map(ToolName::of(...), [...app(LockedEchoAgent::class)->tools()]);
 
@@ -50,7 +50,7 @@ it('rejects toolset overrides over HTTP and MCP but allows clearing', function (
 
     $this->putJson(route('cortex.concrete-agents.tools.update', 'locked-echo'), ['tools' => null])->assertOk();
 
-    expect(ConcreteAgentOverride::query()->value('tools'))->toBeNull();
+    expect(ConcreteAgentOverrideModel::query()->value('tools'))->toBeNull();
 });
 
 it('shows the toolset as locked on the dashboard', function (): void {

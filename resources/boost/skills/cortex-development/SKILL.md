@@ -49,7 +49,7 @@ The API routes, dashboard, and MCP server manage **and execute** agents. MCP tra
 ],
 ```
 
-Every API endpoint and MCP tool that touches a model is also checked through the Gate against `cortex.policies`, as the signed-in user or as a guest. Cortex records have no owner, so the bundled policies allow everything and the middleware stays the gate. To restrict something, extend the bundled policy (e.g. `JayI\Cortex\Policies\VirtualAgentPolicy`), override the ability (`update`, `delete`, `publish`, `run`, ...) and point the model at it in `cortex.policies`. Version policies defer to their virtual agent or override: `view` to read, `update` to add or publish. Type the user parameter as non-nullable to refuse guests.
+Every API endpoint and MCP tool that touches a model is also checked through the Gate against `cortex.policies`, as the signed-in user or as a guest. Cortex records have no owner, so the bundled policies allow everything and the middleware stays the gate. To restrict something, extend the bundled policy (e.g. `JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy`), override the ability (`update`, `delete`, `publish`, `run`, ...) and point the model at it in `cortex.policies`. Version policies defer to their virtual agent or override: `view` to read, `update` to add or publish. Type the user parameter as non-nullable to refuse guests.
 
 ### 3. Enable the dashboard (optional)
 
@@ -66,9 +66,9 @@ Gate::define('viewAtrium', fn ($user) => $user->is_admin);
 
 Without a `viewAtrium` gate Atrium allows the `local` environment only. Set `'ui' => ['enabled' => false]` to leave Cortex out of the dashboard; the JSON API keeps serving.
 
-The pages check the same policies as the API (`JayI\Cortex\Http\Ui\ScreenAccess`): each page and action answers 403 when refused, and each navigation item, button, form and card shows only when its action is allowed. In published or custom views, gate a control with `@cortexCan('ability', $subject, [$arguments])` ... `@endcortexCan`, asked exactly as the action asks. Actions are `<x-atrium::icon-button>`s and states are `<x-atrium::status-dot>`s coloured by `JayI\Cortex\Atrium\Badges::forStatus()`.
+The pages check the same policies as the API (`JayI\Cortex\Atrium\ScreenAccess`): each page and action answers 403 when refused, and each navigation item, button, form and card shows only when its action is allowed. In published or custom views, gate a control with `@cortexCan('ability', $subject, [$arguments])` ... `@endcortexCan`, asked exactly as the action asks. Actions are `<x-atrium::icon-button>`s and states are `<x-atrium::status-dot>`s coloured by `JayI\Cortex\Atrium\Badges::forStatus()`.
 
-With `jayi/pennantplus` installed, `JayI\Cortex\Features\CortexSupportFeature` switches Cortex in Atrium on and off as a whole (global value only; pages 404 while off). Configure the list in `cortex.atrium.features`; feature classes that cannot load are skipped.
+With `jayi/pennantplus` installed, `JayI\Cortex\Atrium\Features\CortexSupportFeature` switches Cortex in Atrium on and off as a whole (global value only; pages 404 while off). Configure the list in `cortex.atrium.features`; feature classes that cannot load are skipped.
 
 ### 4. Register tools
 
@@ -88,16 +88,16 @@ Cortex::tools()->register('search', \App\Ai\Tools\SearchTool::class);
 
 Tag tools to group them in the dashboard and agent tool pickers: `Cortex::tools()->register($name, $class, ['catalog'])`, a config entry `'lookup' => ['class' => LookupTool::class, 'tags' => ['catalog']]`, or namespace patterns under `cortex.tool_tags.namespaces` (default `App\\Domains\\{tag}\\` and `App\\Modules\\{tag}\\`, `{tag}` = one namespace segment, kebab-cased). Packages registering their own tools should tag them with the package name. Filter with `GET /cortex/tools?tag=` or the `list-tools-tool` `tag` argument.
 
-To let a tool's description be overridden at runtime (versioned + published like agent prompts), extend `JayI\Cortex\Tools\Tool` or use the `JayI\Cortex\Tools\Concerns\HasVersionedDescription` trait. Manage overrides from the dashboard or `/cortex/tools/{tool}/description` endpoints.
+To let a tool's description be overridden at runtime (versioned + published like agent prompts), extend `JayI\Cortex\Domains\Tool\Support\Tool` or use the `JayI\Cortex\Domains\Tool\Concerns\HasVersionedDescription` trait. Manage overrides from the dashboard or `/cortex/tools/{tool}/description` endpoints.
 
-MCP server *instructions* work the same way. Cortex's own server is always registered as `cortex`; register app servers under `cortex.mcp.servers` config (string keys name them; unkeyed entries derive the name from `#[Name]` or the class basename) or at runtime with `Cortex::servers()->register('support', \App\Mcp\SupportServer::class)`. For published overrides to be served to MCP clients, the server must extend `JayI\Cortex\Mcp\Server` or use the `JayI\Cortex\Mcp\Concerns\HasVersionedInstructions` trait.
+MCP server *instructions* work the same way. Cortex's own server is always registered as `cortex`; register app servers under `cortex.mcp.servers` config (string keys name them; unkeyed entries derive the name from `#[Name]` or the class basename) or at runtime with `Cortex::servers()->register('support', \App\Mcp\SupportServer::class)`. For published overrides to be served to MCP clients, the server must extend `JayI\Cortex\Domains\McpServer\Support\Server` or use the `JayI\Cortex\Domains\McpServer\Concerns\HasVersionedInstructions` trait.
 
 ### 5. Register concrete agents
 
-Class-based agents extend `JayI\Cortex\Agents\Agent` and declare `defaultInstructions()` and `defaultTools()`:
+Class-based agents extend `JayI\Cortex\Domains\ConcreteAgent\Support\Agent` and declare `defaultInstructions()` and `defaultTools()`:
 
 ```php
-use JayI\Cortex\Agents\Agent;
+use JayI\Cortex\Domains\ConcreteAgent\Support\Agent;
 
 class TriageAgent extends Agent
 {
@@ -113,7 +113,7 @@ class TriageAgent extends Agent
 }
 ```
 
-Register under `cortex.agents` config (string keys name them; unkeyed entries use the kebab-cased class basename) or with `Cortex::agents()->register('triage', TriageAgent::class)`. The agent then runs everywhere with the published Cortex prompt override and toolset override when they exist. The toolset override picks from the class's own tools and registered Cortex tools and stores registered names; unresolvable names are skipped at run time. Add `#[JayI\Cortex\Agents\Attributes\LockedTools]` to keep the code toolset: Cortex then rejects toolset overrides (only `null` is accepted) and ignores saved ones, while the prompt stays overridable. Use the `JayI\Cortex\Agents\Concerns\HasCortexOverrides` trait if the class cannot extend the base. Registered agents without it can still be listed, run and used as sub-agents, but ignore overrides.
+Register under `cortex.agents` config (string keys name them; unkeyed entries use the kebab-cased class basename) or with `Cortex::agents()->register('triage', TriageAgent::class)`. The agent then runs everywhere with the published Cortex prompt override and toolset override when they exist. The toolset override picks from the class's own tools and registered Cortex tools and stores registered names; unresolvable names are skipped at run time. Add `#[JayI\Cortex\Domains\ConcreteAgent\Support\LockedTools]` to keep the code toolset: Cortex then rejects toolset overrides (only `null` is accepted) and ignores saved ones, while the prompt stays overridable. Use the `JayI\Cortex\Domains\ConcreteAgent\Concerns\HasCortexOverrides` trait if the class cannot extend the base. Registered agents without it can still be listed, run and used as sub-agents, but ignore overrides.
 
 ### 6. Manage agents via the API (or MCP tools)
 
@@ -151,14 +151,14 @@ Provider/model/settings fall back to the app's `config/ai.php` defaults when uns
 
 ### 8. React to changes
 
-- Model events: one class per Eloquent hook per model, e.g. `JayI\Cortex\Events\Model\VirtualAgentVersionCreatedEvent` (`$event->version`).
+- Model events: one class per Eloquent hook per model, e.g. `JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionCreatedEvent` (`$event->version`).
 - Action events: a start and a finish event per action, e.g. `VirtualAgentVersionPublishingActionEvent` then `VirtualAgentVersionPublishedActionEvent` (`$event->agent`), or `VirtualAgentRunningActionEvent` then `VirtualAgentRanActionEvent` (`$event->agent`, `$event->input`, `$event->response`). Finish events fire after commit and only on success.
 - Listen to `JayI\Cortex\Contracts\ActionFinishedEvent` or `ModelLifecycleEvent` to see a whole family. In tests, fake only the events you assert on: `Event::fake([VirtualAgentVersionPublishedActionEvent::class])`.
 
 ### 9. Test the integration
 
 ```php
-use JayI\Cortex\Runtime\DbAgent;
+use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
 
 DbAgent::fake(['Canned response.']);      // virtual agents
 TriageAgent::fake(['Canned triage.']);    // concrete agents fake through their own class

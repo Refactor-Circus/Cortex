@@ -269,7 +269,7 @@ final class CreatePromptTool extends Tool
 }
 ```
 
-- Extend `JayI\Cortex\Tools\Tool` (not Laravel's directly) — gives versioned description support
+- Extend `JayI\Cortex\Domains\Tool\Support\Tool` (not Laravel's directly) — gives versioned description support
 - Request class: `rules()` returns `SomeAction::rules()` (plus slug lookup rules), `handle(array $validated)` resolves the action — deliberate mirror of the HTTP FormRequest `persist()` pattern: same mental model and test shape on both surfaces
 - Base `Mcp\Request::persist()` centralizes authorize → validate → not-found handling; never re-implement in a tool
 - Never put queries or action calls in `Tool::handle()` — always delegate

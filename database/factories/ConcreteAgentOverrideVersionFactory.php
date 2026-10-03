@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace JayI\Cortex\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use JayI\Cortex\Models\ConcreteAgentOverride;
-use JayI\Cortex\Models\ConcreteAgentOverrideVersion;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 
 /**
- * @extends Factory<ConcreteAgentOverrideVersion>
+ * @extends Factory<ConcreteAgentOverrideVersionModel>
  */
 final class ConcreteAgentOverrideVersionFactory extends Factory
 {
-    protected $model = ConcreteAgentOverrideVersion::class;
+    protected $model = ConcreteAgentOverrideVersionModel::class;
 
     /**
      * @return array<string, mixed>
@@ -21,7 +21,7 @@ final class ConcreteAgentOverrideVersionFactory extends Factory
     public function definition(): array
     {
         return [
-            'concrete_agent_override_id' => ConcreteAgentOverride::factory(),
+            'concrete_agent_override_id' => ConcreteAgentOverrideModel::factory(),
             'version' => 1,
             'content' => fake()->paragraph(),
         ];
