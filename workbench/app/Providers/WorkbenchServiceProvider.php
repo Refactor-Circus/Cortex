@@ -2,6 +2,8 @@
 
 namespace Workbench\App\Providers;
 
+use Illuminate\Contracts\Http\Kernel as HttpKernel;
+use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Workbench\App\Ai\Agents\CatalogAgent;
@@ -14,6 +16,7 @@ use Workbench\App\Domains\Orders\Tools\LookupOrderTool;
 use Workbench\App\Domains\Orders\Tools\RefundOrderTool;
 use Workbench\App\Domains\Support\Tools\CreateTicketTool;
 use Workbench\App\Domains\Support\Tools\SearchKnowledgeBaseTool;
+use Workbench\App\Http\Middleware\SignInWorkbenchUser;
 use Workbench\App\Mcp\Servers\CatalogServer;
 use Workbench\App\Mcp\Servers\SupportServer;
 use Workbench\App\Models\User;
@@ -77,6 +80,13 @@ class WorkbenchServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Keep the workbench user signed in whatever URL is opened first.
+        $this->callAfterResolving(HttpKernel::class, function (HttpKernel $kernel): void {
+            if ($kernel instanceof Kernel) {
+                $kernel->appendMiddlewareToGroup('web', SignInWorkbenchUser::class);
+            }
+        });
+
         // A real application defines a real gate; the demo user may see it all.
         Gate::define('viewAtrium', fn ($user = null): bool => true);
     }
