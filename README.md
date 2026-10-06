@@ -123,6 +123,10 @@ Each page, action and control is checked against the same policies as the API: a
 
 The screens follow Atrium's screen conventions: actions are icon buttons with their label as tooltip, states (override or code, published, locked) are status dots with a `data-status` attribute, and every navigation item has an icon. `JayI\Cortex\Atrium\Badges` maps each state to its colour.
 
+Cortex ships no stylesheet and no components of its own: its views use Atrium's components (`search-input`, `chip`, `flash`, form controls, tables, cards) and the utilities Atrium compiles. A test asserts it with `JayI\Atrium\Testing\AtriumStyles`.
+
+With an audit log such as [jayi/keen](https://github.com/jayjfletcher/Keen) installed, the screens show history through Atrium's `<x-atrium::audit-trail>`: the virtual agents list shows all of Cortex's, and a virtual agent, a tool description, an MCP server instruction or a concrete agent override shows its own, below its versions. Without an audit log nothing is shown.
+
 To switch Cortex in the dashboard on and off as a whole - navigation, search, settings and pages, which answer `404` while it is off - install [jayi/pennantplus](https://github.com/jayjfletcher/PennantPlus). `JayI\Cortex\Atrium\Features\CortexSupportFeature` is on until its global value is set, and only its global value counts:
 
 ```php

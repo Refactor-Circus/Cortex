@@ -42,6 +42,10 @@ backend:
   sub-agents:
     description: Recursive sub-agent tools with dual cycle guards
 
+frontend:
+  atrium-screens:
+    description: "Views use only x-atrium components and safelisted utilities; audit-trail for history"
+
 database:
   immutable-versions:
     description: Version rows never edited; model hook throws, new row per version

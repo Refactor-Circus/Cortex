@@ -68,6 +68,8 @@ Without a `viewAtrium` gate Atrium allows the `local` environment only. Set `'ui
 
 The pages check the same policies as the API (`JayI\Cortex\Atrium\ScreenAccess`): each page and action answers 403 when refused, and each navigation item, button, form and card shows only when its action is allowed. In published or custom views, gate a control with `@cortexCan('ability', $subject, [$arguments])` ... `@endcortexCan`, asked exactly as the action asks. Actions are `<x-atrium::icon-button>`s and states are `<x-atrium::status-dot>`s coloured by `JayI\Cortex\Atrium\Badges::forStatus()`.
 
+Cortex ships no CSS: views use only `x-atrium::*` components (`search-input`, `chip` with `x-bind:aria-pressed`, `form.checkbox bare`, `flash :keys="['prompt', 'agent']"`, `audit-trail`) and Atrium's safelisted utilities, checked by `AtriumStyles::missingClasses()` / `inlineStyles()`. `<x-atrium::audit-trail source="cortex" />` sits on the virtual agents list, and `:subject` versions on the virtual agent form and the override screens (tool description, server instructions, concrete agent); it renders nothing until an audit log (jayi/keen) is installed.
+
 With `jayi/pennantplus` installed, `JayI\Cortex\Atrium\Features\CortexSupportFeature` switches Cortex in Atrium on and off as a whole (global value only; pages 404 while off). Configure the list in `cortex.atrium.features`; feature classes that cannot load are skipped.
 
 ### 4. Register tools

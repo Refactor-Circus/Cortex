@@ -25,7 +25,7 @@ src/Domains/{Domain}/
 
 ## Registration
 
-- `CortexServiceProvider` (the class in `extra.laravel.providers`) extends Foundation's `PackageServiceProvider`. It merges the config, registers the package (`definition()`, `registerPackage()`), registers `JayI\Cortex\Domains\DomainServiceProvider`, and keeps cross-cutting wiring: the `Cortex` singleton, policies, the Atrium plugin and the Cortex MCP server through the base helpers, the history route (`loadHistoryRoutes()`), views, styles, translations and publish tags.
+- `CortexServiceProvider` (the class in `extra.laravel.providers`) extends Foundation's `PackageServiceProvider`. It merges the config, registers the package (`definition()`, `registerPackage()`), registers `JayI\Cortex\Domains\DomainServiceProvider`, and keeps cross-cutting wiring: the `Cortex` singleton, policies, the Atrium plugin and the Cortex MCP server through the base helpers, the history route (`loadHistoryRoutes()`), views, translations and publish tags.
 - `DomainServiceProvider` lists every domain provider in a private `$providers` array and registers them in a loop.
 - A domain provider binds its own services, keeps its morph aliases and loads its `routes.php` with `loadApiRoutesFrom()`, which skips the routes unless `cortex.routes.enabled` is true.
 

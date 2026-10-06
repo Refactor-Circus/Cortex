@@ -9,7 +9,7 @@
     </x-atrium::page-header>
 
     <div class="mt-5">
-        @include('cortex::ui.partials.status')
+        <x-atrium::flash :keys="['prompt', 'agent']" class="mb-4" />
 
         @if ($agents->isEmpty())
             <x-atrium::empty-state :title="__('cortex::cortex.no_agents')" />
@@ -73,5 +73,7 @@
                 <x-atrium::pagination :paginator="$agents" />
             </div>
         @endif
+
+        <x-atrium::audit-trail source="cortex" class="mt-5" />
     </div>
 </x-atrium::layout>

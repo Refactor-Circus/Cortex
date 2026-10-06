@@ -24,6 +24,15 @@ Cortex stands on `jayi/foundation`, the shared runtime of the jayi suite; read i
 - `Http\Request` and `Mcp\Request` extend Foundation's request bases but keep Cortex's authorization: every check goes to the Gate, as the signed-in user or as a guest, and the bundled policies allow guests. Do not switch them to Foundation's `authorization` switch.
 - `Mcp\CortexServer` extends `JayI\Foundation\Mcp\Server` and lists every tool in `TOOLS`, including `Mcp\Tools\ListCortexHistoryTool`. Cortex's own tools extend `JayI\Foundation\Mcp\Tool`; `Domains\Tool\Support\Tool` and `Domains\McpServer\Support\Server` are for application tools and servers.
 
+## Frontend
+
+Atrium owns every component and style; Cortex ships no `resources/css`, no `Atrium::css()` call and no component namespace. See `agent-os/standards/frontend/atrium-screens.md`.
+
+- Views use only `x-atrium::*` components and the utilities Atrium safelists. No `<style>` blocks and no `style=` attributes. `tests/Feature/Ui/StylesTest.php` checks this with `JayI\Atrium\Testing\AtriumStyles`.
+- Status and errors use `<x-atrium::flash :keys="['prompt', 'agent']" />`; tag filters are `x-atrium::chip`s; searches are `x-atrium::search-input`.
+- History is `<x-atrium::audit-trail source="cortex" />`, with `:subject` on a record's screen. The content-versions partial stays, since versions are publishable content.
+- `CortexPlugin::features()` uses Atrium's `featuresFromConfig()`. Cortex keeps its own `Atrium\ScreenAccess` and `AuthorizesScreens`: Atrium's copies follow Foundation's `authorization` switch and refuse guests, while Cortex asks the Gate as the signed-in user or as a guest, with extra arguments.
+
 ## Quick Commands
 
 - Full validation: `composer test`

@@ -4,7 +4,7 @@
      unsaved one, that the policies are asked about, and $versionClass its version model. Each card shows
      only when the action behind it would be allowed. --}}
 <div class="mt-5 flex flex-col gap-5" x-data="{ expanded: null }">
-    @include('cortex::ui.partials.status')
+    <x-atrium::flash :keys="['prompt', 'agent']" />
 
     <x-atrium::card :title="$liveTitle ?? __('cortex::cortex.live_description')">
         <div class="mb-3 flex items-center gap-2">
@@ -53,5 +53,10 @@
                 <x-atrium::icon-button icon="trash" :label="__('cortex::cortex.remove_override')" variant="danger" type="submit" data-testid="remove-override" />
             </form>
         </x-atrium::card>
+    @endif
+
+    {{-- The override's own history; versions above are its publishable content. --}}
+    @if ($override)
+        <x-atrium::audit-trail source="cortex" :subject="$override" />
     @endif
 </div>

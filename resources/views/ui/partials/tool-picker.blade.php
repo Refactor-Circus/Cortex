@@ -24,11 +24,11 @@
      x-on:change="count()"
      data-testid="tool-picker">
     <div class="flex flex-wrap items-center gap-2">
-        <input type="search" x-model="search" placeholder="{{ __('cortex::cortex.search_tools') }}"
-               class="w-full max-w-sm rounded-radius border border-outline bg-surface-alt px-2 py-1.5 text-sm dark:border-outline-dark dark:bg-surface-dark-alt/50" />
+        <x-atrium::search-input x-model="search" :placeholder="__('cortex::cortex.search_tools')" data-testid="tool-search" />
 
-        <label class="flex items-center gap-2 text-sm">
-            <input type="checkbox" x-model="selectedOnly" class="size-4 accent-primary dark:accent-primary-dark" />
+        {{-- A view filter, not a form field: it has no name, so it is never submitted. --}}
+        <label class="flex cursor-pointer items-center gap-2 text-sm">
+            <x-atrium::form.checkbox bare name="" :id="$idPrefix.'selected-only'" x-model="selectedOnly" data-testid="selected-only" />
             {{ __('cortex::cortex.selected_only') }}
         </label>
 
@@ -37,17 +37,14 @@
 
     @if ($pickerTags !== [])
         <div class="flex flex-wrap gap-2" data-testid="tool-tags">
-            <button type="button" x-on:click="tag = null"
-                    class="rounded-full px-2 py-0.5 text-xs font-medium"
-                    x-bind:class="tag === null ? 'bg-primary text-on-primary dark:bg-primary-dark dark:text-on-primary-dark' : 'bg-surface-alt text-on-surface dark:bg-surface-dark-alt dark:text-on-surface-dark'">
+            <x-atrium::chip :active="true" x-on:click="tag = null" x-bind:aria-pressed="tag === null" data-testid="picker-tag-all">
                 {{ __('cortex::cortex.all_tags') }}
-            </button>
+            </x-atrium::chip>
             @foreach ($pickerTags as $pickerTag)
-                <button type="button" x-on:click="tag = tag === @js($pickerTag) ? null : @js($pickerTag)"
-                        class="rounded-full px-2 py-0.5 text-xs font-medium"
-                        x-bind:class="tag === @js($pickerTag) ? 'bg-primary text-on-primary dark:bg-primary-dark dark:text-on-primary-dark' : 'bg-surface-alt text-on-surface dark:bg-surface-dark-alt dark:text-on-surface-dark'">
+                <x-atrium::chip x-on:click="tag = tag === {{ Js::from($pickerTag) }} ? null : {{ Js::from($pickerTag) }}"
+                                x-bind:aria-pressed="tag === {{ Js::from($pickerTag) }}" data-testid="picker-tag-{{ $pickerTag }}">
                     {{ $pickerTag }}
-                </button>
+                </x-atrium::chip>
             @endforeach
         </div>
     @endif

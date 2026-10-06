@@ -2,7 +2,7 @@
     <x-atrium::page-header :title="__('cortex::cortex.concrete_agents')" :description="__('cortex::cortex.concrete_agents_description')" />
 
     <div class="mt-5">
-        @include('cortex::ui.partials.status')
+        <x-atrium::flash :keys="['prompt', 'agent']" class="mb-4" />
 
         @if ($agents === [])
             <x-atrium::empty-state :title="__('cortex::cortex.no_concrete_agents')" />

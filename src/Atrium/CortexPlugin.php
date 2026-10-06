@@ -26,7 +26,6 @@ use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
 use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
 use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use Throwable;
 
 /**
  * Registers Cortex inside the Atrium dashboard.
@@ -36,16 +35,6 @@ use Throwable;
  */
 class CortexPlugin extends Plugin
 {
-    public function key(): string
-    {
-        return 'cortex';
-    }
-
-    public function label(): string
-    {
-        return 'Cortex';
-    }
-
     /**
      * Features from `cortex.atrium.features` that switch Cortex in Atrium on
      * and off as a whole. A feature class that cannot be loaded, such as
@@ -55,26 +44,7 @@ class CortexPlugin extends Plugin
      */
     public function features(): array
     {
-        $features = config('cortex.atrium.features', []);
-
-        return array_values(array_filter(
-            is_array($features) ? $features : [],
-            fn (mixed $feature): bool => is_string($feature) && (! str_contains($feature, '\\') || self::classLoads($feature)),
-        ));
-    }
-
-    /**
-     * Whether a class can be loaded. Autoloading CortexSupportFeature without
-     * jayi/pennantplus throws, because its parent class is missing, so that
-     * counts as not installed rather than an error.
-     */
-    private static function classLoads(string $class): bool
-    {
-        try {
-            return class_exists($class);
-        } catch (Throwable) {
-            return false;
-        }
+        return $this->featuresFromConfig('cortex.atrium.features');
     }
 
     /**

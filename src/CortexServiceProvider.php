@@ -6,7 +6,6 @@ namespace JayI\Cortex;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
-use JayI\Atrium\Support\StyleRegistry;
 use JayI\Cortex\Atrium\CortexPlugin;
 use JayI\Cortex\Atrium\ScreenAccess;
 use JayI\Cortex\Domains\DomainServiceProvider;
@@ -103,12 +102,6 @@ class CortexServiceProvider extends PackageServiceProvider
         $this->loadHistoryRoutes();
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'cortex');
-
-        // Utilities the Atrium screens use that Atrium's stylesheet lacks.
-        $this->callAfterResolving(StyleRegistry::class, fn (StyleRegistry $styles): StyleRegistry => $styles->css(
-            (string) file_get_contents(__DIR__.'/../resources/css/atrium.css'),
-            'cortex',
-        ));
 
         // @cortexCan('update', $agent) ... @endcortexCan: the screens' own
         // policy check, so a control shows only when its action is allowed.

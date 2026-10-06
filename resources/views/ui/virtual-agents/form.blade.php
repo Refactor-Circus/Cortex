@@ -22,7 +22,7 @@
     </x-atrium::page-header>
 
     <div class="mt-5 flex max-w-2xl flex-col gap-5" x-data="{ expanded: null }">
-        @include('cortex::ui.partials.status')
+        <x-atrium::flash :keys="['prompt', 'agent']" />
 
         <x-atrium::card>
             <form method="POST"
@@ -144,6 +144,10 @@
                 'publishedVersion' => $agent->publishedVersion?->version,
                 'publishRoute' => fn (int $version) => route('atrium.cortex.virtual-agents.versions.publish', [$agent->slug, $version]),
             ])
+        @endif
+
+        @if ($editing)
+            <x-atrium::audit-trail source="cortex" :subject="$agent" />
         @endif
     </div>
 

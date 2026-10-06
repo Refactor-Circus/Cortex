@@ -235,11 +235,14 @@
 - Dashboard permission gates: every Atrium page, action and control is checked against the `cortex.policies` policies exactly as the JSON API and MCP tools check them, through `JayI\Cortex\Http\Ui\ScreenAccess` and the new `@cortexCan` Blade conditional. Navigation items, buttons, forms and cards are shown only when their action would be allowed, the run page offers only the agents the user may `run`, and search returns only what the searcher may view.
 - `JayI\Cortex\Features\CortexSupportFeature` (needs `jayi/pennantplus`, suggested) and the `cortex.atrium.features` config: switch Cortex in Atrium on and off as a whole. Feature classes that cannot be loaded are skipped.
 - `JayI\Cortex\Atrium\Badges` maps each dashboard state to its Atrium colour.
+- Per-record history on the dashboard: `<x-atrium::audit-trail>` shows Cortex's audit entries on the virtual agents list, and each virtual agent's, tool description's, MCP server instruction's and concrete agent override's own entries on its screen. Nothing renders until an audit log such as jayi/keen is installed.
 
 ### Changed
 
+- The Atrium screens use Atrium's components only: searches are `x-atrium::search-input`, tag filters are `x-atrium::chip`s (linked on the tool list, Alpine-driven in the tool pickers), the picker's "selected only" box is a bare `x-atrium::form.checkbox`, and the status and first prompt or agent error come from `<x-atrium::flash :keys="['prompt', 'agent']" />`.
+- `CortexPlugin::features()` uses Atrium's `featuresFromConfig()`, and the plugin's `key()` / `label()` come from Atrium's base derivation (still `cortex` / `Cortex`).
 - The Run agent navigation item and page follow `viewAny` on either kind of agent, so building the dashboard navigation no longer queries every agent; the page lists the agents the user may run, or says there are none.
-- The Atrium screens follow Atrium's screen conventions: actions, tabs and back links are icon buttons (the label is the tooltip and accessible name), states are status dots carrying `data-status`, and every navigation item has a Heroicons icon. Tool tag filters are linked badges. Requires `jayi/atrium` at f5eb488 or later.
+- The Atrium screens follow Atrium's screen conventions: actions, tabs and back links are icon buttons (the label is the tooltip and accessible name), states are status dots carrying `data-status`, and every navigation item has a Heroicons icon. Tool tag filters are linked chips. Requires `jayi/atrium` at f5eb488 or later.
 - The dashboard pages now authorize: before, they ran actions without asking the policies the API asks.
 
 - The dashboard is server-rendered Blade built on `jayi/atrium`, which Cortex now requires, replacing the Vue 3 SPA. Cortex registers an Atrium plugin with navigation, routes under `/atrium/cortex/...`, search over virtual and concrete agents, and a settings panel. Atrium owns the path, middleware and `viewAtrium` gate, so the `ui.auth` config, the `UiTokenResolver` contract and the `/cortex/ui` route are gone; `ui.enabled` remains as the switch.
@@ -247,13 +250,14 @@
 
 ### Removed
 
+- `resources/css/atrium.css` and its registration through Atrium's style hook: Cortex ships no styles, and every class its views use comes from Atrium's stylesheet.
+- The `cortex::ui.partials.status` view, replaced by Atrium's `flash` component.
 - The TypeScript SDK (`@jayi/cortex-sdk`, `sdk/`), its npm workspace and `sdk:generate`/`sdk:build` scripts, and the `dedoc/scramble` dev dependency that exported its OpenAPI spec.
 - The `cortex-assets` publish tag and the empty `public/` directory it published. The dashboard is Blade rendered through Atrium and ships no assets of its own.
 - The skeleton `cortex:placeholder` Artisan command and the `cortex::messages.placeholder` translation.
 
 ### Fixed
 
-- The Atrium screens' utilities that Atrium's stylesheet lacks are generated into `resources/css/atrium.css` and added through Atrium's style hook, so they take effect.
 - Agents calling an MCP tool whose `handle()` type-hints its own `Laravel\Mcp\Request` subclass now pass their arguments to it. Previously laravel/ai's `McpServerTool` bound the arguments only as the base request, so such tools, including Cortex's own MCP tools, received an empty request and failed validation.
 
 

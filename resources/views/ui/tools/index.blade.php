@@ -3,16 +3,14 @@
 
     <div class="mt-5 flex flex-col gap-4" x-data="{ search: '' }">
         @if ($tags !== [])
-            {{-- The tag filter is a query string, so a filtered list can be linked to.
-                 Tags are named, so they are linked badges, like the tags in the table. --}}
+            {{-- The tag filter is a query string, so a filtered list can be linked to:
+                 each tag is a linked chip, pressed when it is the current filter. --}}
             <div class="flex flex-wrap items-center gap-2" data-testid="tool-tags">
-                <a href="{{ route('atrium.cortex.tools.index') }}" data-testid="tag-all" @if ($tag === null) aria-current="true" @endif>
-                    <x-atrium::badge :variant="$tag === null ? 'primary' : 'neutral'">{{ __('cortex::cortex.all_tags') }}</x-atrium::badge>
-                </a>
+                <x-atrium::chip :href="route('atrium.cortex.tools.index')" :active="$tag === null" data-testid="tag-all"
+                                :aria-current="$tag === null ? 'true' : null">{{ __('cortex::cortex.all_tags') }}</x-atrium::chip>
                 @foreach ($tags as $option)
-                    <a href="{{ route('atrium.cortex.tools.index', ['tag' => $option]) }}" data-testid="tag-{{ $option }}" @if ($tag === $option) aria-current="true" @endif>
-                        <x-atrium::badge :variant="$tag === $option ? 'primary' : 'neutral'">{{ $option }}</x-atrium::badge>
-                    </a>
+                    <x-atrium::chip :href="route('atrium.cortex.tools.index', ['tag' => $option])" :active="$tag === $option" data-testid="tag-{{ $option }}"
+                                    :aria-current="$tag === $option ? 'true' : null">{{ $option }}</x-atrium::chip>
                 @endforeach
             </div>
         @endif
@@ -20,8 +18,7 @@
         @if ($tools === [])
             <x-atrium::empty-state :title="$tag === null ? __('cortex::cortex.no_tools') : __('cortex::cortex.no_tools_tagged', ['tag' => $tag])" />
         @else
-            <input type="search" x-model="search" placeholder="{{ __('cortex::cortex.search_tools') }}"
-                   class="w-full max-w-sm rounded-radius border border-outline bg-surface-alt px-2 py-1.5 text-sm dark:border-outline-dark dark:bg-surface-dark-alt/50" />
+            <x-atrium::search-input x-model="search" :placeholder="__('cortex::cortex.search_tools')" data-testid="tool-search" />
 
             <x-atrium::table striped>
                 <x-slot:head>
