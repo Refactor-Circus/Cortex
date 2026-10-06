@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace JayI\Cortex\Domains\VirtualAgent\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use JayI\Cortex\Domains\Tool\Support\Tool;
 use JayI\Cortex\Domains\VirtualAgent\Mcp\Requests\ListVirtualAgentsMcpRequest;
+use JayI\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;

@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace JayI\Cortex\Http;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
-use Symfony\Component\HttpFoundation\Response;
+use JayI\Foundation\Http\Requests\Request as FoundationRequest;
 
 /**
  * Base HTTP request.
@@ -15,26 +14,18 @@ use Symfony\Component\HttpFoundation\Response;
  * Validation rules come from the Action the request wraps, and `persist()`
  * calls that same Action. Each request's `authorize()` checks the model it
  * touches against the policies in `cortex.policies`.
+ *
+ * Unlike the shared runtime's `authorization` switch, Cortex always asks the
+ * Gate, as the authenticated user or as a guest: its bundled policies allow
+ * guests, so the route middleware stays the gate until an application
+ * registers stricter ones.
  */
-abstract class Request extends FormRequest
+abstract class Request extends FoundationRequest
 {
     public function authorize(): bool
     {
         return true;
     }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function rules(): array
-    {
-        return [];
-    }
-
-    /**
-     * Execute the request's use case and build the response.
-     */
-    abstract public function persist(): Response;
 
     /**
      * Check an ability against the model's policy from `cortex.policies`, as

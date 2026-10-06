@@ -18,7 +18,6 @@ use JayI\Cortex\Domains\McpServer\Mcp\Tools\ListServerInstructionVersionsTool;
 use JayI\Cortex\Domains\McpServer\Mcp\Tools\ListServersTool;
 use JayI\Cortex\Domains\McpServer\Mcp\Tools\PublishServerInstructionVersionTool;
 use JayI\Cortex\Domains\McpServer\Mcp\Tools\ShowServerInstructionsTool;
-use JayI\Cortex\Domains\McpServer\Support\Server;
 use JayI\Cortex\Domains\Tool\Mcp\Tools\ListToolsTool;
 use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentTool;
 use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentVersionTool;
@@ -30,6 +29,8 @@ use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\RunVirtualAgentTool;
 use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentTool;
 use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentVersionTool;
 use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\UpdateVirtualAgentTool;
+use JayI\Cortex\Mcp\Tools\ListCortexHistoryTool;
+use JayI\Foundation\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Version;
@@ -42,44 +43,52 @@ use Laravel\Mcp\Server\Tools\ToolSearch;
 final class CortexServer extends Server
 {
     /**
+     * Every tool the server offers, behind ToolSearch.
+     *
+     * @var array<int, class-string<Tool>>
+     */
+    public const array TOOLS = [
+        // Virtual agents
+        ListVirtualAgentsTool::class,
+        CreateVirtualAgentTool::class,
+        ShowVirtualAgentTool::class,
+        UpdateVirtualAgentTool::class,
+        DeleteVirtualAgentTool::class,
+        RunVirtualAgentTool::class,
+
+        // Virtual agent prompt versions
+        ListVirtualAgentVersionsTool::class,
+        CreateVirtualAgentVersionTool::class,
+        ShowVirtualAgentVersionTool::class,
+        PublishVirtualAgentVersionTool::class,
+
+        // Concrete agents
+        ListConcreteAgentsTool::class,
+        ShowConcreteAgentTool::class,
+        RunConcreteAgentTool::class,
+        ListConcreteAgentVersionsTool::class,
+        CreateConcreteAgentVersionTool::class,
+        PublishConcreteAgentVersionTool::class,
+        UpdateConcreteAgentToolsTool::class,
+        DeleteConcreteAgentOverrideTool::class,
+
+        // Tools
+        ListToolsTool::class,
+
+        // MCP servers
+        ListServersTool::class,
+        ShowServerInstructionsTool::class,
+        ListServerInstructionVersionsTool::class,
+        CreateServerInstructionVersionTool::class,
+        PublishServerInstructionVersionTool::class,
+        DeleteServerInstructionsTool::class,
+
+        // History
+        ListCortexHistoryTool::class,
+    ];
+
+    /**
      * @var array<class-string<ToolSearch>, array<int, class-string<Tool>|Tool>>
      */
-    protected array $tools = [
-        ToolSearch::class => [
-            // Virtual agents
-            ListVirtualAgentsTool::class,
-            CreateVirtualAgentTool::class,
-            ShowVirtualAgentTool::class,
-            UpdateVirtualAgentTool::class,
-            DeleteVirtualAgentTool::class,
-            RunVirtualAgentTool::class,
-
-            // Virtual agent prompt versions
-            ListVirtualAgentVersionsTool::class,
-            CreateVirtualAgentVersionTool::class,
-            ShowVirtualAgentVersionTool::class,
-            PublishVirtualAgentVersionTool::class,
-
-            // Concrete agents
-            ListConcreteAgentsTool::class,
-            ShowConcreteAgentTool::class,
-            RunConcreteAgentTool::class,
-            ListConcreteAgentVersionsTool::class,
-            CreateConcreteAgentVersionTool::class,
-            PublishConcreteAgentVersionTool::class,
-            UpdateConcreteAgentToolsTool::class,
-            DeleteConcreteAgentOverrideTool::class,
-
-            // Tools
-            ListToolsTool::class,
-
-            // MCP servers
-            ListServersTool::class,
-            ShowServerInstructionsTool::class,
-            ListServerInstructionVersionsTool::class,
-            CreateServerInstructionVersionTool::class,
-            PublishServerInstructionVersionTool::class,
-            DeleteServerInstructionsTool::class,
-        ],
-    ];
+    protected array $tools = [ToolSearch::class => self::TOOLS];
 }

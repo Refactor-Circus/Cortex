@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use JayI\Cortex\Database\Factories\McpInstructionFactory;
-use JayI\Cortex\Support\Models\Concerns\DispatchesModelEvents;
+use JayI\Foundation\Models\Concerns\DispatchesModelEvents;
 
 /**
  * A versioned instructions override for a registered MCP server, keyed by

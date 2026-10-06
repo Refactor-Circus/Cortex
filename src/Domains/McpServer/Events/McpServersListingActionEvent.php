@@ -6,7 +6,7 @@ namespace JayI\Cortex\Domains\McpServer\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Contracts\ActionStartingEvent;
+use JayI\Foundation\Contracts\ActionStartingEvent;
 
 /**
  * The registered MCP servers are about to be listed.

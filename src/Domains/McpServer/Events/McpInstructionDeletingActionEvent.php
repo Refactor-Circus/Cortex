@@ -6,8 +6,8 @@ namespace JayI\Cortex\Domains\McpServer\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Contracts\ActionStartingEvent;
 use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use JayI\Foundation\Contracts\ActionStartingEvent;
 
 /**
  * An MCP server's instructions override is about to be deleted.

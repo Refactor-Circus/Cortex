@@ -6,19 +6,31 @@ namespace JayI\Cortex;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\ServiceProvider;
-use JayI\Atrium\Facades\Atrium;
 use JayI\Atrium\Support\StyleRegistry;
 use JayI\Cortex\Atrium\CortexPlugin;
 use JayI\Cortex\Atrium\ScreenAccess;
 use JayI\Cortex\Domains\DomainServiceProvider;
 use JayI\Cortex\Mcp\CortexServer;
-use Laravel\Mcp\Facades\Mcp;
+use JayI\Foundation\Packages\Package;
+use JayI\Foundation\Support\PackageServiceProvider;
 use Laravel\Mcp\Request as McpRequest;
 
-class CortexServiceProvider extends ServiceProvider
+class CortexServiceProvider extends PackageServiceProvider
 {
+    /**
+     * Describe Cortex to the shared runtime.
+     *
+     * Cortex does not connect its own server to itself through
+     * `registerCortex()`: it registers its server with its own registry, and
+     * its management tools are not offered to agents.
+     */
+    protected function definition(): Package
+    {
+        return Package::make('cortex', __NAMESPACE__)
+            ->label('Cortex')
+            ->server(CortexServer::class);
+    }
+
     /**
      * Register any application services.
      */
@@ -26,11 +38,29 @@ class CortexServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/cortex.php', 'cortex');
 
+        $this->keepRoutesEnabled();
+
+        $this->registerPackage();
+
         $this->app->register(DomainServiceProvider::class);
 
         $this->app->singleton(Cortex::class);
 
         $this->fillMcpRequestsForAgents();
+    }
+
+    /**
+     * The shared runtime loads the JSON API only while `cortex.routes.enabled`
+     * is true. A config file published before that key existed replaces the
+     * whole `routes` array, so default it to on rather than drop the API.
+     */
+    private function keepRoutesEnabled(): void
+    {
+        $config = $this->config();
+
+        if ($config->get('cortex.routes.enabled') === null) {
+            $config->set('cortex.routes.enabled', true);
+        }
     }
 
     /**
@@ -66,9 +96,11 @@ class CortexServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        $this->registerAtriumPlugin();
+        $this->registerAtriumPlugin(CortexPlugin::class);
 
-        $this->registerMcpServers();
+        $this->registerMcpServer();
+
+        $this->loadHistoryRoutes();
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'cortex');
 
@@ -103,54 +135,5 @@ class CortexServiceProvider extends ServiceProvider
         $this->publishesMigrations([
             __DIR__.'/../database/migrations' => database_path('migrations'),
         ], ['cortex', 'cortex-migrations']);
-    }
-
-    /**
-     * Register the policy for each model from `cortex.policies`, so the JSON
-     * API and MCP tools, and the application's own `can()` checks, share them.
-     */
-    private function registerPolicies(): void
-    {
-        /** @var array<class-string, class-string> $policies */
-        $policies = $this->app->make('config')->get('cortex.policies', []);
-
-        foreach ($policies as $model => $policy) {
-            Gate::policy($model, $policy);
-        }
-    }
-
-    /**
-     * Register Cortex with the Atrium dashboard.
-     *
-     * Atrium discovers the plugin from composer.json, so this only needs to
-     * honour the config switch that turns the dashboard surface off.
-     */
-    private function registerAtriumPlugin(): void
-    {
-        if ($this->app->make('config')->get('cortex.ui.enabled') !== true) {
-            return;
-        }
-
-        Atrium::plugin(CortexPlugin::class);
-    }
-
-    /**
-     * Register the Cortex MCP server transports enabled in the config.
-     */
-    private function registerMcpServers(): void
-    {
-        $config = $this->app->make('config');
-
-        if ($config->get('cortex.mcp.web.enabled') === true) {
-            /** @var array<int, string> $middleware */
-            $middleware = $config->get('cortex.mcp.web.middleware', []);
-
-            Mcp::web((string) $config->get('cortex.mcp.web.route'), CortexServer::class)
-                ->middleware($middleware);
-        }
-
-        if ($config->get('cortex.mcp.local.enabled') === true) {
-            Mcp::local((string) $config->get('cortex.mcp.local.handle'), CortexServer::class);
-        }
     }
 }

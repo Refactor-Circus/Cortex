@@ -16,4 +16,5 @@ it('creates a prompt with parity to the http payload', function () {
 
 - HTTP is the canonical shape; MCP must match — this is the executable check on the shared-Resource contract
 - Required for every mutation tool; list tools additionally test the empty case (`data: []` must not error)
+- `list-cortex-history-tool` is exempt: it returns audit entries, not a resource, and is tested against the history route's not-installed answer instead
 - Invoke tools via `CortexServer::tool(ToolClass::class, $args)` — never construct requests by hand

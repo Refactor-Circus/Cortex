@@ -6,9 +6,9 @@ namespace JayI\Cortex\Domains\VirtualAgent\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Contracts\ActionFinishedEvent;
 use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
+use JayI\Foundation\Contracts\ActionFinishedEvent;
 
 /**
  * A version of a virtual agent's prompt was shown.

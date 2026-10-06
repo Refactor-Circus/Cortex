@@ -7,8 +7,8 @@ namespace JayI\Cortex\Domains\McpServer\Events;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Contracts\ModelLifecycleEvent;
 use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use JayI\Foundation\Contracts\ModelLifecycleEvent;
 
 /**
  * The McpInstructionVersionModel `deleting` Eloquent event.

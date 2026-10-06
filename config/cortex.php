@@ -27,13 +27,16 @@ return [
     | HTTP API Routes
     |--------------------------------------------------------------------------
     |
-    | The prefix and middleware applied to the Cortex management API routes.
-    | Add authentication middleware (e.g. auth:sanctum) before exposing
-    | these routes in production - they manage and execute agents.
+    | Whether the Cortex management API routes load, and the prefix and
+    | middleware applied to them, which the audit history route at
+    | {prefix}/history shares. Add authentication middleware (e.g.
+    | auth:sanctum) before exposing these routes in production - they manage
+    | and execute agents.
     |
     */
 
     'routes' => [
+        'enabled' => true,
         'prefix' => 'cortex',
         'middleware' => ['api'],
     ],

@@ -38,7 +38,7 @@ Event::listen(VirtualAgentVersionCreatedEvent::class, function (VirtualAgentVers
 - **Cancelling:** a `creating`, `updating`, `saving` or `deleting` listener that returns `false` stops the operation.
 - **Your own mapping:** entries a model declares on `$dispatchesEvents` win over the derived ones.
 
-The mapping is done by the `DispatchesModelEvents` trait (`JayI\Cortex\Support\Models\Concerns`).
+The mapping is done by the `DispatchesModelEvents` trait (`JayI\Foundation\Models\Concerns`).
 
 ## Action events
 
@@ -68,7 +68,7 @@ Action events live beside the model events, in `JayI\Cortex\Domains\{Domain}\Eve
 
 ## Listening to a whole family
 
-Each family implements an interface in `JayI\Cortex\Contracts`, and Laravel delivers an event to listeners of the interfaces it implements:
+Each family implements an interface in `JayI\Foundation\Contracts`, and Laravel delivers an event to listeners of the interfaces it implements:
 
 | Interface | Receives |
 | --- | --- |
@@ -77,7 +77,7 @@ Each family implements an interface in `JayI\Cortex\Contracts`, and Laravel deli
 | `ActionFinishedEvent` | every action finish event |
 
 ```php
-use JayI\Cortex\Contracts\ActionFinishedEvent;
+use JayI\Foundation\Contracts\ActionFinishedEvent;
 
 Event::listen(ActionFinishedEvent::class, fn (ActionFinishedEvent $event) => AuditLog::record($event));
 ```

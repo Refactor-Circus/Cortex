@@ -25,6 +25,8 @@ Run either kind via the API, the dashboard, the MCP server, or the `Cortex` faca
 composer require jayi/cortex
 ```
 
+Cortex stands on [jayi/foundation](https://github.com/jayjfletcher/Foundation), the shared runtime of the jayi suite, which Composer installs with it. Its event contracts, base requests and MCP bases are shared by every package of the suite.
+
 Publish and run the migrations:
 
 ```bash
@@ -49,6 +51,7 @@ php artisan vendor:publish --tag="atrium-assets"
 ```php
 return [
     'routes' => [
+        'enabled' => true, // load the JSON API (and GET {prefix}/history)
         'prefix' => 'cortex',
         'middleware' => ['api'],
     ],
@@ -234,6 +237,7 @@ Everything is available over the REST API (prefix `cortex` by default):
 | GET/DELETE | `/cortex/servers/{server}/instructions` | Show / remove the instruction override |
 | GET/POST | `/cortex/servers/{server}/instructions/versions` | List / create immutable override versions |
 | POST | `/cortex/servers/{server}/instructions/versions/{version}/publish` | Publish an override version |
+| GET | `/cortex/history` | Cortex's audit history, newest first; 404 until an audit log such as jayi/keen is installed |
 
 Virtual agent create/update payloads accept `instructions` (the prompt; required on create), `tools` (registered tool names), `sub_agents` (virtual agent slugs) and `concrete_sub_agents` (registered concrete agent names). Updating with changed `instructions` saves them as a new published version; unchanged instructions leave the history alone. The lists use sync semantics — send the desired end state. Circular sub-agent references are rejected. Sub-agents are offered to the parent under their slug or registered class name.
 
@@ -284,7 +288,7 @@ Published virtual agent prompts, tool description overrides, MCP server instruct
 
 ## MCP Server
 
-The `CortexServer` exposes the virtual agent, concrete agent, tool, and server-instruction operations as MCP tools (25 tools: virtual agent CRUD + run + prompt versions + publish, concrete agent list/show/run + prompt versions + publish + tools + remove overrides, list tools, server instructions + versions + publish). The provider and tool-description endpoints are HTTP-only. Enable a transport in the config:
+The `CortexServer` exposes the virtual agent, concrete agent, tool, and server-instruction operations as MCP tools (26 tools: virtual agent CRUD + run + prompt versions + publish, concrete agent list/show/run + prompt versions + publish + tools + remove overrides, list tools, server instructions + versions + publish, and `list-cortex-history-tool` for the audit history). The provider and tool-description endpoints are HTTP-only. Enable a transport in the config:
 
 ```php
 'mcp' => [
@@ -320,7 +324,7 @@ For the published override to actually be served to MCP clients, the server clas
 
 - **Model events:** every Eloquent hook of every Cortex model fires its own class, such as `VirtualAgentCreatingEvent`, `VirtualAgentVersionSavedEvent` or `ConcreteAgentOverrideDeletedEvent`.
 - **Action events:** every action fires a start and a finish event, such as `VirtualAgentVersionPublishingActionEvent` and `VirtualAgentVersionPublishedActionEvent`, or `VirtualAgentRunningActionEvent` and `VirtualAgentRanActionEvent`. The start event fires before the work. The finish event fires after the transaction commits, and only on success.
-- **Listening to a whole family:** listen to `ModelLifecycleEvent`, `ActionStartingEvent` or `ActionFinishedEvent` (in `JayI\Cortex\Contracts`) to receive every event of that family.
+- **Listening to a whole family:** listen to `ModelLifecycleEvent`, `ActionStartingEvent` or `ActionFinishedEvent` (in `JayI\Foundation\Contracts`) to receive every event of that family.
 
 **Full guide:** [Events](docs/events.md). It lists every action with its two events and what they carry.
 

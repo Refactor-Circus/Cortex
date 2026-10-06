@@ -6,8 +6,8 @@ namespace JayI\Cortex\Domains\McpServer\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Contracts\ActionFinishedEvent;
 use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use JayI\Foundation\Contracts\ActionFinishedEvent;
 
 /**
  * A version of an MCP server's instructions override was published; `$instruction->publishedVersion` is the new one.

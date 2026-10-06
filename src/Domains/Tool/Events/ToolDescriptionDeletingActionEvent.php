@@ -6,8 +6,8 @@ namespace JayI\Cortex\Domains\Tool\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Contracts\ActionStartingEvent;
 use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use JayI\Foundation\Contracts\ActionStartingEvent;
 
 /**
  * A tool's description override is about to be deleted.

@@ -8,7 +8,7 @@ use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use JayI\Cortex\Domains\ConcreteAgent\Services\ConcreteAgentOverrides;
-use JayI\Cortex\Support\ServiceProvider;
+use JayI\Foundation\Support\ServiceProvider;
 
 class ConcreteAgentServiceProvider extends ServiceProvider
 {

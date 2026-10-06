@@ -7,8 +7,8 @@ namespace JayI\Cortex\Domains\ConcreteAgent\Events;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Contracts\ModelLifecycleEvent;
 use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Foundation\Contracts\ModelLifecycleEvent;
 
 /**
  * The ConcreteAgentOverrideModel `creating` Eloquent event.

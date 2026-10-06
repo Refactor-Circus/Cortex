@@ -5,9 +5,6 @@ declare(strict_types=1);
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
-use JayI\Cortex\Contracts\ActionFinishedEvent;
-use JayI\Cortex\Contracts\ActionStartingEvent;
-use JayI\Cortex\Contracts\ModelLifecycleEvent;
 use JayI\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
 use JayI\Cortex\Domains\ConcreteAgent\Actions\DeleteConcreteAgentOverrideAction;
 use JayI\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentsAction;
@@ -50,6 +47,9 @@ use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishingActionE
 use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
 use JayI\Cortex\Tests\Fixtures\EchoAgent;
+use JayI\Foundation\Contracts\ActionFinishedEvent;
+use JayI\Foundation\Contracts\ActionStartingEvent;
+use JayI\Foundation\Contracts\ModelLifecycleEvent;
 
 /**
  * Record every event of a kind, in order.

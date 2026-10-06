@@ -6,7 +6,7 @@ namespace JayI\Cortex\Domains\Tool\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use JayI\Cortex\Domains\Tool\Mcp\Requests\ListToolsMcpRequest;
-use JayI\Cortex\Domains\Tool\Support\Tool;
+use JayI\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;

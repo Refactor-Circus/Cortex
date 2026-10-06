@@ -19,6 +19,7 @@
     "require": {
         "php": "^8.4",
         "jayi/atrium": "dev-main",
+        "jayi/foundation": "dev-main",
         "laravel/ai": "^1.0",
         "laravel/framework": "^13.15",
         "laravel/mcp": "^1.0"
@@ -118,6 +119,10 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jayjfletcher/Foundation.git"
+        },
         {
             "type": "vcs",
             "url": "https://github.com/jayjfletcher/Atrium.git"

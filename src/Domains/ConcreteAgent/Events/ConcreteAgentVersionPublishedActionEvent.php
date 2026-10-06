@@ -6,8 +6,8 @@ namespace JayI\Cortex\Domains\ConcreteAgent\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Contracts\ActionFinishedEvent;
 use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use JayI\Foundation\Contracts\ActionFinishedEvent;
 
 /**
  * A version of a concrete agent's prompt override was published; `$override->publishedVersion` is the new one.

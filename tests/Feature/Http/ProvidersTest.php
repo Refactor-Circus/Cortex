@@ -2,7 +2,12 @@
 
 declare(strict_types=1);
 
+use Laravel\Ai\AiManager;
+
 it('lists text-capable providers with their models', function () {
+    // laravel/ai moves its default models between releases, so ask it.
+    $default = app(AiManager::class)->textProvider('anthropic')->defaultTextModel();
+
     $response = $this->getJson(route('cortex.providers.index'))->assertOk();
 
     $providers = collect($response->json('data'));
@@ -12,8 +17,8 @@ it('lists text-capable providers with their models', function () {
     $anthropic = $providers->firstWhere('name', 'anthropic');
 
     expect($anthropic)->not->toBeNull()
-        ->and($anthropic['models'])->toContain('claude-sonnet-5')
-        ->and($anthropic['default_model'])->toBe('claude-sonnet-5');
+        ->and($anthropic['models'])->toContain($default)
+        ->and($anthropic['default_model'])->toBe($default);
 });
 
 it('honors a configured provider allowlist', function () {

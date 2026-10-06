@@ -8,7 +8,7 @@ use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 use JayI\Cortex\Domains\Tool\Services\ToolDescriptionOverrides;
 use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Support\ServiceProvider;
+use JayI\Foundation\Support\ServiceProvider;
 
 class ToolServiceProvider extends ServiceProvider
 {

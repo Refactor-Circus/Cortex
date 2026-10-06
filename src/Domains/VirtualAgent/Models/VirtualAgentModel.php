@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use JayI\Cortex\Database\Factories\VirtualAgentFactory;
-use JayI\Cortex\Support\Models\Concerns\DispatchesModelEvents;
+use JayI\Foundation\Models\Concerns\DispatchesModelEvents;
 
 /**
  * An agent defined entirely in the database. Its prompt is versioned in

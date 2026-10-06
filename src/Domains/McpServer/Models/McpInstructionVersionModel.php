@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use JayI\Cortex\Database\Factories\McpInstructionVersionFactory;
-use JayI\Cortex\Support\Models\Concerns\DispatchesModelEvents;
+use JayI\Foundation\Models\Concerns\DispatchesModelEvents;
 use LogicException;
 
 /**

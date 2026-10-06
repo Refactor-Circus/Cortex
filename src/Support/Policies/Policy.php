@@ -7,6 +7,7 @@ namespace JayI\Cortex\Support\Policies;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
+use JayI\Foundation\Policies\Policy as FoundationPolicy;
 
 /**
  * Shared checks for the bundled policies.
@@ -19,8 +20,11 @@ use Illuminate\Support\Facades\Gate;
  * guests too, which keeps the JSON API and MCP tools behind your route
  * middleware exactly as before. Type the user parameter as non-nullable in
  * your own policy to require a signed-in user.
+ *
+ * The shared runtime's `allowsOn()` needs a signed-in user, so the bundled
+ * policies keep `allowsOnParent()`, which also asks for guests.
  */
-abstract class Policy
+abstract class Policy extends FoundationPolicy
 {
     /**
      * Ask the Gate about the parent record, so a version follows whichever

@@ -4,6 +4,14 @@
 
 ### Breaking
 
+- Cortex stands on [jayi/foundation](https://github.com/jayjfletcher/Foundation), the shared runtime of the jayi suite, which it now requires. The package-local copies are gone; update imports:
+  - `JayI\Cortex\Contracts\{ActionStartingEvent,ActionFinishedEvent,ModelLifecycleEvent}` → `JayI\Foundation\Contracts\...`, so one listener hears every package of the suite
+  - `JayI\Cortex\Support\Models\Concerns\DispatchesModelEvents` → `JayI\Foundation\Models\Concerns\DispatchesModelEvents`
+  - `JayI\Cortex\Support\ServiceProvider` → `JayI\Foundation\Support\ServiceProvider`; `CortexServiceProvider` extends `JayI\Foundation\Support\PackageServiceProvider` and registers Cortex with the `PackageRegistry` as `cortex`
+  - `JayI\Cortex\Http\Request`, `JayI\Cortex\Mcp\Request` and `JayI\Cortex\Support\Policies\Policy` stay, extending Foundation's bases. They keep asking the Gate as the signed-in user or as a guest, so authorization is unchanged. MCP calls are now marked with the `mcp` surface.
+  - `CortexServer` extends `JayI\Foundation\Mcp\Server`, lists its tools in a public `TOOLS` constant, and Cortex's own MCP tools extend `JayI\Foundation\Mcp\Tool`. Both still serve published instruction and description overrides. `Domains\McpServer\Support\Server`, `Domains\Tool\Support\Tool` and their `HasVersionedInstructions` / `HasVersionedDescription` traits remain the bases for an application's own servers and tools.
+- The JSON API loads only while the new `cortex.routes.enabled` key is true. It defaults to true, also for a published config file that predates the key.
+
 - The package is reorganised into domain modules (`src/Domains/VirtualAgent`, `ConcreteAgent`, `Tool`, `McpServer`), mirroring the mono application's layout. Classes move namespaces and the models gain a `Model` suffix; there are no aliases for the old class names, so update imports and `cortex.policies` keys. Config keys, route names and paths, MCP tool names, publish tags, views, translations, tables and model event class names are unchanged. Each model keeps its old class name as its morph alias, so values stored under it still resolve, and `CortexSupportFeature` keeps its Pennant stored name (`JayI\Cortex\Features\CortexSupportFeature`). The JSON API routes now load from each domain (`routes/cortex.php` is gone). Old → new:
   - `JayI\Cortex\Actions\Concerns\ResolvesVirtualAgentReferences` → `JayI\Cortex\Domains\VirtualAgent\Concerns\ResolvesVirtualAgentReferences`
   - `JayI\Cortex\Actions\CreateConcreteAgentVersionAction` → `JayI\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction`
@@ -204,6 +212,7 @@
 
 ### Added
 
+- Audit history: `GET /cortex/history` (route `cortex.history.index`, inside the JSON API group) and the `list-cortex-history-tool` MCP tool list Cortex's audit entries, newest first, through jayi/foundation. Both answer "not installed" (404 over HTTP) until an audit log such as jayi/keen is installed.
 - Virtual agents: DB-backed agents (`cortex_virtual_agents`) that own their prompt, versioned in place with immutable versions and a published-version pointer (`cortex_virtual_agent_versions`), plus registered tools, provider/model settings, virtual sub-agents (`cortex_virtual_agent_sub_agents`, with cycle protection) and concrete sub-agents. Updating the instructions saves a new published version. All Cortex tables use ULID primary keys.
 - Concrete agents: `AgentRegistry` registers class-based `Laravel\Ai\Contracts\Agent` implementations by name via config (`cortex.agents`) or `Cortex::agents()->register()`. Registered agents are listed, runnable and attachable as sub-agents of virtual agents.
 - `JayI\Cortex\Agents\Agent` base class and `HasCortexOverrides` trait: agents declare `defaultInstructions()` and `defaultTools()`, and run with the published Cortex overrides (`cortex_concrete_agent_overrides`, `cortex_concrete_agent_override_versions`) when they exist — a versioned prompt override and a toolset override picked from the class's own tools and registered Cortex tools. `#[LockedTools]` opts an agent out of toolset overrides.

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use JayI\Cortex\Database\Factories\ConcreteAgentOverrideFactory;
-use JayI\Cortex\Support\Models\Concerns\DispatchesModelEvents;
+use JayI\Foundation\Models\Concerns\DispatchesModelEvents;
 
 /**
  * Overrides for a registered concrete (class-based) agent, keyed by the

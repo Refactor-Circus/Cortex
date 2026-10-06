@@ -6,7 +6,7 @@ namespace JayI\Cortex\Domains\VirtualAgent;
 
 use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
-use JayI\Cortex\Support\ServiceProvider;
+use JayI\Foundation\Support\ServiceProvider;
 
 class VirtualAgentServiceProvider extends ServiceProvider
 {

@@ -6,7 +6,7 @@ namespace JayI\Cortex\Domains\VirtualAgent\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Contracts\ActionStartingEvent;
+use JayI\Foundation\Contracts\ActionStartingEvent;
 
 /**
  * A virtual agent is about to be created.

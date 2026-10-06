@@ -8,7 +8,7 @@ use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
 use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
 use JayI\Cortex\Domains\McpServer\Services\McpInstructionOverrides;
 use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
-use JayI\Cortex\Support\ServiceProvider;
+use JayI\Foundation\Support\ServiceProvider;
 
 class McpServerServiceProvider extends ServiceProvider
 {

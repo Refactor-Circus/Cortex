@@ -44,8 +44,17 @@ final class ConcreteAgentOverrides
      */
     private function all(): array
     {
-        /** @var array<string, array{instructions: string|null, tools: list<string>|null}> */
-        return $this->overrides ??= (array) $this->cache->remember(
+        return $this->overrides ??= $this->load();
+    }
+
+    /**
+     * Every override with a published prompt or a toolset, from the cache.
+     *
+     * @return array<string, array{instructions: string|null, tools: list<string>|null}>
+     */
+    private function load(): array
+    {
+        return $this->cache->remember(
             $this->cache->concreteAgentsKey(),
             fn (): array => ConcreteAgentOverrideModel::query()
                 ->with('publishedVersion')

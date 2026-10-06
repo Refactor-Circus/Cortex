@@ -12,11 +12,17 @@ This repository is a Laravel package. Keep the package focused, idiomatic, and e
 
 ## Layout
 
-The package follows the mono domain-module layout, described in `agent-os/standards/backend/domain-modules.md`. Code lives in `src/Domains/{VirtualAgent,ConcreteAgent,Tool,McpServer}` (namespace `JayI\Cortex\Domains\{Domain}`), each with its own `{Domain}ServiceProvider` registered by `Domains\DomainServiceProvider`. Models are named `{Entity}Model`. The Atrium screens span every domain and live in `src/Atrium`; package-wide pieces (`Cortex`, the facade, contracts, base requests, `Mcp\CortexServer`, `Support\`) stay at the top level. `config/cortex.php` stays one file.
+The package follows the mono domain-module layout, described in `agent-os/standards/backend/domain-modules.md`. Code lives in `src/Domains/{VirtualAgent,ConcreteAgent,Tool,McpServer}` (namespace `JayI\Cortex\Domains\{Domain}`), each with its own `{Domain}ServiceProvider` registered by `Domains\DomainServiceProvider`. Models are named `{Entity}Model`. The Atrium screens span every domain and live in `src/Atrium`; package-wide pieces (`Cortex`, the facade, the base requests, `Mcp\CortexServer`, `Support\`) stay at the top level. `config/cortex.php` stays one file.
 
-## Layout
+## Foundation
 
-The package follows the mono domain-module layout, described in `agent-os/standards/backend/domain-modules.md`. Code lives in `src/Domains/{VirtualAgent,ConcreteAgent,Tool,McpServer}` (namespace `JayI\Cortex\Domains\{Domain}`), each with its own `{Domain}ServiceProvider` registered by `Domains\DomainServiceProvider`. Models are named `{Entity}Model`. The Atrium screens span every domain and live in `src/Atrium`; package-wide pieces (`Cortex`, the facade, contracts, base requests, `Mcp\CortexServer`, `Support\`) stay at the top level. `config/cortex.php` stays one file.
+Cortex stands on `jayi/foundation`, the shared runtime of the jayi suite; read its README before changing base classes.
+
+- `CortexServiceProvider` extends `JayI\Foundation\Support\PackageServiceProvider`. `definition()` describes the package (`cortex`, `JayI\Cortex`, `CortexServer`); `register()` merges the config, calls `registerPackage()`, then registers the domain providers. `boot()` uses `registerPolicies()`, `registerAtriumPlugin()`, `registerMcpServer()` and `loadHistoryRoutes()`. It does not call `registerCortex()`: Cortex registers its own server with its own registry, and its management tools are not offered to agents.
+- Domain providers extend `JayI\Foundation\Support\ServiceProvider`; routes load through `loadApiRoutesFrom()`, gated by `cortex.routes.enabled`.
+- Events implement `JayI\Foundation\Contracts\{ActionStartingEvent,ActionFinishedEvent,ModelLifecycleEvent}`; models use `JayI\Foundation\Models\Concerns\DispatchesModelEvents`.
+- `Http\Request` and `Mcp\Request` extend Foundation's request bases but keep Cortex's authorization: every check goes to the Gate, as the signed-in user or as a guest, and the bundled policies allow guests. Do not switch them to Foundation's `authorization` switch.
+- `Mcp\CortexServer` extends `JayI\Foundation\Mcp\Server` and lists every tool in `TOOLS`, including `Mcp\Tools\ListCortexHistoryTool`. Cortex's own tools extend `JayI\Foundation\Mcp\Tool`; `Domains\Tool\Support\Tool` and `Domains\McpServer\Support\Server` are for application tools and servers.
 
 ## Quick Commands
 

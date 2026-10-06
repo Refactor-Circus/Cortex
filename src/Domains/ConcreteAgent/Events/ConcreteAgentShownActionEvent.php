@@ -6,7 +6,7 @@ namespace JayI\Cortex\Domains\ConcreteAgent\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Contracts\ActionFinishedEvent;
+use JayI\Foundation\Contracts\ActionFinishedEvent;
 
 /**
  * A concrete agent was shown, with its overrides resolved.
