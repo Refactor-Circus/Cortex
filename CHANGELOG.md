@@ -2,6 +2,10 @@
 
 ## [Unreleased](https://github.com/jayi/cortex/compare/v0.1.0...1.x)
 
+### Added
+
+- An **Audit log** link in the package's sidebar group, opening its own audit log in Atrium (`/atrium/history/cortex`), shown while an audit log (jayi/keen) is installed and to those who may read the package's history.
+
 ### Breaking
 
 - Cortex stands on [jayi/foundation](https://github.com/jayjfletcher/Foundation), the shared runtime of the jayi suite, which it now requires. The package-local copies are gone; update imports:

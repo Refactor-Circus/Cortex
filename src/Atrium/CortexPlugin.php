@@ -87,6 +87,9 @@ class CortexPlugin extends Plugin
                 ->route('atrium.cortex.servers.index')
                 ->group('Cortex')
                 ->sort(50),
+
+            // The package's own audit log, while an audit log is installed.
+            $this->historyNavItem('cortex')->group('Cortex')->sort(90),
         ];
     }
 

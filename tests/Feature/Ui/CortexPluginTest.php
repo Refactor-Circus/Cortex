@@ -18,7 +18,7 @@ it('contributes navigation for every section', function (): void {
         app(CortexPlugin::class)->navigation(),
     );
 
-    expect($labels)->toBe(['Virtual agents', 'Concrete agents', 'Run agent', 'Tools', 'Servers']);
+    expect($labels)->toBe(['Virtual agents', 'Concrete agents', 'Run agent', 'Tools', 'Servers', 'Audit log']);
 });
 
 it('registers its routes inside the atrium group', function (): void {
