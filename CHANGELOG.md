@@ -249,6 +249,7 @@
 
 ### Changed
 
+- Requires PHP 8.5 (it was 8.4). Dependency constraints are raised to their latest releases, including Laravel 13.35, Testbench 11.3 and Pest 5.3; CI tests PHP 8.5 only.
 - The Atrium screens use Atrium's components only: searches are `x-atrium::search-input`, tag filters are `x-atrium::chip`s (linked on the tool list, Alpine-driven in the tool pickers), the picker's "selected only" box is a bare `x-atrium::form.checkbox`, and the status and first prompt or agent error come from `<x-atrium::flash :keys="['prompt', 'agent']" />`.
 - `CortexPlugin::features()` uses Atrium's `featuresFromConfig()`, and the plugin's `key()` / `label()` come from Atrium's base derivation (still `cortex` / `Cortex`).
 - The Run agent navigation item and page follow `viewAny` on either kind of agent, so building the dashboard navigation no longer queries every agent; the page lists the agents the user may run, or says there are none.
