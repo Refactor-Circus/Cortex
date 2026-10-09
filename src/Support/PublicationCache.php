@@ -12,8 +12,9 @@ use Throwable;
 
 /**
  * Cache for published content (virtual agent prompts, tool description,
- * MCP instruction and concrete agent overrides) that only changes when a new
- * version is published — the publishing actions invalidate explicitly.
+ * MCP instruction and concrete agent overrides, and the stored OAuth redirect
+ * domains) that only changes when a new version is published or a domain is
+ * added or removed — those actions invalidate explicitly.
  *
  * When Redis is available the Redis store is used with the flexible
  * (stale-while-revalidate) strategy, serving cached content instantly and
@@ -92,6 +93,11 @@ final class PublicationCache
     public function mcpInstructionsKey(): string
     {
         return '{cortex.published}.mcp-instructions';
+    }
+
+    public function redirectDomainsKey(): string
+    {
+        return '{cortex.published}.redirect-domains';
     }
 
     public function concreteAgentsKey(): string

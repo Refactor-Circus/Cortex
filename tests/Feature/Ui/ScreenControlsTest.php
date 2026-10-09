@@ -99,7 +99,7 @@ function screenOverride(): ConcreteAgentOverrideModel
 }
 
 it('shows each navigation item only with the ability its page needs', function (): void {
-    expect(screenNavigation(screenUser()))->toBe(['Tools', 'Servers'])
+    expect(screenNavigation(screenUser()))->toBe(['Tools', 'Servers', 'Redirect domains'])
         ->and(screenNavigation(screenUser(['virtual-agents.viewAny'])))->toContain('Virtual agents')
         ->and(screenNavigation(screenUser(['concrete-agents.viewAny'])))->toContain('Concrete agents')
         ->and(screenNavigation(screenUser(['concrete-agents.viewAny'])))->toContain('Run agent')

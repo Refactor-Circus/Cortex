@@ -20,6 +20,9 @@ use JayI\Cortex\Domains\McpServer\Actions\ListMcpInstructionVersionsAction;
 use JayI\Cortex\Domains\McpServer\Actions\ListMcpServersAction;
 use JayI\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
 use JayI\Cortex\Domains\McpServer\Actions\ShowMcpInstructionAction;
+use JayI\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
+use JayI\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
+use JayI\Cortex\Domains\RedirectDomain\Actions\ListRedirectDomainsAction;
 use JayI\Cortex\Domains\Tool\Actions\CreateToolDescriptionVersionAction;
 use JayI\Cortex\Domains\Tool\Actions\DeleteToolDescriptionAction;
 use JayI\Cortex\Domains\Tool\Actions\ListToolDescriptionVersionsAction;
@@ -173,6 +176,10 @@ it('starts and finishes every action once, in order', function (): void {
     app(ListMcpInstructionVersionsAction::class)->execute($instruction);
     app(DeleteMcpInstructionAction::class)->execute($instruction);
 
+    $domain = app(CreateRedirectDomainAction::class)->execute(['domain' => 'claude.ai']);
+    app(ListRedirectDomainsAction::class)->execute();
+    app(DeleteRedirectDomainAction::class)->execute($domain);
+
     app(ListToolsAction::class)->execute();
     app(ListMcpServersAction::class)->execute();
     app(ListProvidersAction::class)->execute();
@@ -180,8 +187,8 @@ it('starts and finishes every action once, in order', function (): void {
     $started = collect($starts)->map(fn (object $event): string => class_basename($event))->unique();
     $finished = collect($stops)->map(fn (object $event): string => class_basename($event))->unique();
 
-    expect($started)->toHaveCount(31)
-        ->and($finished)->toHaveCount(31)
+    expect($started)->toHaveCount(34)
+        ->and($finished)->toHaveCount(34)
         ->and(count($starts))->toBe(count($stops))
         ->and($started->all())->toContain(
             'VirtualAgentCreatingActionEvent', 'VirtualAgentVersionCreatingActionEvent', 'VirtualAgentVersionPublishingActionEvent',
@@ -212,7 +219,7 @@ it('gives every action exactly one start and one finish event', function (): voi
         }
     }
 
-    expect($actions)->toHaveCount(31)
+    expect($actions)->toHaveCount(34)
         ->and($unpaired)->toBe([]);
 });
 

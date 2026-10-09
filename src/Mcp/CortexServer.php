@@ -18,6 +18,9 @@ use JayI\Cortex\Domains\McpServer\Mcp\Tools\ListServerInstructionVersionsTool;
 use JayI\Cortex\Domains\McpServer\Mcp\Tools\ListServersTool;
 use JayI\Cortex\Domains\McpServer\Mcp\Tools\PublishServerInstructionVersionTool;
 use JayI\Cortex\Domains\McpServer\Mcp\Tools\ShowServerInstructionsTool;
+use JayI\Cortex\Domains\RedirectDomain\Mcp\Tools\CreateRedirectDomainTool;
+use JayI\Cortex\Domains\RedirectDomain\Mcp\Tools\DeleteRedirectDomainTool;
+use JayI\Cortex\Domains\RedirectDomain\Mcp\Tools\ListRedirectDomainsTool;
 use JayI\Cortex\Domains\Tool\Mcp\Tools\ListToolsTool;
 use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentTool;
 use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentVersionTool;
@@ -39,7 +42,7 @@ use Laravel\Mcp\Server\Tools\ToolSearch;
 
 #[Name('Cortex')]
 #[Version('1.0.0')]
-#[Instructions('Manage Cortex virtual agents, concrete agents, tools, and MCP server instructions. Virtual agents live in the database: each holds its own versioned prompt (content is immutable per version; the published version runs), registered tools, and optional virtual or concrete sub-agents, and runs with run-virtual-agent. Concrete agents are classes registered in code; their prompt and toolset can be overridden (prompt overrides are versioned and published), and they run with run-concrete-agent. Registered MCP servers hold versioned instruction overrides that replace their code-declared instructions when published.')]
+#[Instructions('Manage Cortex virtual agents, concrete agents, tools, and MCP server instructions. Virtual agents live in the database: each holds its own versioned prompt (content is immutable per version; the published version runs), registered tools, and optional virtual or concrete sub-agents, and runs with run-virtual-agent. Concrete agents are classes registered in code; their prompt and toolset can be overridden (prompt overrides are versioned and published), and they run with run-concrete-agent. Registered MCP servers hold versioned instruction overrides that replace their code-declared instructions when published. Redirect domains are the origins MCP clients may register OAuth redirect URIs on, beside the configured ones.')]
 final class CortexServer extends Server
 {
     /**
@@ -82,6 +85,11 @@ final class CortexServer extends Server
         CreateServerInstructionVersionTool::class,
         PublishServerInstructionVersionTool::class,
         DeleteServerInstructionsTool::class,
+
+        // OAuth redirect domains
+        ListRedirectDomainsTool::class,
+        CreateRedirectDomainTool::class,
+        DeleteRedirectDomainTool::class,
 
         // History
         ListCortexHistoryTool::class,

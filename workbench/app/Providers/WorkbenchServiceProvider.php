@@ -34,6 +34,14 @@ class WorkbenchServiceProvider extends ServiceProvider
     {
         config([
             'auth.providers.users.model' => User::class,
+            // jayi/pennantplus's layered store: users who follow a feature's
+            // global value store nothing, as in a real application.
+            'pennant.default' => 'pennantplus',
+            'pennant.stores.pennantplus' => [
+                'driver' => 'pennantplus',
+                'connection' => null,
+                'table' => 'features',
+            ],
 
             // Offered when configuring a virtual agent. Nothing calls them
             // unless an agent is run from the dashboard.

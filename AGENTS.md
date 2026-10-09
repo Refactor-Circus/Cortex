@@ -12,7 +12,7 @@ This repository is a Laravel package. Keep the package focused, idiomatic, and e
 
 ## Layout
 
-The package follows the mono domain-module layout, described in `agent-os/standards/backend/domain-modules.md`. Code lives in `src/Domains/{VirtualAgent,ConcreteAgent,Tool,McpServer}` (namespace `JayI\Cortex\Domains\{Domain}`), each with its own `{Domain}ServiceProvider` registered by `Domains\DomainServiceProvider`. Models are named `{Entity}Model`. The Atrium screens span every domain and live in `src/Atrium`; package-wide pieces (`Cortex`, the facade, the base requests, `Mcp\CortexServer`, `Support\`) stay at the top level. `config/cortex.php` stays one file.
+The package follows the mono domain-module layout, described in `agent-os/standards/backend/domain-modules.md`. Code lives in `src/Domains/{VirtualAgent,ConcreteAgent,Tool,McpServer,RedirectDomain}` (namespace `JayI\Cortex\Domains\{Domain}`), each with its own `{Domain}ServiceProvider` registered by `Domains\DomainServiceProvider`. Models are named `{Entity}Model`. The Atrium screens span every domain and live in `src/Atrium`; package-wide pieces (`Cortex`, the facade, the base requests, `Mcp\CortexServer`, `Support\`) stay at the top level. `config/cortex.php` stays one file.
 
 ## Foundation
 

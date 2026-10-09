@@ -11,6 +11,8 @@ use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
 use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
 use JayI\Cortex\Domains\McpServer\Policies\McpInstructionPolicy;
 use JayI\Cortex\Domains\McpServer\Policies\McpInstructionVersionPolicy;
+use JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use JayI\Cortex\Domains\RedirectDomain\Policies\RedirectDomainPolicy;
 use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 use JayI\Cortex\Domains\Tool\Policies\ToolDescriptionPolicy;
@@ -65,6 +67,7 @@ return [
         ToolDescriptionVersionModel::class => ToolDescriptionVersionPolicy::class,
         McpInstructionModel::class => McpInstructionPolicy::class,
         McpInstructionVersionModel::class => McpInstructionVersionPolicy::class,
+        RedirectDomainModel::class => RedirectDomainPolicy::class,
     ],
 
     /*
@@ -146,6 +149,33 @@ return [
         'servers' => [
             // 'support' => \App\Mcp\SupportServer::class,
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | OAuth Redirect Domains
+    |--------------------------------------------------------------------------
+    |
+    | MCP clients register themselves through laravel/mcp's dynamic client
+    | registration (Mcp::oauthRoutes()), which only accepts redirect URIs on
+    | the origins in `mcp.redirect_domains`. While this is enabled, Cortex
+    | also accepts every origin stored in its redirect domains table, managed
+    | from the dashboard, the JSON API ({prefix}/redirect-domains) and the MCP
+    | tools, so a new client needs no deploy. A domain may belong to an owner
+    | (Roster adds them per organization and per user) or to none.
+    |
+    | Registration is anonymous: any client may register on any allowed
+    | origin, whoever added it. Users still approve each client on the OAuth
+    | consent screen. The JSON API and MCP tools that manage the list follow
+    | the RedirectDomainModel policy above and your route middleware, so keep
+    | auth middleware in front of them. The configured domains, `*` and
+    | localhost keep working as laravel/mcp documents; only config can allow
+    | `*`. Set this to false to use the configured domains alone.
+    |
+    */
+
+    'redirect_domains' => [
+        'enabled' => true,
     ],
 
     /*

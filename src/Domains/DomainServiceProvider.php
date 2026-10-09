@@ -7,6 +7,7 @@ namespace JayI\Cortex\Domains;
 use Illuminate\Support\ServiceProvider;
 use JayI\Cortex\Domains\ConcreteAgent\ConcreteAgentServiceProvider;
 use JayI\Cortex\Domains\McpServer\McpServerServiceProvider;
+use JayI\Cortex\Domains\RedirectDomain\RedirectDomainServiceProvider;
 use JayI\Cortex\Domains\Tool\ToolServiceProvider;
 use JayI\Cortex\Domains\VirtualAgent\VirtualAgentServiceProvider;
 
@@ -20,6 +21,7 @@ class DomainServiceProvider extends ServiceProvider
     private array $providers = [
         ConcreteAgentServiceProvider::class,
         McpServerServiceProvider::class,
+        RedirectDomainServiceProvider::class,
         ToolServiceProvider::class,
         VirtualAgentServiceProvider::class,
     ];

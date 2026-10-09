@@ -4,6 +4,7 @@
 
 ### Added
 
+- **OAuth redirect domains** managed at runtime instead of only through `mcp.redirect_domains` (`MCP_REDIRECT_DOMAINS`). Cortex keeps a `cortex_redirect_domains` table (new migration) and replaces laravel/mcp's dynamic client registration controller with one that also accepts every stored origin. Domains may belong to any model (an organization, a user) or to no one, and are managed from the new **Redirect domains** dashboard screen (the compiled list of config, global, organization and user domains, filterable by source, where global domains are added), the `/cortex/redirect-domains` API and the `list-redirect-domains-tool`, `create-redirect-domain-tool` and `delete-redirect-domain-tool` MCP tools. Hosts and redirect URLs are stored as their origin; only config can allow `*`. Switch it off with `cortex.redirect_domains.enabled`. `RedirectDomainModel` gets a policy in `cortex.policies` that allows everything, like the other bundled policies.
 - The package's section in Atrium's sidebar rail has its own icon (`cpu-chip`) and a fixed place in the rail.
 - An **Audit log** link in the package's sidebar group, opening its own audit log in Atrium (`/atrium/history/cortex`), shown while an audit log (jayi/keen) is installed and to those who may read the package's history.
 

@@ -241,6 +241,8 @@ Everything is available over the REST API (prefix `cortex` by default):
 | GET/DELETE | `/cortex/servers/{server}/instructions` | Show / remove the instruction override |
 | GET/POST | `/cortex/servers/{server}/instructions/versions` | List / create immutable override versions |
 | POST | `/cortex/servers/{server}/instructions/versions/{version}/publish` | Publish an override version |
+| GET/POST | `/cortex/redirect-domains` | List (optionally one owner's, with `owner_type` and `owner_id`) / add OAuth redirect domains |
+| DELETE | `/cortex/redirect-domains/{id}` | Remove a redirect domain |
 | GET | `/cortex/history` | Cortex's audit history, newest first; 404 until an audit log such as jayi/keen is installed |
 
 Virtual agent create/update payloads accept `instructions` (the prompt; required on create), `tools` (registered tool names), `sub_agents` (virtual agent slugs) and `concrete_sub_agents` (registered concrete agent names). Updating with changed `instructions` saves them as a new published version; unchanged instructions leave the history alone. The lists use sync semantics — send the desired end state. Circular sub-agent references are rejected. Sub-agents are offered to the parent under their slug or registered class name.
@@ -288,11 +290,11 @@ The dashboard's virtual agent form and `GET /cortex/providers` offer the same pr
 
 ## Publication Cache
 
-Published virtual agent prompts, tool description overrides, MCP server instruction overrides and concrete agent overrides are cached so agent runs, tool listings, and MCP handshakes don't hit the database on every request; publishing invalidates explicitly. When Redis is available it is preferred and read via `Cache::flexible()` using the `cache.fresh`/`cache.stale` windows (stale-while-revalidate); any other store caches until invalidation. Pin a store with `cache.store`, or set `cache.enabled` to `false` to read from the database on every pull.
+Published virtual agent prompts, tool description overrides, MCP server instruction overrides, concrete agent overrides and the stored OAuth redirect domains are cached so agent runs, tool listings, and MCP handshakes don't hit the database on every request; publishing invalidates explicitly. When Redis is available it is preferred and read via `Cache::flexible()` using the `cache.fresh`/`cache.stale` windows (stale-while-revalidate); any other store caches until invalidation. Pin a store with `cache.store`, or set `cache.enabled` to `false` to read from the database on every pull.
 
 ## MCP Server
 
-The `CortexServer` exposes the virtual agent, concrete agent, tool, and server-instruction operations as MCP tools (26 tools: virtual agent CRUD + run + prompt versions + publish, concrete agent list/show/run + prompt versions + publish + tools + remove overrides, list tools, server instructions + versions + publish, and `list-cortex-history-tool` for the audit history). The provider and tool-description endpoints are HTTP-only. Enable a transport in the config:
+The `CortexServer` exposes the virtual agent, concrete agent, tool, and server-instruction operations as MCP tools (29 tools: virtual agent CRUD + run + prompt versions + publish, concrete agent list/show/run + prompt versions + publish + tools + remove overrides, list tools, server instructions + versions + publish, OAuth redirect domains list/add/remove, and `list-cortex-history-tool` for the audit history). The provider and tool-description endpoints are HTTP-only. Enable a transport in the config:
 
 ```php
 'mcp' => [
@@ -323,6 +325,18 @@ Cortex::servers()->register('support', \App\Mcp\SupportServer::class);
 ```
 
 For the published override to actually be served to MCP clients, the server class must extend `JayI\Cortex\Domains\McpServer\Support\Server` (or use the `JayI\Cortex\Domains\McpServer\Concerns\HasVersionedInstructions` trait if it cannot change its base class). Unregistered servers, and servers with no published version, keep serving their code-declared instructions.
+
+### OAuth Redirect Domains
+
+laravel/mcp's dynamic client registration (`Mcp::oauthRoutes()`) only accepts redirect URIs on the origins in `mcp.redirect_domains`, usually set from `MCP_REDIRECT_DOMAINS` in `.env`. Every new MCP client (Claude, ChatGPT, Cursor, an organization's own tool) would need a deploy. Cortex keeps a table of redirect domains beside that config and accepts both when a client registers, so new origins are added at runtime:
+
+- **Dashboard:** Cortex → Redirect domains is the global list: one table of every allowed origin, compiled from config, global domains and those organizations and users own, with each row's source and chips to filter by it. Global domains (no owner) are added and removed here; configured ones change only in config.
+- **API and MCP:** `/cortex/redirect-domains` and the `list-redirect-domains-tool`, `create-redirect-domain-tool` and `delete-redirect-domain-tool` tools.
+- **Code:** `app(CreateRedirectDomainAction::class)->execute(['domain' => 'claude.ai'], $owner)`.
+
+A domain may belong to any model, such as an organization or a user (Roster manages them on its organization and user pages), or to no one. Hosts, origins and full redirect URLs are all stored as their origin: `claude.ai`, `https://claude.ai/` and `https://claude.ai/api/mcp/auth_callback` are all `https://claude.ai`. Only config can allow `*`.
+
+Registration is anonymous, so every client may register on every allowed origin, whoever added it; the owner says who manages a domain, not who may use it. Users still approve each client on the consent screen. The configured domains, `*` and localhost keep working as laravel/mcp documents. Set `cortex.redirect_domains.enabled` to `false` to use the configured domains alone. The policy in `cortex.policies` receives the owner on `create`, so an application can let an organization's admins manage only that organization's domains.
 
 ## Events
 

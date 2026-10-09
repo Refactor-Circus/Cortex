@@ -17,7 +17,7 @@ src/Domains/{Domain}/
 └── Concerns/ Exceptions/ Support/ # only when used
 ```
 
-- Domains: `VirtualAgent` (virtual agents, their versions, runtime and providers), `ConcreteAgent` (class-based agents, their registry and overrides), `Tool` (tool registry and description overrides), `McpServer` (MCP server registry and instruction overrides). Create a subdirectory only when it holds something.
+- Domains: `VirtualAgent` (virtual agents, their versions, runtime and providers), `ConcreteAgent` (class-based agents, their registry and overrides), `Tool` (tool registry and description overrides), `McpServer` (MCP server registry and instruction overrides), `RedirectDomain` (stored OAuth redirect domains and the dynamic client registration controller that accepts them). Create a subdirectory only when it holds something.
 - Package-wide code stays at the top level: `Cortex`, `CortexServiceProvider`, `Facades\Cortex`, the base `Http\Request` and `Mcp\Request`, `Mcp\CortexServer`, `Mcp\Tools\ListCortexHistoryTool`, `Http\Resources\AgentRunResource`, and `Support\` (`PublicationCache`, `Policies\Policy`).
 - The event contracts, `DispatchesModelEvents` and the provider bases come from `jayi/foundation` (`JayI\Foundation\Contracts\*`, `JayI\Foundation\Models\Concerns\DispatchesModelEvents`, `JayI\Foundation\Support\{ServiceProvider,PackageServiceProvider}`).
 - The Atrium screens span every domain, so they live in `src/Atrium` (`CortexPlugin`, `ScreenAccess`, `RunnableAgents`, `Badges`, `Http\Controllers\*UiController`, `Features\CortexSupportFeature`).

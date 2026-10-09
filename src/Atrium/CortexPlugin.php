@@ -16,6 +16,7 @@ use JayI\Atrium\Domains\Settings\Data\SettingsPanel;
 use JayI\Atrium\Support\Icons;
 use JayI\Cortex\Atrium\Http\Controllers\ConcreteAgentUiController;
 use JayI\Cortex\Atrium\Http\Controllers\McpInstructionUiController;
+use JayI\Cortex\Atrium\Http\Controllers\RedirectDomainUiController;
 use JayI\Cortex\Atrium\Http\Controllers\RunAgentUiController;
 use JayI\Cortex\Atrium\Http\Controllers\ServerUiController;
 use JayI\Cortex\Atrium\Http\Controllers\ToolDescriptionUiController;
@@ -25,6 +26,7 @@ use JayI\Cortex\Atrium\Http\Controllers\VirtualAgentVersionUiController;
 use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
 use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
 use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
@@ -99,6 +101,13 @@ class CortexPlugin extends Plugin
                 ->group('Cortex')
                 ->sort(50),
 
+            NavItem::make(__('cortex::cortex.redirect_domains'))
+                ->icon(Icons::svg('globe-alt'))
+                ->route('atrium.cortex.redirect-domains.index')
+                ->group('Cortex')
+                ->sort(60)
+                ->authorize(fn (Request $request): bool => ScreenAccess::allowsFor($request->user(), 'viewAny', RedirectDomainModel::class)),
+
             // The package's own audit log, while an audit log is installed.
             $this->historyNavItem('cortex')->group('Cortex')->sort(90),
         ];
@@ -140,6 +149,10 @@ class CortexPlugin extends Plugin
             Route::post('cortex/servers/{server}/instructions/versions/{version}/publish', [McpInstructionUiController::class, 'publish'])
                 ->whereNumber('version')->name('servers.instructions.publish');
             Route::delete('cortex/servers/{server}/instructions', [McpInstructionUiController::class, 'destroy'])->name('servers.instructions.destroy');
+
+            Route::get('cortex/redirect-domains', [RedirectDomainUiController::class, 'index'])->name('redirect-domains.index');
+            Route::post('cortex/redirect-domains', [RedirectDomainUiController::class, 'store'])->name('redirect-domains.store');
+            Route::delete('cortex/redirect-domains/{domain}', [RedirectDomainUiController::class, 'destroy'])->name('redirect-domains.destroy');
         });
     }
 

@@ -117,6 +117,25 @@ return [
     'back_to_tools' => 'Back to tools',
     'back_to_servers' => 'Back to servers',
 
+    // Redirect domains
+    'redirect_domains' => 'Redirect domains',
+    'redirect_domains_description' => 'Every origin MCP clients may register OAuth redirect URIs on: those in config, global ones added here, and those organizations and users add. Any client may register on any of them; each user still approves the client.',
+    'configured_redirect_domains_hint' => 'Set in mcp.redirect_domains',
+    'source' => 'Source',
+    'all_sources' => 'All',
+    'source_config' => 'Config',
+    'source_global' => 'Global',
+    'source_owned' => 'Organizations & users',
+    'domain' => 'Domain',
+    'domain_hint' => 'A host, origin or full redirect URL; only the origin is kept. A bare host is taken as https.',
+    'add_domain' => 'Add global domain',
+    'remove_domain' => 'Remove',
+    'no_redirect_domains' => 'No redirect domains.',
+    'redirect_domain_added' => 'Redirect domain added.',
+    'redirect_domain_removed' => 'Redirect domain removed.',
+    'redirect_domain_invalid' => 'Enter a host or an http(s) URL, such as claude.ai or https://claude.ai.',
+    'redirect_domains_disabled' => 'Stored redirect domains are switched off (cortex.redirect_domains.enabled), so only the configured ones are accepted.',
+
     // Shared
     'save' => 'Save',
     'cancel' => 'Cancel',
