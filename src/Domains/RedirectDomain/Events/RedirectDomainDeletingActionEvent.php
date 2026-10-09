@@ -7,7 +7,7 @@ namespace RefactorCircus\Cortex\Domains\RedirectDomain\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
-use RefactorCircus\Foundation\Contracts\ActionStartingEvent;
+use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
 
 /**
  * A redirect domain is about to be removed.

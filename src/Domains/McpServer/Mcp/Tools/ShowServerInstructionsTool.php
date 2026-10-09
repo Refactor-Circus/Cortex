@@ -9,7 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests\ShowServerInstructionsMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
+use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Show the instruction override for a registered MCP server, including its published version.')]
 final class ShowServerInstructionsTool extends Tool

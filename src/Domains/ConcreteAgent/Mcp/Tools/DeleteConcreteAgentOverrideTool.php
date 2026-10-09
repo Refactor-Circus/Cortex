@@ -9,7 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests\DeleteConcreteAgentOverrideMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
+use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Remove every override of a registered concrete agent (prompt versions and toolset); its code-declared prompt and tools take over.')]
 final class DeleteConcreteAgentOverrideTool extends Tool

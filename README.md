@@ -25,7 +25,7 @@ Run either kind via the API, the dashboard, the MCP server, or the `Cortex` faca
 composer require refactor-circus/cortex
 ```
 
-Cortex stands on [refactor-circus/foundation](https://github.com/Refactor-Circus/Foundation), the shared runtime of the Refactor Circus suite, which Composer installs with it. Its event contracts, base requests and MCP bases are shared by every package of the suite.
+Cortex stands on [refactor-circus/keystone](https://github.com/Refactor-Circus/Keystone), the shared runtime of the Refactor Circus suite, which Composer installs with it. Its event contracts, base requests and MCP bases are shared by every package of the suite.
 
 Publish and run the migrations:
 
@@ -342,7 +342,7 @@ Registration is anonymous, so every client may register on every allowed origin,
 
 - **Model events:** every Eloquent hook of every Cortex model fires its own class, such as `VirtualAgentCreatingEvent`, `VirtualAgentVersionSavedEvent` or `ConcreteAgentOverrideDeletedEvent`.
 - **Action events:** every action fires a start and a finish event, such as `VirtualAgentVersionPublishingActionEvent` and `VirtualAgentVersionPublishedActionEvent`, or `VirtualAgentRunningActionEvent` and `VirtualAgentRanActionEvent`. The start event fires before the work. The finish event fires after the transaction commits, and only on success.
-- **Listening to a whole family:** listen to `ModelLifecycleEvent`, `ActionStartingEvent` or `ActionFinishedEvent` (in `RefactorCircus\Foundation\Contracts`) to receive every event of that family.
+- **Listening to a whole family:** listen to `ModelLifecycleEvent`, `ActionStartingEvent` or `ActionFinishedEvent` (in `RefactorCircus\Keystone\Contracts`) to receive every event of that family.
 
 **Full guide:** [Events](docs/events.md). It lists every action with its two events and what they carry.
 

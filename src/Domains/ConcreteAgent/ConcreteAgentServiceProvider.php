@@ -6,7 +6,7 @@ namespace RefactorCircus\Cortex\Domains\ConcreteAgent;
 
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\ConcreteAgentOverrides;
-use RefactorCircus\Foundation\Support\ServiceProvider;
+use RefactorCircus\Keystone\Support\ServiceProvider;
 
 class ConcreteAgentServiceProvider extends ServiceProvider
 {

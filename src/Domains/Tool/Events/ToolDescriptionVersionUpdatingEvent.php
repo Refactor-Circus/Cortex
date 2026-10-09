@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
-use RefactorCircus\Foundation\Contracts\ModelLifecycleEvent;
+use RefactorCircus\Keystone\Contracts\ModelLifecycleEvent;
 
 /**
  * The ToolDescriptionVersionModel `updating` Eloquent event.

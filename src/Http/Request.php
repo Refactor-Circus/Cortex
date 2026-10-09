@@ -6,7 +6,7 @@ namespace RefactorCircus\Cortex\Http;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
-use RefactorCircus\Foundation\Http\Requests\Request as FoundationRequest;
+use RefactorCircus\Keystone\Http\Requests\Request as KeystoneRequest;
 
 /**
  * Base HTTP request.
@@ -20,7 +20,7 @@ use RefactorCircus\Foundation\Http\Requests\Request as FoundationRequest;
  * guests, so the route middleware stays the gate until an application
  * registers stricter ones.
  */
-abstract class Request extends FoundationRequest
+abstract class Request extends KeystoneRequest
 {
     public function authorize(): bool
     {

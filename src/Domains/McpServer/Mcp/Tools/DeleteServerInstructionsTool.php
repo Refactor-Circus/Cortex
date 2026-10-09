@@ -9,7 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests\DeleteServerInstructionsMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
+use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Remove the instruction override and its version history for a registered MCP server; the code-declared instructions take over.')]
 final class DeleteServerInstructionsTool extends Tool

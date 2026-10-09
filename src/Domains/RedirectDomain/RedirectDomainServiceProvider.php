@@ -7,7 +7,7 @@ namespace RefactorCircus\Cortex\Domains\RedirectDomain;
 use Laravel\Mcp\Server\Http\Controllers\OAuthRegisterController as BaseOAuthRegisterController;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Http\Controllers\OAuthRegisterController;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
-use RefactorCircus\Foundation\Support\ServiceProvider;
+use RefactorCircus\Keystone\Support\ServiceProvider;
 
 class RedirectDomainServiceProvider extends ServiceProvider
 {

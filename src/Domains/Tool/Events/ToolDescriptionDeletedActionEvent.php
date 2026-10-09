@@ -7,7 +7,7 @@ namespace RefactorCircus\Cortex\Domains\Tool\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
+use RefactorCircus\Keystone\Contracts\ActionFinishedEvent;
 
 /**
  * A tool's description override was deleted; the tool falls back to its code-declared description.

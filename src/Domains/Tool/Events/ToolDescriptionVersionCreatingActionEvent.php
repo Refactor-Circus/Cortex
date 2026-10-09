@@ -6,7 +6,7 @@ namespace RefactorCircus\Cortex\Domains\Tool\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use RefactorCircus\Foundation\Contracts\ActionStartingEvent;
+use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
 
 /**
  * A new version of a tool's description override is about to be created.

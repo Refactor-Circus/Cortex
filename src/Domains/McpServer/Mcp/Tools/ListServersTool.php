@@ -9,7 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests\ListServersMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
+use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('List the MCP servers registered with Cortex, including the instructions each currently serves.')]
 final class ListServersTool extends Tool

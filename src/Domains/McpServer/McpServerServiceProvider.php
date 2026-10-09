@@ -6,7 +6,7 @@ namespace RefactorCircus\Cortex\Domains\McpServer;
 
 use RefactorCircus\Cortex\Domains\McpServer\Services\McpInstructionOverrides;
 use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
-use RefactorCircus\Foundation\Support\ServiceProvider;
+use RefactorCircus\Keystone\Support\ServiceProvider;
 
 class McpServerServiceProvider extends ServiceProvider
 {

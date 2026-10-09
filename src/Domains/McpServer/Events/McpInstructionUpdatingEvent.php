@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use RefactorCircus\Foundation\Contracts\ModelLifecycleEvent;
+use RefactorCircus\Keystone\Contracts\ModelLifecycleEvent;
 
 /**
  * The McpInstructionModel `updating` Eloquent event.

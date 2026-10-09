@@ -50,9 +50,9 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublish
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Support\DbAgent;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoAgent;
-use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
-use RefactorCircus\Foundation\Contracts\ActionStartingEvent;
-use RefactorCircus\Foundation\Contracts\ModelLifecycleEvent;
+use RefactorCircus\Keystone\Contracts\ActionFinishedEvent;
+use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
+use RefactorCircus\Keystone\Contracts\ModelLifecycleEvent;
 
 /**
  * Record every event of a kind, in order.

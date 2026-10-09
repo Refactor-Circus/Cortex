@@ -10,7 +10,7 @@ use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Concerns\DescribesVirtualAgentPayload;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\CreateVirtualAgentMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
+use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Create a Cortex virtual agent. Its instructions become prompt version 1, published immediately. Attach registered tools and virtual or concrete sub-agents to delegate to.')]
 final class CreateVirtualAgentTool extends Tool

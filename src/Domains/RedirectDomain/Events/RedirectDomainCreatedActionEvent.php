@@ -7,7 +7,7 @@ namespace RefactorCircus\Cortex\Domains\RedirectDomain\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
-use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
+use RefactorCircus\Keystone\Contracts\ActionFinishedEvent;
 
 /**
  * A redirect domain was added; MCP clients may now register redirect URIs on it.

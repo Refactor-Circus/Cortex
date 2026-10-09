@@ -9,7 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\Tool\Mcp\Requests\ListToolsMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
+use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('List the tools registered with Cortex that can be attached to agents, including their input schemas and tags. Pass a tag to list only the tools carrying it.')]
 final class ListToolsTool extends Tool

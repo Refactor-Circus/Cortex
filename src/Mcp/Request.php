@@ -6,7 +6,7 @@ namespace RefactorCircus\Cortex\Mcp;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
-use RefactorCircus\Foundation\Mcp\Requests\Request as FoundationRequest;
+use RefactorCircus\Keystone\Mcp\Requests\Request as KeystoneRequest;
 
 /**
  * Base MCP request: mirrors the HTTP FormRequest `persist()` pattern so
@@ -17,7 +17,7 @@ use RefactorCircus\Foundation\Mcp\Requests\Request as FoundationRequest;
  * guests, so the route middleware stays the gate until an application
  * registers stricter ones.
  */
-abstract class Request extends FoundationRequest
+abstract class Request extends KeystoneRequest
 {
     /**
      * Authorize the tool call. Requests that touch a model override this to

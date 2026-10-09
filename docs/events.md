@@ -38,7 +38,7 @@ Event::listen(VirtualAgentVersionCreatedEvent::class, function (VirtualAgentVers
 - **Cancelling:** a `creating`, `updating`, `saving` or `deleting` listener that returns `false` stops the operation.
 - **Your own mapping:** entries a model declares on `$dispatchesEvents` win over the derived ones.
 
-The mapping is done by the `DispatchesModelEvents` trait (`RefactorCircus\Foundation\Models\Concerns`).
+The mapping is done by the `DispatchesModelEvents` trait (`RefactorCircus\Keystone\Models\Concerns`).
 
 ## Action events
 
@@ -68,7 +68,7 @@ Action events live beside the model events, in `RefactorCircus\Cortex\Domains\{D
 
 ## Listening to a whole family
 
-Each family implements an interface in `RefactorCircus\Foundation\Contracts`, and Laravel delivers an event to listeners of the interfaces it implements:
+Each family implements an interface in `RefactorCircus\Keystone\Contracts`, and Laravel delivers an event to listeners of the interfaces it implements:
 
 | Interface | Receives |
 | --- | --- |
@@ -77,7 +77,7 @@ Each family implements an interface in `RefactorCircus\Foundation\Contracts`, an
 | `ActionFinishedEvent` | every action finish event |
 
 ```php
-use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
+use RefactorCircus\Keystone\Contracts\ActionFinishedEvent;
 
 Event::listen(ActionFinishedEvent::class, fn (ActionFinishedEvent $event) => AuditLog::record($event));
 ```

@@ -14,15 +14,15 @@ This repository is a Laravel package. Keep the package focused, idiomatic, and e
 
 The package follows the mono domain-module layout, described in `agent-os/standards/backend/domain-modules.md`. Code lives in `src/Domains/{VirtualAgent,ConcreteAgent,Tool,McpServer,RedirectDomain}` (namespace `RefactorCircus\Cortex\Domains\{Domain}`), each with its own `{Domain}ServiceProvider` registered by `Domains\DomainServiceProvider`. Models are named `{Entity}Model`. The Atrium screens span every domain and live in `src/Atrium`; package-wide pieces (`Cortex`, the facade, the base requests, `Mcp\CortexServer`, `Support\`) stay at the top level. `config/cortex.php` stays one file.
 
-## Foundation
+## Keystone
 
-Cortex stands on `refactor-circus/foundation`, the shared runtime of the Refactor Circus suite; read its README before changing base classes.
+Cortex stands on `refactor-circus/keystone`, the shared runtime of the Refactor Circus suite; read its README before changing base classes.
 
-- `CortexServiceProvider` extends `RefactorCircus\Foundation\Support\PackageServiceProvider`. `definition()` describes the package (`cortex`, `RefactorCircus\Cortex`, `CortexServer`); `register()` merges the config, calls `registerPackage()`, then registers the domain providers. `boot()` uses `registerPolicies()`, `registerAtriumPlugin()`, `registerMcpServer()` and `loadHistoryRoutes()`. It does not call `registerCortex()`: Cortex registers its own server with its own registry, and its management tools are not offered to agents.
-- Domain providers extend `RefactorCircus\Foundation\Support\ServiceProvider`; routes load through `loadApiRoutesFrom()`, gated by `cortex.routes.enabled`.
-- Events implement `RefactorCircus\Foundation\Contracts\{ActionStartingEvent,ActionFinishedEvent,ModelLifecycleEvent}`; models use `RefactorCircus\Foundation\Models\Concerns\DispatchesModelEvents`.
-- `Http\Request` and `Mcp\Request` extend Foundation's request bases but keep Cortex's authorization: every check goes to the Gate, as the signed-in user or as a guest, and the bundled policies allow guests. Do not switch them to Foundation's `authorization` switch.
-- `Mcp\CortexServer` extends `RefactorCircus\Foundation\Mcp\Server` and lists every tool in `TOOLS`, including `Mcp\Tools\ListCortexHistoryTool`. Cortex's own tools extend `RefactorCircus\Foundation\Mcp\Tool`; `Domains\Tool\Support\Tool` and `Domains\McpServer\Support\Server` are for application tools and servers.
+- `CortexServiceProvider` extends `RefactorCircus\Keystone\Support\PackageServiceProvider`. `definition()` describes the package (`cortex`, `RefactorCircus\Cortex`, `CortexServer`); `register()` merges the config, calls `registerPackage()`, then registers the domain providers. `boot()` uses `registerPolicies()`, `registerAtriumPlugin()`, `registerMcpServer()` and `loadHistoryRoutes()`. It does not call `registerCortex()`: Cortex registers its own server with its own registry, and its management tools are not offered to agents.
+- Domain providers extend `RefactorCircus\Keystone\Support\ServiceProvider`; routes load through `loadApiRoutesFrom()`, gated by `cortex.routes.enabled`.
+- Events implement `RefactorCircus\Keystone\Contracts\{ActionStartingEvent,ActionFinishedEvent,ModelLifecycleEvent}`; models use `RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents`.
+- `Http\Request` and `Mcp\Request` extend Keystone's request bases but keep Cortex's authorization: every check goes to the Gate, as the signed-in user or as a guest, and the bundled policies allow guests. Do not switch them to Keystone's `authorization` switch.
+- `Mcp\CortexServer` extends `RefactorCircus\Keystone\Mcp\Server` and lists every tool in `TOOLS`, including `Mcp\Tools\ListCortexHistoryTool`. Cortex's own tools extend `RefactorCircus\Keystone\Mcp\Tool`; `Domains\Tool\Support\Tool` and `Domains\McpServer\Support\Server` are for application tools and servers.
 
 ## Frontend
 
@@ -31,7 +31,7 @@ Atrium owns every component and style; Cortex ships no `resources/css`, no `Atri
 - Views use only `x-atrium::*` components and the utilities Atrium safelists. No `<style>` blocks and no `style=` attributes. `tests/Feature/Ui/StylesTest.php` checks this with `RefactorCircus\Atrium\Testing\AtriumStyles`.
 - Status and errors use `<x-atrium::flash :keys="['prompt', 'agent']" />`; tag filters are `x-atrium::chip`s; searches are `x-atrium::search-input`.
 - History is `<x-atrium::audit-trail source="cortex" />`, with `:subject` on a record's screen. The content-versions partial stays, since versions are publishable content.
-- `CortexPlugin::features()` uses Atrium's `featuresFromConfig()`. Cortex keeps its own `Atrium\ScreenAccess` and `AuthorizesScreens`: Atrium's copies follow Foundation's `authorization` switch and refuse guests, while Cortex asks the Gate as the signed-in user or as a guest, with extra arguments.
+- `CortexPlugin::features()` uses Atrium's `featuresFromConfig()`. Cortex keeps its own `Atrium\ScreenAccess` and `AuthorizesScreens`: Atrium's copies follow Keystone's `authorization` switch and refuse guests, while Cortex asks the Gate as the signed-in user or as a guest, with extra arguments.
 
 ## Quick Commands
 

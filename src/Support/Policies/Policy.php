@@ -7,7 +7,7 @@ namespace RefactorCircus\Cortex\Support\Policies;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
-use RefactorCircus\Foundation\Policies\Policy as FoundationPolicy;
+use RefactorCircus\Keystone\Policies\Policy as KeystonePolicy;
 
 /**
  * Shared checks for the bundled policies.
@@ -24,7 +24,7 @@ use RefactorCircus\Foundation\Policies\Policy as FoundationPolicy;
  * The shared runtime's `allowsOn()` needs a signed-in user, so the bundled
  * policies keep `allowsOnParent()`, which also asks for guests.
  */
-abstract class Policy extends FoundationPolicy
+abstract class Policy extends KeystonePolicy
 {
     /**
      * Ask the Gate about the parent record, so a version follows whichever

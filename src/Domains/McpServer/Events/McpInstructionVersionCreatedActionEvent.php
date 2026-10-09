@@ -7,7 +7,7 @@ namespace RefactorCircus\Cortex\Domains\McpServer\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
+use RefactorCircus\Keystone\Contracts\ActionFinishedEvent;
 
 /**
  * A new version of an MCP server's instructions override was created, and published when asked.

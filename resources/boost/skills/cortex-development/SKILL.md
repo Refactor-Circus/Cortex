@@ -132,9 +132,9 @@ Register under `cortex.agents` config (string keys name them; unkeyed entries us
 - `GET|DELETE /cortex/tools/{tool}/description`, `GET|POST .../description/versions`, `POST .../versions/{version}/publish` — versioned tool description overrides.
 - `GET /cortex/servers` — registered MCP servers with their effective instructions.
 - `GET|DELETE /cortex/servers/{server}/instructions`, `GET|POST .../instructions/versions`, `POST .../versions/{version}/publish` — versioned server instruction overrides (rollback = publish an older version).
-- `GET /cortex/history` — Cortex's audit history, newest first (route `cortex.history.index`, from refactor-circus/foundation); answers 404 until an audit log such as refactor-circus/keen is installed.
+- `GET /cortex/history` — Cortex's audit history, newest first (route `cortex.history.index`, from refactor-circus/keystone); answers 404 until an audit log such as refactor-circus/keen is installed.
 
-The MCP server (`RefactorCircus\Cortex\Mcp\CortexServer`) exposes the virtual agent, concrete agent, tool-list, and server-instruction operations as 26 MCP tools, including `list-cortex-history-tool`; the provider and tool-description endpoints are HTTP-only. Cortex stands on `refactor-circus/foundation`: its event contracts live in `RefactorCircus\Foundation\Contracts`.
+The MCP server (`RefactorCircus\Cortex\Mcp\CortexServer`) exposes the virtual agent, concrete agent, tool-list, and server-instruction operations as 26 MCP tools, including `list-cortex-history-tool`; the provider and tool-description endpoints are HTTP-only. Cortex stands on `refactor-circus/keystone`: its event contracts live in `RefactorCircus\Keystone\Contracts`.
 
 Published agent prompts, concrete agent overrides, description overrides, and server instruction overrides are cached (`cortex.cache` config: Redis preferred with stale-while-revalidate, other stores cache until publish invalidates; disable with `'cache' => ['enabled' => false]`).
 
@@ -156,7 +156,7 @@ Provider/model/settings fall back to the app's `config/ai.php` defaults when uns
 
 - Model events: one class per Eloquent hook per model, e.g. `RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionCreatedEvent` (`$event->version`).
 - Action events: a start and a finish event per action, e.g. `VirtualAgentVersionPublishingActionEvent` then `VirtualAgentVersionPublishedActionEvent` (`$event->agent`), or `VirtualAgentRunningActionEvent` then `VirtualAgentRanActionEvent` (`$event->agent`, `$event->input`, `$event->response`). Finish events fire after commit and only on success.
-- Listen to `RefactorCircus\Foundation\Contracts\ActionFinishedEvent` or `ModelLifecycleEvent` to see a whole family. In tests, fake only the events you assert on: `Event::fake([VirtualAgentVersionPublishedActionEvent::class])`.
+- Listen to `RefactorCircus\Keystone\Contracts\ActionFinishedEvent` or `ModelLifecycleEvent` to see a whole family. In tests, fake only the events you assert on: `Event::fake([VirtualAgentVersionPublishedActionEvent::class])`.
 
 ### 9. Test the integration
 

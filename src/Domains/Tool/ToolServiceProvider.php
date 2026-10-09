@@ -6,7 +6,7 @@ namespace RefactorCircus\Cortex\Domains\Tool;
 
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolDescriptionOverrides;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
-use RefactorCircus\Foundation\Support\ServiceProvider;
+use RefactorCircus\Keystone\Support\ServiceProvider;
 
 class ToolServiceProvider extends ServiceProvider
 {

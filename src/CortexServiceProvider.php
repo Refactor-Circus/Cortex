@@ -11,8 +11,8 @@ use RefactorCircus\Cortex\Atrium\CortexPlugin;
 use RefactorCircus\Cortex\Atrium\ScreenAccess;
 use RefactorCircus\Cortex\Domains\DomainServiceProvider;
 use RefactorCircus\Cortex\Mcp\CortexServer;
-use RefactorCircus\Foundation\Packages\Package;
-use RefactorCircus\Foundation\Support\PackageServiceProvider;
+use RefactorCircus\Keystone\Packages\Package;
+use RefactorCircus\Keystone\Support\PackageServiceProvider;
 
 class CortexServiceProvider extends PackageServiceProvider
 {

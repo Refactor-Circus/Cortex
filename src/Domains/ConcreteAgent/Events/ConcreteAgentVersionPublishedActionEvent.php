@@ -7,7 +7,7 @@ namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
+use RefactorCircus\Keystone\Contracts\ActionFinishedEvent;
 
 /**
  * A version of a concrete agent's prompt override was published; `$override->publishedVersion` is the new one.

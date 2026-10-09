@@ -38,7 +38,7 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentTool;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentVersionTool;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\UpdateVirtualAgentTool;
 use RefactorCircus\Cortex\Mcp\Tools\ListCortexHistoryTool;
-use RefactorCircus\Foundation\Mcp\Server;
+use RefactorCircus\Keystone\Mcp\Server;
 
 #[Name('Cortex')]
 #[Version('1.0.0')]
