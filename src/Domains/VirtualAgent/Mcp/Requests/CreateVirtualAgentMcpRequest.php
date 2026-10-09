@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Mcp\Requests;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests;
 
-use JayI\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
-use JayI\Cortex\Mcp\Request;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
+use RefactorCircus\Cortex\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 

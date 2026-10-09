@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Atrium\Http\Controllers;
+namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use JayI\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\Tool\Actions\ListToolsAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\DeleteVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\ListProvidersAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentsAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Actions\ListToolsAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\DeleteVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ListProvidersAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentsAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 final class VirtualAgentUiController
 {

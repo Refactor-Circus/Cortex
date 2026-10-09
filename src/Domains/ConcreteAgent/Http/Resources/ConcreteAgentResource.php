@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Http\Resources;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 
 /**
  * @property array{name: string, class: string, overridable: bool, tools_overridable: bool, instructions: string, tools: list<string>, default_instructions?: string, default_tools: list<string>, override: ConcreteAgentOverrideModel|null} $resource

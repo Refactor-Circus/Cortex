@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\RedirectDomain\Models;
+namespace RefactorCircus\Cortex\Domains\RedirectDomain\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
-use JayI\Cortex\Database\Factories\RedirectDomainFactory;
-use JayI\Foundation\Models\Concerns\DispatchesModelEvents;
+use RefactorCircus\Cortex\Database\Factories\RedirectDomainFactory;
+use RefactorCircus\Foundation\Models\Concerns\DispatchesModelEvents;
 
 /**
  * An origin MCP clients may register OAuth redirect URIs on, beside the

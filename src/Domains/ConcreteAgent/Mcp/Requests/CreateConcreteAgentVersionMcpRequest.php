@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Mcp\Requests;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests;
 
 use Illuminate\Support\Arr;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
-use JayI\Cortex\Domains\ConcreteAgent\Resources\ConcreteAgentOverrideVersionResource;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Resources\ConcreteAgentOverrideVersionResource;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 

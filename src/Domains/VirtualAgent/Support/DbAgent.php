@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Support;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Support;
 
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\CanActAsTool;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Support;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Support;
 
 use Attribute;
 

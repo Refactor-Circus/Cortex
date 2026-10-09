@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Atrium\Http\Controllers;
+namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use JayI\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
-use JayI\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
-use JayI\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
-use JayI\Cortex\Domains\RedirectDomain\Actions\ListRedirectDomainsAction;
-use JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
-use JayI\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\ListRedirectDomainsAction;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
 
 /**
  * Every stored redirect domain, whoever owns it. Domains added here belong

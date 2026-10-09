@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\RedirectDomain\Actions;
+namespace RefactorCircus\Cortex\Domains\RedirectDomain\Actions;
 
-use JayI\Cortex\Domains\RedirectDomain\Events\RedirectDomainDeletedActionEvent;
-use JayI\Cortex\Domains\RedirectDomain\Events\RedirectDomainDeletingActionEvent;
-use JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
-use JayI\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainDeletedActionEvent;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainDeletingActionEvent;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
 
 final class DeleteRedirectDomainAction
 {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\RedirectDomain\Events;
+namespace RefactorCircus\Cortex\Domains\RedirectDomain\Events;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
-use JayI\Foundation\Contracts\ModelLifecycleEvent;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use RefactorCircus\Foundation\Contracts\ModelLifecycleEvent;
 
 /**
  * The RedirectDomainModel `deleting` Eloquent event.

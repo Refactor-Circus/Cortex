@@ -185,7 +185,7 @@ final class StorePromptRequest extends Request
 }
 ```
 
-- Extend `JayI\Cortex\Http\Request` (abstract persist() enforces the shape)
+- Extend `RefactorCircus\Cortex\Http\Request` (abstract persist() enforces the shape)
 - One request class per operation; controllers stay identical across models and mirror the MCP request layer 1:1
 - `rules()` always delegates to the action's static rules — never inline
 - Status codes: 201 create, 200 default, 204 (Response) for deletes
@@ -269,7 +269,7 @@ final class CreatePromptTool extends Tool
 }
 ```
 
-- Extend `JayI\Cortex\Domains\Tool\Support\Tool` (not Laravel's directly) — gives versioned description support
+- Extend `RefactorCircus\Cortex\Domains\Tool\Support\Tool` (not Laravel's directly) — gives versioned description support
 - Request class: `rules()` returns `SomeAction::rules()` (plus slug lookup rules), `handle(array $validated)` resolves the action — deliberate mirror of the HTTP FormRequest `persist()` pattern: same mental model and test shape on both surfaces
 - Base `Mcp\Request::persist()` centralizes authorize → validate → not-found handling; never re-implement in a tool
 - Never put queries or action calls in `Tool::handle()` — always delegate
@@ -425,7 +425,7 @@ export default {
 
 - `unwrap()` converts openapi-fetch results to payload-or-throw: returns `data`, throws `ApiError(status, message, errors)` on failure — every view handles errors the same way
 - `client.js` owns auth headers, the single 401 retry, and error normalization — bypassing it silently loses all three
-- SDK is the generated `@jayi/cortex-sdk` OpenAPI client; spec churn stays inside `api/`, views only see named methods
+- SDK is the generated `@refactor-circus/cortex-sdk` OpenAPI client; spec churn stays inside `api/`, views only see named methods
 - Path params are slugs (matching backend slug binding), never ids
 
 ---
@@ -537,7 +537,7 @@ arch('it will not use dd(), ddd(), env(), or exit()')
     ->each->not->toBeUsed();
 
 arch('the package source declares strict types')
-    ->expect('JayI\Cortex')
+    ->expect('RefactorCircus\Cortex')
     ->toUseStrictTypes();
 ```
 

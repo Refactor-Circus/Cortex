@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Actions;
+namespace RefactorCircus\Cortex\Domains\McpServer\Actions;
 
-use JayI\Cortex\Domains\McpServer\Events\McpInstructionShowingActionEvent;
-use JayI\Cortex\Domains\McpServer\Events\McpInstructionShownActionEvent;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Events\McpInstructionShowingActionEvent;
+use RefactorCircus\Cortex\Domains\McpServer\Events\McpInstructionShownActionEvent;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
 
 final class ShowMcpInstructionAction
 {

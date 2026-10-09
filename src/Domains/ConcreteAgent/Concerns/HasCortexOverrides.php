@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Concerns;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Concerns;
 
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\ConcreteAgent\Services\ConcreteAgentOverrides;
-use JayI\Cortex\Domains\ConcreteAgent\Support\Agent;
-use JayI\Cortex\Domains\ConcreteAgent\Support\LockedTools;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\ConcreteAgentOverrides;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Support\Agent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Support\LockedTools;
 use Stringable;
 
 /**

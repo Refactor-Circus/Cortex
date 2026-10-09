@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Tests\Fixtures\EchoTool;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
 
 it('lists registered tools with schemas', function () {
     app(ToolRegistry::class)->register('echo', EchoTool::class);

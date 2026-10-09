@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Mcp\Requests;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests;
 
 use Illuminate\Support\Arr;
-use JayI\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
-use JayI\Cortex\Domains\VirtualAgent\Resources\VirtualAgentVersionResource;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentVersionResource;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 

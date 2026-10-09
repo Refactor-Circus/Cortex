@@ -1,6 +1,6 @@
 # TestCase Environment
 
-All tests extend `JayI\Cortex\Tests\TestCase` (Orchestra Testbench), bound in `Pest.php` via `uses(TestCase::class)->in(__DIR__)`.
+All tests extend `RefactorCircus\Cortex\Tests\TestCase` (Orchestra Testbench), bound in `Pest.php` via `uses(TestCase::class)->in(__DIR__)`.
 
 Pinned environment — don't undo these:
 

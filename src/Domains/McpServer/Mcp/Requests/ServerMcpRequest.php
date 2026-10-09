@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Mcp\Requests;
+namespace RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
-use JayI\Cortex\Mcp\Request;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Mcp\Request;
 
 abstract class ServerMcpRequest extends Request
 {

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex;
+namespace RefactorCircus\Cortex;
 
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Services\AgentFactory;
-use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Services\AgentFactory;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Support\DbAgent;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Responses\AgentResponse;
 

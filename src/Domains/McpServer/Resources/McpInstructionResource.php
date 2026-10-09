@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Resources;
+namespace RefactorCircus\Cortex\Domains\McpServer\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
 
 /**
  * @mixin McpInstructionModel

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Tests;
+namespace RefactorCircus\Cortex\Tests;
 
-use JayI\PennantPlus\PennantPlusServiceProvider;
+use RefactorCircus\PennantPlus\PennantPlusServiceProvider;
 use Laravel\Pennant\PennantServiceProvider;
 
 /**
- * Cortex booted with jayi/pennantplus answering Atrium's feature checks.
+ * Cortex booted with refactor-circus/pennantplus answering Atrium's feature checks.
  */
 abstract class PennantPlusTestCase extends TestCase
 {

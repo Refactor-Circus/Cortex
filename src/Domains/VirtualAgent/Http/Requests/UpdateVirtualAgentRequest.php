@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
 
 final class UpdateVirtualAgentRequest extends VirtualAgentRequest
 {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Actions;
+namespace RefactorCircus\Cortex\Domains\McpServer\Actions;
 
 use Illuminate\Database\Eloquent\Collection;
-use JayI\Cortex\Domains\McpServer\Events\McpInstructionVersionsListedActionEvent;
-use JayI\Cortex\Domains\McpServer\Events\McpInstructionVersionsListingActionEvent;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Events\McpInstructionVersionsListedActionEvent;
+use RefactorCircus\Cortex\Domains\McpServer\Events\McpInstructionVersionsListingActionEvent;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
 
 final class ListMcpInstructionVersionsAction
 {

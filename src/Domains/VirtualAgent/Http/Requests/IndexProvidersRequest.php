@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\VirtualAgent\Actions\ListProvidersAction;
-use JayI\Cortex\Http\Request;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ListProvidersAction;
+use RefactorCircus\Cortex\Http\Request;
 
 final class IndexProvidersRequest extends Request
 {

@@ -5,7 +5,7 @@
 Applicable conventions come from `CLAUDE.md`:
 
 - Use Laravel-native package APIs and the existing service provider shape before adding abstractions.
-- Keep names, namespaces, Composer metadata, publish tags, docs, and examples aligned with `jayi/cortex`.
+- Keep names, namespaces, Composer metadata, publish tags, docs, and examples aligned with `refactor-circus/cortex`.
 - Add only files and dependencies needed for the behavior being implemented.
 - Prefer explicit Laravel package code over helper abstractions unless the extension point is real.
 - Tests focus on observable behavior through public APIs, provider wiring, commands, routes, published resources, and documentation promises.

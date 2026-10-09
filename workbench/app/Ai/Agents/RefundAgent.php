@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Workbench\App\Ai\Agents;
 
-use JayI\Cortex\Domains\ConcreteAgent\Support\Agent;
-use JayI\Cortex\Domains\ConcreteAgent\Support\LockedTools;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Support\Agent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Support\LockedTools;
 use Workbench\App\Domains\Orders\Tools\LookupOrderTool;
 use Workbench\App\Domains\Orders\Tools\RefundOrderTool;
 

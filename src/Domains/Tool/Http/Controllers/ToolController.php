@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Http\Controllers;
+namespace RefactorCircus\Cortex\Domains\Tool\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\Tool\Http\Requests\IndexToolsRequest;
+use RefactorCircus\Cortex\Domains\Tool\Http\Requests\IndexToolsRequest;
 
 final class ToolController
 {

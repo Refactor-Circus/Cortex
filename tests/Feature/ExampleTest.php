@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Cortex;
+use RefactorCircus\Cortex\Cortex;
 
 it('resolves the singleton', function () {
     expect(app(Cortex::class))->toBeInstanceOf(Cortex::class);

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests;
 
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
-use JayI\Cortex\Http\Request;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
+use RefactorCircus\Cortex\Http\Request;
 
 abstract class VirtualAgentRequest extends Request
 {

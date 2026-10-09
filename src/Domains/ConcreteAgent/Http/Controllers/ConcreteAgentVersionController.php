@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Http\Controllers;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Requests\IndexConcreteAgentVersionsRequest;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Requests\PublishConcreteAgentVersionRequest;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Requests\StoreConcreteAgentVersionRequest;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests\IndexConcreteAgentVersionsRequest;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests\PublishConcreteAgentVersionRequest;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests\StoreConcreteAgentVersionRequest;
 
 final class ConcreteAgentVersionController
 {

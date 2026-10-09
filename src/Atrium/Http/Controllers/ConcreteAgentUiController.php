@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Atrium\Http\Controllers;
+namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use JayI\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
-use JayI\Cortex\Atrium\ScreenAccess;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\DeleteConcreteAgentOverrideAction;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentsAction;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\PublishConcreteAgentVersionAction;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
+use RefactorCircus\Cortex\Atrium\ScreenAccess;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\DeleteConcreteAgentOverrideAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentsAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\PublishConcreteAgentVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
 
 final class ConcreteAgentUiController
 {

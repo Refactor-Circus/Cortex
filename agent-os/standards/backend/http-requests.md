@@ -28,7 +28,7 @@ final class StorePromptRequest extends Request
 }
 ```
 
-- Extend `JayI\Cortex\Http\Request` (abstract persist() enforces the shape). It extends `JayI\Foundation\Http\Requests\Request` but keeps asking the Gate as the signed-in user or as a guest
+- Extend `RefactorCircus\Cortex\Http\Request` (abstract persist() enforces the shape). It extends `RefactorCircus\Foundation\Http\Requests\Request` but keeps asking the Gate as the signed-in user or as a guest
 - One request class per operation; controllers stay identical across models and mirror the MCP request layer 1:1
 - `rules()` always delegates to the action's static rules — never inline
 - Status codes: 201 create, 200 default, 204 (Response) for deletes

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Database\Factories;
+namespace RefactorCircus\Cortex\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
 
 /**
  * @extends Factory<VirtualAgentVersionModel>

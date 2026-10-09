@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Workbench\App\Domains\Catalog\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use JayI\Cortex\Domains\Tool\Support\Tool;
+use RefactorCircus\Cortex\Domains\Tool\Support\Tool;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;

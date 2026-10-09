@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Actions;
+namespace RefactorCircus\Cortex\Domains\Tool\Actions;
 
-use JayI\Cortex\Domains\Tool\Events\ToolDescriptionDeletedActionEvent;
-use JayI\Cortex\Domains\Tool\Events\ToolDescriptionDeletingActionEvent;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use JayI\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionDeletedActionEvent;
+use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionDeletingActionEvent;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Support\PublicationCache;
 
 final class DeleteToolDescriptionAction
 {

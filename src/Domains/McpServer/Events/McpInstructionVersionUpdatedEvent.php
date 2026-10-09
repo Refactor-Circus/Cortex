@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Events;
+namespace RefactorCircus\Cortex\Domains\McpServer\Events;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use JayI\Foundation\Contracts\ModelLifecycleEvent;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Foundation\Contracts\ModelLifecycleEvent;
 
 /**
  * The McpInstructionVersionModel `updated` Eloquent event.

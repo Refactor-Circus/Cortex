@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use JayI\Cortex\Domains\Tool\Http\Controllers\ToolController;
-use JayI\Cortex\Domains\Tool\Http\Controllers\ToolDescriptionController;
+use RefactorCircus\Cortex\Domains\Tool\Http\Controllers\ToolController;
+use RefactorCircus\Cortex\Domains\Tool\Http\Controllers\ToolDescriptionController;
 
 Route::get('tools', [ToolController::class, 'index'])->name('tools.index');
 

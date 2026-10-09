@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool;
+namespace RefactorCircus\Cortex\Domains\Tool;
 
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
-use JayI\Cortex\Domains\Tool\Services\ToolDescriptionOverrides;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Foundation\Support\ServiceProvider;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolDescriptionOverrides;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Foundation\Support\ServiceProvider;
 
 class ToolServiceProvider extends ServiceProvider
 {
@@ -21,11 +21,6 @@ class ToolServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->keepMorphAliases([
-            'JayI\Cortex\Models\ToolDescription' => ToolDescriptionModel::class,
-            'JayI\Cortex\Models\ToolDescriptionVersion' => ToolDescriptionVersionModel::class,
-        ]);
-
         $this->loadApiRoutesFrom(__DIR__.'/routes.php');
     }
 }

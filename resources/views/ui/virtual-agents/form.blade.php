@@ -2,7 +2,7 @@
 @php($settings = (array) ($agent?->settings ?? []))
 {{-- The form saves through `update` when editing, `create` otherwise; without
      it the agent is shown read-only. --}}
-@php($maySave = $editing ? \JayI\Cortex\Atrium\ScreenAccess::allows('update', $agent) : \JayI\Cortex\Atrium\ScreenAccess::allows('create', \JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel::class))
+@php($maySave = $editing ? \RefactorCircus\Cortex\Atrium\ScreenAccess::allows('update', $agent) : \RefactorCircus\Cortex\Atrium\ScreenAccess::allows('create', \RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel::class))
 
 {{-- Provider and model options are assembled server-side so a value saved
      earlier stays selectable even when the provider no longer lists it.
@@ -138,7 +138,7 @@
             </form>
         </x-atrium::card>
 
-        @if ($editing && \JayI\Cortex\Atrium\ScreenAccess::allows('viewAny', \JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel::class, [$agent]))
+        @if ($editing && \RefactorCircus\Cortex\Atrium\ScreenAccess::allows('viewAny', \RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel::class, [$agent]))
             @include('cortex::ui.partials.versions', [
                 'versions' => $versions,
                 'publishedVersion' => $agent->publishedVersion?->version,

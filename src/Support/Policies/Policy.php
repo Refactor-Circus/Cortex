@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Support\Policies;
+namespace RefactorCircus\Cortex\Support\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
-use JayI\Foundation\Policies\Policy as FoundationPolicy;
+use RefactorCircus\Foundation\Policies\Policy as FoundationPolicy;
 
 /**
  * Shared checks for the bundled policies.

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Events;
+namespace RefactorCircus\Cortex\Domains\McpServer\Events;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use JayI\Foundation\Contracts\ActionFinishedEvent;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
 
 /**
  * The versions of an MCP server's instructions override were listed.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Tests\Fixtures\Policies;
+namespace RefactorCircus\Cortex\Tests\Fixtures\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 

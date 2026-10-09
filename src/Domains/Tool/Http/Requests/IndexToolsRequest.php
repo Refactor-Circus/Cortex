@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\Tool\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\Tool\Actions\ListToolsAction;
-use JayI\Cortex\Domains\Tool\Http\Resources\ToolResource;
-use JayI\Cortex\Http\Request;
+use RefactorCircus\Cortex\Domains\Tool\Actions\ListToolsAction;
+use RefactorCircus\Cortex\Domains\Tool\Http\Resources\ToolResource;
+use RefactorCircus\Cortex\Http\Request;
 
 final class IndexToolsRequest extends Request
 {

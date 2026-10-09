@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Http\Resources;
+namespace RefactorCircus\Cortex\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

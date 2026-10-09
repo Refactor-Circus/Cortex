@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Services;
+namespace RefactorCircus\Cortex\Domains\McpServer\Services;
 
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Support\PublicationCache;
 
 /**
  * Lookup of published MCP server instruction overrides. The map is cached

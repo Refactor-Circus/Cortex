@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use JayI\Atrium\Domains\Navigation\Data\NavItem;
-use JayI\Atrium\Domains\Navigation\Services\NavigationRegistry;
-use JayI\Cortex\Atrium\CortexPlugin;
-use JayI\Cortex\Atrium\Features\CortexSupportFeature;
+use RefactorCircus\Atrium\Domains\Navigation\Data\NavItem;
+use RefactorCircus\Atrium\Domains\Navigation\Services\NavigationRegistry;
+use RefactorCircus\Cortex\Atrium\CortexPlugin;
+use RefactorCircus\Cortex\Atrium\Features\CortexSupportFeature;
 use Laravel\Pennant\Feature;
 use Workbench\App\Models\User;
 
@@ -86,13 +86,13 @@ it('uses a subclass named in the config instead', function (): void {
 });
 
 it('keeps the stored name it had before it moved', function (): void {
-    // Values stored before the class moved from JayI\Cortex\Features.
-    Feature::for(null)->deactivate('JayI\\Cortex\\Features\\CortexSupportFeature');
+    // Values stored before the class moved from RefactorCircus\Cortex\Features.
+    Feature::for(null)->deactivate('RefactorCircus\\Cortex\\Features\\CortexSupportFeature');
 
     expect(Feature::for(null)->active(CortexSupportFeature::class))->toBeFalse()
         ->and(pennantNavigation(pennantUser()))->not->toContain('Virtual agents');
 
     Feature::define(OffCortexSupportFeature::class);
 
-    expect(Feature::defined())->toContain('JayI\\Cortex\\Features\\CortexSupportFeature', OffCortexSupportFeature::class);
+    expect(Feature::defined())->toContain('RefactorCircus\\Cortex\\Features\\CortexSupportFeature', OffCortexSupportFeature::class);
 });

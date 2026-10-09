@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Support;
+namespace RefactorCircus\Cortex\Domains\Tool\Support;
 
-use JayI\Cortex\Domains\Tool\Concerns\HasVersionedDescription;
+use RefactorCircus\Cortex\Domains\Tool\Concerns\HasVersionedDescription;
 use Laravel\Mcp\Server\Tool as McpTool;
 
 /**

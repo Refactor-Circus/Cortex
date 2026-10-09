@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Actions;
+namespace RefactorCircus\Cortex\Domains\Tool\Actions;
 
 use Illuminate\Database\Eloquent\Collection;
-use JayI\Cortex\Domains\Tool\Events\ToolDescriptionVersionsListedActionEvent;
-use JayI\Cortex\Domains\Tool\Events\ToolDescriptionVersionsListingActionEvent;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
+use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionVersionsListedActionEvent;
+use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionVersionsListingActionEvent;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 
 final class ListToolDescriptionVersionsAction
 {

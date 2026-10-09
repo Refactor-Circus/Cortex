@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Database\Factories;
+namespace RefactorCircus\Cortex\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 
 /**
  * @extends Factory<ToolDescriptionVersionModel>

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Policies;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Support\Policies\Policy;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Support\Policies\Policy;
 
 /**
  * Answers `$user->can(...)` for concrete agent overrides.

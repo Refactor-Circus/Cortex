@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Workbench\App\Mcp\Servers;
 
-use JayI\Cortex\Domains\McpServer\Support\Server;
+use RefactorCircus\Cortex\Domains\McpServer\Support\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Version;

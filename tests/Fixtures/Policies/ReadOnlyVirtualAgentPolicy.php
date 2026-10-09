@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Tests\Fixtures\Policies;
+namespace RefactorCircus\Cortex\Tests\Fixtures\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy;
 
 /**
  * Nobody may change a virtual agent, or add or publish its prompt versions.

@@ -8,6 +8,6 @@
 
     <x-atrium::card :title="__('cortex::cortex.cache')">
         @php($cacheStatus = $cacheEnabled ? 'enabled' : 'disabled')
-        <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus($cacheStatus)" :label="__('cortex::cortex.'.$cacheStatus)" data-status="{{ $cacheStatus }}" />
+        <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus($cacheStatus)" :label="__('cortex::cortex.'.$cacheStatus)" data-status="{{ $cacheStatus }}" />
     </x-atrium::card>
 </div>

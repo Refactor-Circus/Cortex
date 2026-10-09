@@ -3,17 +3,17 @@
 declare(strict_types=1);
 
 use Illuminate\Testing\Fluent\AssertableJson;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\Tool\Mcp\Tools\ListToolsTool;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentTool;
-use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\DeleteVirtualAgentTool;
-use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\ListVirtualAgentsTool;
-use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentTool;
-use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\UpdateVirtualAgentTool;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Tests\Fixtures\EchoAgent;
-use JayI\Cortex\Tests\Fixtures\EchoTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Mcp\Tools\ListToolsTool;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\DeleteVirtualAgentTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ListVirtualAgentsTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\UpdateVirtualAgentTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoAgent;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
 
 it('creates a virtual agent with parity to the http payload', function () {
     app(ToolRegistry::class)->register('echo', EchoTool::class);

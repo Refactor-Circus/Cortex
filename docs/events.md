@@ -11,7 +11,7 @@ Every event carries the models involved, not just their ids. Every event also us
 
 Each model fires a class-based event for the 10 hooks that apply to models without soft deletes: `retrieved`, `creating`, `created`, `updating`, `updated`, `saving`, `saved`, `deleting`, `deleted` and `replicating`. No Cortex model uses soft deletes, so there are no `restoring`, `restored`, `trashed`, `forceDeleting` or `forceDeleted` events.
 
-They live in each domain's `Events` namespace (`JayI\Cortex\Domains\{Domain}\Events`) and are named `{Entity}{Hook}Event`, the entity being the model's name less its `Model` suffix, for example `VirtualAgentCreatingEvent` or `ConcreteAgentOverrideDeletedEvent`. The model is a typed property:
+They live in each domain's `Events` namespace (`RefactorCircus\Cortex\Domains\{Domain}\Events`) and are named `{Entity}{Hook}Event`, the entity being the model's name less its `Model` suffix, for example `VirtualAgentCreatingEvent` or `ConcreteAgentOverrideDeletedEvent`. The model is a typed property:
 
 | Model | Property |
 | --- | --- |
@@ -27,7 +27,7 @@ They live in each domain's `Events` namespace (`JayI\Cortex\Domains\{Domain}\Eve
 The model is also available as `$event->model()`, alongside `$event->hook()`.
 
 ```php
-use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionCreatedEvent;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionCreatedEvent;
 
 Event::listen(VirtualAgentVersionCreatedEvent::class, function (VirtualAgentVersionCreatedEvent $event) {
     Log::info('New prompt version', ['agent' => $event->version->virtual_agent_id, 'version' => $event->version->version]);
@@ -38,7 +38,7 @@ Event::listen(VirtualAgentVersionCreatedEvent::class, function (VirtualAgentVers
 - **Cancelling:** a `creating`, `updating`, `saving` or `deleting` listener that returns `false` stops the operation.
 - **Your own mapping:** entries a model declares on `$dispatchesEvents` win over the derived ones.
 
-The mapping is done by the `DispatchesModelEvents` trait (`JayI\Foundation\Models\Concerns`).
+The mapping is done by the `DispatchesModelEvents` trait (`RefactorCircus\Foundation\Models\Concerns`).
 
 ## Action events
 
@@ -48,8 +48,8 @@ Every action dispatches two events:
 2. **A finish event** (`…edActionEvent`, e.g. `VirtualAgentVersionPublishedActionEvent`), once the action has succeeded. It carries the result.
 
 ```php
-use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentRanActionEvent;
-use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishedActionEvent;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentRanActionEvent;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishedActionEvent;
 
 Event::listen(VirtualAgentVersionPublishedActionEvent::class, function (VirtualAgentVersionPublishedActionEvent $event) {
     Notification::route('slack', config('services.slack.prompts'))
@@ -64,11 +64,11 @@ Event::listen(VirtualAgentRanActionEvent::class, function (VirtualAgentRanAction
 - **Failure:** an action that throws fires its start event and no finish event. Publishing a version number that does not exist fires `VirtualAgentVersionPublishingActionEvent` only.
 - **Timing:** finish events implement `ShouldDispatchAfterCommit`, so inside a transaction they fire once it commits and never for work that was rolled back. Start events fire immediately.
 
-Action events live beside the model events, in `JayI\Cortex\Domains\{Domain}\Events`.
+Action events live beside the model events, in `RefactorCircus\Cortex\Domains\{Domain}\Events`.
 
 ## Listening to a whole family
 
-Each family implements an interface in `JayI\Foundation\Contracts`, and Laravel delivers an event to listeners of the interfaces it implements:
+Each family implements an interface in `RefactorCircus\Foundation\Contracts`, and Laravel delivers an event to listeners of the interfaces it implements:
 
 | Interface | Receives |
 | --- | --- |
@@ -77,7 +77,7 @@ Each family implements an interface in `JayI\Foundation\Contracts`, and Laravel 
 | `ActionFinishedEvent` | every action finish event |
 
 ```php
-use JayI\Foundation\Contracts\ActionFinishedEvent;
+use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
 
 Event::listen(ActionFinishedEvent::class, fn (ActionFinishedEvent $event) => AuditLog::record($event));
 ```
@@ -125,7 +125,7 @@ Event::listen(ActionFinishedEvent::class, fn (ActionFinishedEvent $event) => Aud
 Fake only the events you assert on, so the rest of Cortex keeps working:
 
 ```php
-use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishedActionEvent;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishedActionEvent;
 
 Event::fake([VirtualAgentVersionPublishedActionEvent::class]);
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Services;
+namespace RefactorCircus\Cortex\Domains\Tool\Services;
 
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use JayI\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Support\PublicationCache;
 
 /**
  * Lookup of published tool description overrides. The map is cached until a

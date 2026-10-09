@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Actions;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Actions;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Concerns\ResolvesVirtualAgentReferences;
-use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentCreatedActionEvent;
-use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentCreatingActionEvent;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Concerns\ResolvesVirtualAgentReferences;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentCreatedActionEvent;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentCreatingActionEvent;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 final class CreateVirtualAgentAction
 {

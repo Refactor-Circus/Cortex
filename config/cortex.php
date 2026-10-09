@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Atrium\Features\CortexSupportFeature;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
-use JayI\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverridePolicy;
-use JayI\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverrideVersionPolicy;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use JayI\Cortex\Domains\McpServer\Policies\McpInstructionPolicy;
-use JayI\Cortex\Domains\McpServer\Policies\McpInstructionVersionPolicy;
-use JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
-use JayI\Cortex\Domains\RedirectDomain\Policies\RedirectDomainPolicy;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
-use JayI\Cortex\Domains\Tool\Policies\ToolDescriptionPolicy;
-use JayI\Cortex\Domains\Tool\Policies\ToolDescriptionVersionPolicy;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
-use JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy;
-use JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentVersionPolicy;
+use RefactorCircus\Cortex\Atrium\Features\CortexSupportFeature;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverridePolicy;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverrideVersionPolicy;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Policies\McpInstructionPolicy;
+use RefactorCircus\Cortex\Domains\McpServer\Policies\McpInstructionVersionPolicy;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Policies\RedirectDomainPolicy;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
+use RefactorCircus\Cortex\Domains\Tool\Policies\ToolDescriptionPolicy;
+use RefactorCircus\Cortex\Domains\Tool\Policies\ToolDescriptionVersionPolicy;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Policies\VirtualAgentVersionPolicy;
 
 return [
 
@@ -99,13 +99,13 @@ return [
     | features: Features that must all be on for Cortex to appear in Atrium
     |           at all - its navigation, search, settings and pages (which
     |           answer 404 otherwise). Atrium asks its feature resolver, so
-    |           Pennant (through jayi/pennantplus) or any other flag system
+    |           Pennant (through refactor-circus/pennantplus) or any other flag system
     |           decides.
     |
     |           CortexSupportFeature is on until its global value is set, and
     |           only its global value counts. Swap in a subclass to change
     |           that, or your own feature names. Feature classes that do not
-    |           exist (without jayi/pennantplus) are skipped, so nothing is
+    |           exist (without refactor-circus/pennantplus) are skipped, so nothing is
     |           checked until Pennant is installed. Empty always shows Cortex.
     |
     | Individual pages and controls are still shown per the policies above.
@@ -266,7 +266,7 @@ return [
     |
     | Class-based agents to manage in Cortex. Each class must implement
     | Laravel\Ai\Contracts\Agent. Registered agents can be run and attached
-    | to virtual agents as sub-agents. Extend JayI\Cortex\Domains\ConcreteAgent\Support\Agent (or
+    | to virtual agents as sub-agents. Extend RefactorCircus\Cortex\Domains\ConcreteAgent\Support\Agent (or
     | use the HasCortexOverrides trait) so the prompt and toolset published
     | in Cortex replace the ones declared in code. String keys set the
     | agent's registered name; unkeyed entries derive it from the class

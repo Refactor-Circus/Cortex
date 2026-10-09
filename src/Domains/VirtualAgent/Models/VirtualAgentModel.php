@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Models;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,8 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use JayI\Cortex\Database\Factories\VirtualAgentFactory;
-use JayI\Foundation\Models\Concerns\DispatchesModelEvents;
+use RefactorCircus\Cortex\Database\Factories\VirtualAgentFactory;
+use RefactorCircus\Foundation\Models\Concerns\DispatchesModelEvents;
 
 /**
  * An agent defined entirely in the database. Its prompt is versioned in

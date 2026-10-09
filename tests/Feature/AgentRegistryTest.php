@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Domains\ConcreteAgent\Exceptions\AgentNotFoundException;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Tests\Fixtures\EchoAgent;
-use JayI\Cortex\Tests\Fixtures\EchoTool;
-use JayI\Cortex\Tests\Fixtures\PlainAgent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Exceptions\AgentNotFoundException;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoAgent;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
+use RefactorCircus\Cortex\Tests\Fixtures\PlainAgent;
 
 it('registers keyed agents from the config', function () {
     config()->set('cortex.agents', ['triage' => EchoAgent::class]);

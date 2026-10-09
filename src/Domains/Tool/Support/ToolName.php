@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Support;
+namespace RefactorCircus\Cortex\Domains\Tool\Support;
 
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\Tool;

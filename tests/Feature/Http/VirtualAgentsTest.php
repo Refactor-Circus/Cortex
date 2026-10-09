@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Tests\Fixtures\EchoAgent;
-use JayI\Cortex\Tests\Fixtures\EchoTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoAgent;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
 
 it('lists virtual agents', function () {
     VirtualAgentModel::factory()->published()->create(['slug' => 'helper']);

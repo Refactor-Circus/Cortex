@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use JayI\Cortex\Domains\VirtualAgent\Http\Controllers\ProviderController;
-use JayI\Cortex\Domains\VirtualAgent\Http\Controllers\VirtualAgentController;
-use JayI\Cortex\Domains\VirtualAgent\Http\Controllers\VirtualAgentRunController;
-use JayI\Cortex\Domains\VirtualAgent\Http\Controllers\VirtualAgentVersionController;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Controllers\ProviderController;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Controllers\VirtualAgentController;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Controllers\VirtualAgentRunController;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Controllers\VirtualAgentVersionController;
 
 Route::get('virtual-agents', [VirtualAgentController::class, 'index'])->name('virtual-agents.index');
 Route::post('virtual-agents', [VirtualAgentController::class, 'store'])->name('virtual-agents.store');

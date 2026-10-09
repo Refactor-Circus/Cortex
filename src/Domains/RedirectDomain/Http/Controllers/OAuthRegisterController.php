@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\RedirectDomain\Http\Controllers;
+namespace RefactorCircus\Cortex\Domains\RedirectDomain\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use JayI\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
 use Laravel\Mcp\Server\Http\Controllers\OAuthRegisterController as BaseOAuthRegisterController;
 
 /**

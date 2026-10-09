@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Services;
+namespace RefactorCircus\Cortex\Domains\Tool\Services;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\JsonSchema\JsonSchema;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use JayI\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
-use JayI\Cortex\Domains\Tool\Support\DescribedTool;
+use RefactorCircus\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
+use RefactorCircus\Cortex\Domains\Tool\Support\DescribedTool;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\McpServerTool;
 use Laravel\Ai\Tools\ToolNameResolver;

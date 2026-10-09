@@ -14,18 +14,18 @@ metadata:
 
 # Cortex
 
-Use this skill when a Laravel application needs to integrate the `jayi/cortex` package to configure or run virtual agents (DB records with immutably versioned prompts), manage concrete agents defined in code, and register AI tools, all built on the Laravel AI SDK.
+Use this skill when a Laravel application needs to integrate the `refactor-circus/cortex` package to configure or run virtual agents (DB records with immutably versioned prompts), manage concrete agents defined in code, and register AI tools, all built on the Laravel AI SDK.
 
 ## Primary Goal
 
-- apply the `jayi/cortex` package's public API in the smallest correct way
+- apply the `refactor-circus/cortex` package's public API in the smallest correct way
 
 ## Workflow
 
 ### 1. Install and migrate
 
 ```bash
-composer require jayi/cortex
+composer require refactor-circus/cortex
 php artisan vendor:publish --tag="cortex-migrations"
 php artisan migrate
 ```
@@ -49,11 +49,11 @@ The API routes, dashboard, and MCP server manage **and execute** agents. MCP tra
 ],
 ```
 
-Every API endpoint and MCP tool that touches a model is also checked through the Gate against `cortex.policies`, as the signed-in user or as a guest. Cortex records have no owner, so the bundled policies allow everything and the middleware stays the gate. To restrict something, extend the bundled policy (e.g. `JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy`), override the ability (`update`, `delete`, `publish`, `run`, ...) and point the model at it in `cortex.policies`. Version policies defer to their virtual agent or override: `view` to read, `update` to add or publish. Type the user parameter as non-nullable to refuse guests.
+Every API endpoint and MCP tool that touches a model is also checked through the Gate against `cortex.policies`, as the signed-in user or as a guest. Cortex records have no owner, so the bundled policies allow everything and the middleware stays the gate. To restrict something, extend the bundled policy (e.g. `RefactorCircus\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy`), override the ability (`update`, `delete`, `publish`, `run`, ...) and point the model at it in `cortex.policies`. Version policies defer to their virtual agent or override: `view` to read, `update` to add or publish. Type the user parameter as non-nullable to refuse guests.
 
 ### 3. Enable the dashboard (optional)
 
-Cortex renders a server-side Blade dashboard (virtual agents with prompt versions, concrete agents with overrides, run playground, tools, tool description overrides, MCP server instruction overrides) through the `jayi/atrium` package, which it requires. The pages live under Atrium's path (`/atrium/cortex/...` by default) and use Atrium's middleware and gate, so they authenticate like the rest of the app. Publish Atrium's assets and define its gate:
+Cortex renders a server-side Blade dashboard (virtual agents with prompt versions, concrete agents with overrides, run playground, tools, tool description overrides, MCP server instruction overrides) through the `refactor-circus/atrium` package, which it requires. The pages live under Atrium's path (`/atrium/cortex/...` by default) and use Atrium's middleware and gate, so they authenticate like the rest of the app. Publish Atrium's assets and define its gate:
 
 ```bash
 php artisan vendor:publish --tag="atrium-assets"
@@ -66,11 +66,11 @@ Gate::define('viewAtrium', fn ($user) => $user->is_admin);
 
 Without a `viewAtrium` gate Atrium allows the `local` environment only. Set `'ui' => ['enabled' => false]` to leave Cortex out of the dashboard; the JSON API keeps serving.
 
-The pages check the same policies as the API (`JayI\Cortex\Atrium\ScreenAccess`): each page and action answers 403 when refused, and each navigation item, button, form and card shows only when its action is allowed. In published or custom views, gate a control with `@cortexCan('ability', $subject, [$arguments])` ... `@endcortexCan`, asked exactly as the action asks. Actions are `<x-atrium::icon-button>`s and states are `<x-atrium::status-dot>`s coloured by `JayI\Cortex\Atrium\Badges::forStatus()`.
+The pages check the same policies as the API (`RefactorCircus\Cortex\Atrium\ScreenAccess`): each page and action answers 403 when refused, and each navigation item, button, form and card shows only when its action is allowed. In published or custom views, gate a control with `@cortexCan('ability', $subject, [$arguments])` ... `@endcortexCan`, asked exactly as the action asks. Actions are `<x-atrium::icon-button>`s and states are `<x-atrium::status-dot>`s coloured by `RefactorCircus\Cortex\Atrium\Badges::forStatus()`.
 
-Cortex ships no CSS: views use only `x-atrium::*` components (`search-input`, `chip` with `x-bind:aria-pressed`, `form.checkbox bare`, `flash :keys="['prompt', 'agent']"`, `audit-trail`) and Atrium's safelisted utilities, checked by `AtriumStyles::missingClasses()` / `inlineStyles()`. `<x-atrium::audit-trail source="cortex" />` sits on the virtual agents list, and `:subject` versions on the virtual agent form and the override screens (tool description, server instructions, concrete agent); it renders nothing until an audit log (jayi/keen) is installed.
+Cortex ships no CSS: views use only `x-atrium::*` components (`search-input`, `chip` with `x-bind:aria-pressed`, `form.checkbox bare`, `flash :keys="['prompt', 'agent']"`, `audit-trail`) and Atrium's safelisted utilities, checked by `AtriumStyles::missingClasses()` / `inlineStyles()`. `<x-atrium::audit-trail source="cortex" />` sits on the virtual agents list, and `:subject` versions on the virtual agent form and the override screens (tool description, server instructions, concrete agent); it renders nothing until an audit log (refactor-circus/keen) is installed.
 
-With `jayi/pennantplus` installed, `JayI\Cortex\Atrium\Features\CortexSupportFeature` switches Cortex in Atrium on and off as a whole (global value only; pages 404 while off). Configure the list in `cortex.atrium.features`; feature classes that cannot load are skipped.
+With `refactor-circus/pennantplus` installed, `RefactorCircus\Cortex\Atrium\Features\CortexSupportFeature` switches Cortex in Atrium on and off as a whole (global value only; pages 404 while off). Configure the list in `cortex.atrium.features`; feature classes that cannot load are skipped.
 
 ### 4. Register tools
 
@@ -84,22 +84,22 @@ Tools implement `Laravel\Ai\Contracts\Tool` (`description()`, `handle()`, `schem
 ],
 
 // or at runtime (e.g. in a service provider):
-use JayI\Cortex\Facades\Cortex;
+use RefactorCircus\Cortex\Facades\Cortex;
 Cortex::tools()->register('search', \App\Ai\Tools\SearchTool::class);
 ```
 
 Tag tools to group them in the dashboard and agent tool pickers: `Cortex::tools()->register($name, $class, ['catalog'])`, a config entry `'lookup' => ['class' => LookupTool::class, 'tags' => ['catalog']]`, or namespace patterns under `cortex.tool_tags.namespaces` (default `App\\Domains\\{tag}\\` and `App\\Modules\\{tag}\\`, `{tag}` = one namespace segment, kebab-cased). Packages registering their own tools should tag them with the package name. Filter with `GET /cortex/tools?tag=` or the `list-tools-tool` `tag` argument.
 
-To let a tool's description be overridden at runtime (versioned + published like agent prompts), extend `JayI\Cortex\Domains\Tool\Support\Tool` or use the `JayI\Cortex\Domains\Tool\Concerns\HasVersionedDescription` trait. Manage overrides from the dashboard or `/cortex/tools/{tool}/description` endpoints.
+To let a tool's description be overridden at runtime (versioned + published like agent prompts), extend `RefactorCircus\Cortex\Domains\Tool\Support\Tool` or use the `RefactorCircus\Cortex\Domains\Tool\Concerns\HasVersionedDescription` trait. Manage overrides from the dashboard or `/cortex/tools/{tool}/description` endpoints.
 
-MCP server *instructions* work the same way. Cortex's own server is always registered as `cortex`; register app servers under `cortex.mcp.servers` config (string keys name them; unkeyed entries derive the name from `#[Name]` or the class basename) or at runtime with `Cortex::servers()->register('support', \App\Mcp\SupportServer::class)`. For published overrides to be served to MCP clients, the server must extend `JayI\Cortex\Domains\McpServer\Support\Server` or use the `JayI\Cortex\Domains\McpServer\Concerns\HasVersionedInstructions` trait.
+MCP server *instructions* work the same way. Cortex's own server is always registered as `cortex`; register app servers under `cortex.mcp.servers` config (string keys name them; unkeyed entries derive the name from `#[Name]` or the class basename) or at runtime with `Cortex::servers()->register('support', \App\Mcp\SupportServer::class)`. For published overrides to be served to MCP clients, the server must extend `RefactorCircus\Cortex\Domains\McpServer\Support\Server` or use the `RefactorCircus\Cortex\Domains\McpServer\Concerns\HasVersionedInstructions` trait.
 
 ### 5. Register concrete agents
 
-Class-based agents extend `JayI\Cortex\Domains\ConcreteAgent\Support\Agent` and declare `defaultInstructions()` and `defaultTools()`:
+Class-based agents extend `RefactorCircus\Cortex\Domains\ConcreteAgent\Support\Agent` and declare `defaultInstructions()` and `defaultTools()`:
 
 ```php
-use JayI\Cortex\Domains\ConcreteAgent\Support\Agent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Support\Agent;
 
 class TriageAgent extends Agent
 {
@@ -115,7 +115,7 @@ class TriageAgent extends Agent
 }
 ```
 
-Register under `cortex.agents` config (string keys name them; unkeyed entries use the kebab-cased class basename) or with `Cortex::agents()->register('triage', TriageAgent::class)`. The agent then runs everywhere with the published Cortex prompt override and toolset override when they exist. The toolset override picks from the class's own tools and registered Cortex tools and stores registered names; unresolvable names are skipped at run time. Add `#[JayI\Cortex\Domains\ConcreteAgent\Support\LockedTools]` to keep the code toolset: Cortex then rejects toolset overrides (only `null` is accepted) and ignores saved ones, while the prompt stays overridable. Use the `JayI\Cortex\Domains\ConcreteAgent\Concerns\HasCortexOverrides` trait if the class cannot extend the base. Registered agents without it can still be listed, run and used as sub-agents, but ignore overrides.
+Register under `cortex.agents` config (string keys name them; unkeyed entries use the kebab-cased class basename) or with `Cortex::agents()->register('triage', TriageAgent::class)`. The agent then runs everywhere with the published Cortex prompt override and toolset override when they exist. The toolset override picks from the class's own tools and registered Cortex tools and stores registered names; unresolvable names are skipped at run time. Add `#[RefactorCircus\Cortex\Domains\ConcreteAgent\Support\LockedTools]` to keep the code toolset: Cortex then rejects toolset overrides (only `null` is accepted) and ignores saved ones, while the prompt stays overridable. Use the `RefactorCircus\Cortex\Domains\ConcreteAgent\Concerns\HasCortexOverrides` trait if the class cannot extend the base. Registered agents without it can still be listed, run and used as sub-agents, but ignore overrides.
 
 ### 6. Manage agents via the API (or MCP tools)
 
@@ -132,16 +132,16 @@ Register under `cortex.agents` config (string keys name them; unkeyed entries us
 - `GET|DELETE /cortex/tools/{tool}/description`, `GET|POST .../description/versions`, `POST .../versions/{version}/publish` — versioned tool description overrides.
 - `GET /cortex/servers` — registered MCP servers with their effective instructions.
 - `GET|DELETE /cortex/servers/{server}/instructions`, `GET|POST .../instructions/versions`, `POST .../versions/{version}/publish` — versioned server instruction overrides (rollback = publish an older version).
-- `GET /cortex/history` — Cortex's audit history, newest first (route `cortex.history.index`, from jayi/foundation); answers 404 until an audit log such as jayi/keen is installed.
+- `GET /cortex/history` — Cortex's audit history, newest first (route `cortex.history.index`, from refactor-circus/foundation); answers 404 until an audit log such as refactor-circus/keen is installed.
 
-The MCP server (`JayI\Cortex\Mcp\CortexServer`) exposes the virtual agent, concrete agent, tool-list, and server-instruction operations as 26 MCP tools, including `list-cortex-history-tool`; the provider and tool-description endpoints are HTTP-only. Cortex stands on `jayi/foundation`: its event contracts live in `JayI\Foundation\Contracts`.
+The MCP server (`RefactorCircus\Cortex\Mcp\CortexServer`) exposes the virtual agent, concrete agent, tool-list, and server-instruction operations as 26 MCP tools, including `list-cortex-history-tool`; the provider and tool-description endpoints are HTTP-only. Cortex stands on `refactor-circus/foundation`: its event contracts live in `RefactorCircus\Foundation\Contracts`.
 
 Published agent prompts, concrete agent overrides, description overrides, and server instruction overrides are cached (`cortex.cache` config: Redis preferred with stale-while-revalidate, other stores cache until publish invalidates; disable with `'cache' => ['enabled' => false]`).
 
 ### 7. Run agents from code
 
 ```php
-use JayI\Cortex\Facades\Cortex;
+use RefactorCircus\Cortex\Facades\Cortex;
 
 $response = Cortex::runVirtualAgent('coordinator', 'Summarize the open tickets.');
 $response->text;
@@ -154,14 +154,14 @@ Provider/model/settings fall back to the app's `config/ai.php` defaults when uns
 
 ### 8. React to changes
 
-- Model events: one class per Eloquent hook per model, e.g. `JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionCreatedEvent` (`$event->version`).
+- Model events: one class per Eloquent hook per model, e.g. `RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionCreatedEvent` (`$event->version`).
 - Action events: a start and a finish event per action, e.g. `VirtualAgentVersionPublishingActionEvent` then `VirtualAgentVersionPublishedActionEvent` (`$event->agent`), or `VirtualAgentRunningActionEvent` then `VirtualAgentRanActionEvent` (`$event->agent`, `$event->input`, `$event->response`). Finish events fire after commit and only on success.
-- Listen to `JayI\Foundation\Contracts\ActionFinishedEvent` or `ModelLifecycleEvent` to see a whole family. In tests, fake only the events you assert on: `Event::fake([VirtualAgentVersionPublishedActionEvent::class])`.
+- Listen to `RefactorCircus\Foundation\Contracts\ActionFinishedEvent` or `ModelLifecycleEvent` to see a whole family. In tests, fake only the events you assert on: `Event::fake([VirtualAgentVersionPublishedActionEvent::class])`.
 
 ### 9. Test the integration
 
 ```php
-use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Support\DbAgent;
 
 DbAgent::fake(['Canned response.']);      // virtual agents
 TriageAgent::fake(['Canned triage.']);    // concrete agents fake through their own class

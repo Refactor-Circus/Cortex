@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 it('creates a version without publishing it by default', function () {
     VirtualAgentModel::factory()->published('v1')->create(['slug' => 'helper']);

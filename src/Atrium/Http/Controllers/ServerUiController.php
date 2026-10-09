@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Atrium\Http\Controllers;
+namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
-use JayI\Cortex\Domains\McpServer\Actions\ListMcpServersAction;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\ListMcpServersAction;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
 
 final class ServerUiController
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Tests\Fixtures;
+namespace RefactorCircus\Cortex\Tests\Fixtures;
 
-use JayI\Cortex\Domains\ConcreteAgent\Support\Agent;
-use JayI\Cortex\Domains\ConcreteAgent\Support\LockedTools;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Support\Agent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Support\LockedTools;
 
 /**
  * A concrete agent whose prompt Cortex manages but whose tools stay fixed.

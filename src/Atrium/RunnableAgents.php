@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Atrium;
+namespace RefactorCircus\Cortex\Atrium;
 
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 /**
  * The agents the run page offers, keyed `virtual:{slug}` or

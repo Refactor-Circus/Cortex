@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Support;
+namespace RefactorCircus\Cortex\Support;
 
 use Closure;
 use Illuminate\Cache\RedisStore;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Exceptions;
+namespace RefactorCircus\Cortex\Domains\McpServer\Exceptions;
 
 use InvalidArgumentException;
 

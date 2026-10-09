@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Models;
+namespace RefactorCircus\Cortex\Domains\Tool\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use JayI\Cortex\Database\Factories\ToolDescriptionFactory;
-use JayI\Foundation\Models\Concerns\DispatchesModelEvents;
+use RefactorCircus\Cortex\Database\Factories\ToolDescriptionFactory;
+use RefactorCircus\Foundation\Models\Concerns\DispatchesModelEvents;
 
 /**
  * A versioned description override for a registered tool, keyed by the

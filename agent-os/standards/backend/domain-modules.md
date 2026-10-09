@@ -1,12 +1,12 @@
 # Domain Modules
 
-Cortex mirrors the `mono` application's domain-module layout: code lives in self-contained modules under `src/Domains/{Domain}/`, namespace `JayI\Cortex\Domains\{Domain}`.
+Cortex mirrors the `mono` application's domain-module layout: code lives in self-contained modules under `src/Domains/{Domain}/`, namespace `RefactorCircus\Cortex\Domains\{Domain}`.
 
 ## Layout
 
 ```
 src/Domains/{Domain}/
-├── {Domain}ServiceProvider.php   # extends JayI\Foundation\Support\ServiceProvider
+├── {Domain}ServiceProvider.php   # extends RefactorCircus\Foundation\Support\ServiceProvider
 ├── routes.php                    # JSON API routes, loaded inside the shared cortex group
 ├── Models/                       # {Entity}Model.php
 ├── Policies/ Resources/          # beside Models/ (model resources)
@@ -19,13 +19,13 @@ src/Domains/{Domain}/
 
 - Domains: `VirtualAgent` (virtual agents, their versions, runtime and providers), `ConcreteAgent` (class-based agents, their registry and overrides), `Tool` (tool registry and description overrides), `McpServer` (MCP server registry and instruction overrides), `RedirectDomain` (stored OAuth redirect domains and the dynamic client registration controller that accepts them). Create a subdirectory only when it holds something.
 - Package-wide code stays at the top level: `Cortex`, `CortexServiceProvider`, `Facades\Cortex`, the base `Http\Request` and `Mcp\Request`, `Mcp\CortexServer`, `Mcp\Tools\ListCortexHistoryTool`, `Http\Resources\AgentRunResource`, and `Support\` (`PublicationCache`, `Policies\Policy`).
-- The event contracts, `DispatchesModelEvents` and the provider bases come from `jayi/foundation` (`JayI\Foundation\Contracts\*`, `JayI\Foundation\Models\Concerns\DispatchesModelEvents`, `JayI\Foundation\Support\{ServiceProvider,PackageServiceProvider}`).
+- The event contracts, `DispatchesModelEvents` and the provider bases come from `refactor-circus/foundation` (`RefactorCircus\Foundation\Contracts\*`, `RefactorCircus\Foundation\Models\Concerns\DispatchesModelEvents`, `RefactorCircus\Foundation\Support\{ServiceProvider,PackageServiceProvider}`).
 - The Atrium screens span every domain, so they live in `src/Atrium` (`CortexPlugin`, `ScreenAccess`, `RunnableAgents`, `Badges`, `Http\Controllers\*UiController`, `Features\CortexSupportFeature`).
 - Migrations and factories stay in `database/`, views in `resources/views`, translations in `lang`. There is one config file, `config/cortex.php`; domains read from it.
 
 ## Registration
 
-- `CortexServiceProvider` (the class in `extra.laravel.providers`) extends Foundation's `PackageServiceProvider`. It merges the config, registers the package (`definition()`, `registerPackage()`), registers `JayI\Cortex\Domains\DomainServiceProvider`, and keeps cross-cutting wiring: the `Cortex` singleton, policies, the Atrium plugin and the Cortex MCP server through the base helpers, the history route (`loadHistoryRoutes()`), views, translations and publish tags.
+- `CortexServiceProvider` (the class in `extra.laravel.providers`) extends Foundation's `PackageServiceProvider`. It merges the config, registers the package (`definition()`, `registerPackage()`), registers `RefactorCircus\Cortex\Domains\DomainServiceProvider`, and keeps cross-cutting wiring: the `Cortex` singleton, policies, the Atrium plugin and the Cortex MCP server through the base helpers, the history route (`loadHistoryRoutes()`), views, translations and publish tags.
 - `DomainServiceProvider` lists every domain provider in a private `$providers` array and registers them in a loop.
 - A domain provider binds its own services, keeps its morph aliases and loads its `routes.php` with `loadApiRoutesFrom()`, which skips the routes unless `cortex.routes.enabled` is true.
 
@@ -43,6 +43,6 @@ src/Domains/{Domain}/
 
 ## Stored identifiers
 
-- Each model keeps its previous class name (`JayI\Cortex\Models\{Entity}`) as its morph alias, through `keepMorphAliases()` in its domain provider, so polymorphic columns and audit records written under the old name still resolve.
-- `CortexSupportFeature` keeps its Pennant stored name, `JayI\Cortex\Features\CortexSupportFeature`, with Pennant's `#[Name]` attribute.
+- Each model keeps its previous class name (`RefactorCircus\Cortex\Models\{Entity}`) as its morph alias, through `keepMorphAliases()` in its domain provider, so polymorphic columns and audit records written under the old name still resolve.
+- `CortexSupportFeature` keeps its Pennant stored name, `RefactorCircus\Cortex\Features\CortexSupportFeature`, with Pennant's `#[Name]` attribute.
 - Tools, servers and agents are stored by their registered names, never their class names.

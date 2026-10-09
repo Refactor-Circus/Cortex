@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Models;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
-use JayI\Cortex\Database\Factories\VirtualAgentVersionFactory;
-use JayI\Foundation\Models\Concerns\DispatchesModelEvents;
+use RefactorCircus\Cortex\Database\Factories\VirtualAgentVersionFactory;
+use RefactorCircus\Foundation\Models\Concerns\DispatchesModelEvents;
 use LogicException;
 
 /**

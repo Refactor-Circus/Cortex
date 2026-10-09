@@ -3,13 +3,13 @@
 namespace Workbench\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
-use JayI\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
-use JayI\Cortex\Domains\Tool\Actions\CreateToolDescriptionVersionAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\PublishVirtualAgentVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\Tool\Actions\CreateToolDescriptionVersionAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\PublishVirtualAgentVersionAction;
 use Workbench\Database\Factories\UserFactory;
 
 /**

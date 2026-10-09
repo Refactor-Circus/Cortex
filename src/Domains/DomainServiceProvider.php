@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains;
+namespace RefactorCircus\Cortex\Domains;
 
 use Illuminate\Support\ServiceProvider;
-use JayI\Cortex\Domains\ConcreteAgent\ConcreteAgentServiceProvider;
-use JayI\Cortex\Domains\McpServer\McpServerServiceProvider;
-use JayI\Cortex\Domains\RedirectDomain\RedirectDomainServiceProvider;
-use JayI\Cortex\Domains\Tool\ToolServiceProvider;
-use JayI\Cortex\Domains\VirtualAgent\VirtualAgentServiceProvider;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\ConcreteAgentServiceProvider;
+use RefactorCircus\Cortex\Domains\McpServer\McpServerServiceProvider;
+use RefactorCircus\Cortex\Domains\RedirectDomain\RedirectDomainServiceProvider;
+use RefactorCircus\Cortex\Domains\Tool\ToolServiceProvider;
+use RefactorCircus\Cortex\Domains\VirtualAgent\VirtualAgentServiceProvider;
 
 class DomainServiceProvider extends ServiceProvider
 {

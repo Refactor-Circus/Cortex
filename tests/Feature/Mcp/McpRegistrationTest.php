@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\CortexServiceProvider;
+use RefactorCircus\Cortex\CortexServiceProvider;
 use Laravel\Mcp\Facades\Mcp;
 
 it('does not register mcp transports by default', function () {

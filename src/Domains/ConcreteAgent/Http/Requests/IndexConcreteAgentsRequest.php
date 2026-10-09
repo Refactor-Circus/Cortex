@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentsAction;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Resources\ConcreteAgentResource;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Http\Request;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentsAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Resources\ConcreteAgentResource;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Http\Request;
 
 final class IndexConcreteAgentsRequest extends Request
 {

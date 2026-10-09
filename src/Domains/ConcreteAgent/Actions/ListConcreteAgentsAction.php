@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Actions;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Actions;
 
-use JayI\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentsListedActionEvent;
-use JayI\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentsListingActionEvent;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentsListedActionEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentsListingActionEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use Laravel\Ai\Contracts\Agent;
 
 final class ListConcreteAgentsAction

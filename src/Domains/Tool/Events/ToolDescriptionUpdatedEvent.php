@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Events;
+namespace RefactorCircus\Cortex\Domains\Tool\Events;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use JayI\Foundation\Contracts\ModelLifecycleEvent;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Foundation\Contracts\ModelLifecycleEvent;
 
 /**
  * The ToolDescriptionModel `updated` Eloquent event.

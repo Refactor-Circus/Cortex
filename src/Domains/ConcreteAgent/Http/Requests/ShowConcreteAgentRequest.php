@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Resources\ConcreteAgentResource;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Resources\ConcreteAgentResource;
 
 final class ShowConcreteAgentRequest extends ConcreteAgentRequest
 {

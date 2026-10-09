@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Actions;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Actions;
 
 use Illuminate\Support\Facades\DB;
-use JayI\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionCreatedActionEvent;
-use JayI\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionCreatingActionEvent;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
-use JayI\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionCreatedActionEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionCreatingActionEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
+use RefactorCircus\Cortex\Support\PublicationCache;
 
 final class CreateConcreteAgentVersionAction
 {

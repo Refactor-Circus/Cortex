@@ -2,33 +2,33 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Atrium;
+namespace RefactorCircus\Cortex\Atrium;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use JayI\Atrium\Domains\Navigation\Data\NavGroup;
-use JayI\Atrium\Domains\Navigation\Data\NavItem;
-use JayI\Atrium\Domains\Plugins\Support\Plugin;
-use JayI\Atrium\Domains\Search\Data\SearchResult;
-use JayI\Atrium\Domains\Search\Data\SearchSource;
-use JayI\Atrium\Domains\Settings\Data\SettingsPanel;
-use JayI\Atrium\Support\Icons;
-use JayI\Cortex\Atrium\Http\Controllers\ConcreteAgentUiController;
-use JayI\Cortex\Atrium\Http\Controllers\McpInstructionUiController;
-use JayI\Cortex\Atrium\Http\Controllers\RedirectDomainUiController;
-use JayI\Cortex\Atrium\Http\Controllers\RunAgentUiController;
-use JayI\Cortex\Atrium\Http\Controllers\ServerUiController;
-use JayI\Cortex\Atrium\Http\Controllers\ToolDescriptionUiController;
-use JayI\Cortex\Atrium\Http\Controllers\ToolUiController;
-use JayI\Cortex\Atrium\Http\Controllers\VirtualAgentUiController;
-use JayI\Cortex\Atrium\Http\Controllers\VirtualAgentVersionUiController;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
-use JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Atrium\Domains\Navigation\Data\NavGroup;
+use RefactorCircus\Atrium\Domains\Navigation\Data\NavItem;
+use RefactorCircus\Atrium\Domains\Plugins\Support\Plugin;
+use RefactorCircus\Atrium\Domains\Search\Data\SearchResult;
+use RefactorCircus\Atrium\Domains\Search\Data\SearchSource;
+use RefactorCircus\Atrium\Domains\Settings\Data\SettingsPanel;
+use RefactorCircus\Atrium\Support\Icons;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\ConcreteAgentUiController;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\McpInstructionUiController;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\RedirectDomainUiController;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\RunAgentUiController;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\ServerUiController;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\ToolDescriptionUiController;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\ToolUiController;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\VirtualAgentUiController;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\VirtualAgentVersionUiController;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 /**
  * Registers Cortex inside the Atrium dashboard.
@@ -41,7 +41,7 @@ class CortexPlugin extends Plugin
     /**
      * Features from `cortex.atrium.features` that switch Cortex in Atrium on
      * and off as a whole. A feature class that cannot be loaded, such as
-     * CortexSupportFeature without jayi/pennantplus, is skipped.
+     * CortexSupportFeature without refactor-circus/pennantplus, is skipped.
      *
      * @return array<int, string>
      */

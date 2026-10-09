@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Tests\Fixtures;
+namespace RefactorCircus\Cortex\Tests\Fixtures;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use JayI\Cortex\Domains\Tool\Support\Tool;
+use RefactorCircus\Cortex\Domains\Tool\Support\Tool;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;

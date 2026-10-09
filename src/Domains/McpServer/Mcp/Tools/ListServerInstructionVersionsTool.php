@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Mcp\Tools;
+namespace RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use JayI\Cortex\Domains\McpServer\Mcp\Requests\ListServerInstructionVersionsMcpRequest;
-use JayI\Foundation\Mcp\Tool;
+use RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests\ListServerInstructionVersionsMcpRequest;
+use RefactorCircus\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Http\Controllers;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Requests\DeleteConcreteAgentOverrideRequest;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Requests\IndexConcreteAgentsRequest;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Requests\RunConcreteAgentRequest;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Requests\ShowConcreteAgentRequest;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Requests\UpdateConcreteAgentToolsRequest;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests\DeleteConcreteAgentOverrideRequest;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests\IndexConcreteAgentsRequest;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests\RunConcreteAgentRequest;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests\ShowConcreteAgentRequest;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests\UpdateConcreteAgentToolsRequest;
 
 final class ConcreteAgentController
 {

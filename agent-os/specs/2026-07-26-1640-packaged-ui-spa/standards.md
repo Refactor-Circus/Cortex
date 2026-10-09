@@ -10,7 +10,7 @@ the applied standards for this work.
 - Use Laravel-native package APIs and the existing service provider shape before
   adding abstractions — the UI route registration mirrors `registerMcpServers()`,
   and assets ship through the pre-existing `cortex-assets` publish tag.
-- Keep names, namespaces, publish tags, docs, and examples aligned with `jayi/cortex`.
+- Keep names, namespaces, publish tags, docs, and examples aligned with `refactor-circus/cortex`.
 - Add only the files and dependencies needed for the behavior being implemented —
   frontend deps limited to vue, vue-router, vite, @vitejs/plugin-vue.
 - Keep tests focused on observable package behavior: route registration, middleware,

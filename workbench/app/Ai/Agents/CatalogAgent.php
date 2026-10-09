@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Workbench\App\Ai\Agents;
 
-use JayI\Cortex\Domains\ConcreteAgent\Support\Agent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Support\Agent;
 use Workbench\App\Domains\Catalog\Tools\CheckInventoryTool;
 
 /**

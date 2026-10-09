@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Cortex;
-use JayI\Cortex\Domains\McpServer\Actions\ListMcpServersAction;
-use JayI\Cortex\Domains\McpServer\Exceptions\McpServerNotFoundException;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
-use JayI\Cortex\Mcp\CortexServer;
-use JayI\Cortex\Support\PublicationCache;
-use JayI\Cortex\Tests\Fixtures\EchoServer;
-use JayI\Cortex\Tests\Fixtures\PlainServer;
+use RefactorCircus\Cortex\Cortex;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\ListMcpServersAction;
+use RefactorCircus\Cortex\Domains\McpServer\Exceptions\McpServerNotFoundException;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Mcp\CortexServer;
+use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoServer;
+use RefactorCircus\Cortex\Tests\Fixtures\PlainServer;
 
 it('registers and resolves servers at runtime', function () {
     $registry = app(McpServerRegistry::class);
@@ -89,5 +89,5 @@ it('lists servers with effective instructions', function () {
 
 it('exposes the registry through the manager and facade', function () {
     expect(app(Cortex::class)->servers())->toBe(app(McpServerRegistry::class))
-        ->and(JayI\Cortex\Facades\Cortex::servers())->toBe(app(McpServerRegistry::class));
+        ->and(RefactorCircus\Cortex\Facades\Cortex::servers())->toBe(app(McpServerRegistry::class));
 });

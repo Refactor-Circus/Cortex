@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Atrium\Http\Controllers;
+namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use JayI\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
-use JayI\Cortex\Atrium\ScreenAccess;
-use JayI\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
-use JayI\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
-use JayI\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
+use RefactorCircus\Cortex\Atrium\ScreenAccess;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
 
 final class McpInstructionUiController
 {

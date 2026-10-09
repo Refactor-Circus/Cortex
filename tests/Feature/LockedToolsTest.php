@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
-use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\UpdateConcreteAgentToolsTool;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\Tool\Support\ToolName;
-use JayI\Cortex\Tests\Fixtures\EchoCortexTool;
-use JayI\Cortex\Tests\Fixtures\LockedEchoAgent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\UpdateConcreteAgentToolsTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Support\ToolName;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoCortexTool;
+use RefactorCircus\Cortex\Tests\Fixtures\LockedEchoAgent;
 
 beforeEach(function (): void {
     app(AgentRegistry::class)->register('locked-echo', LockedEchoAgent::class);

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Actions;
+namespace RefactorCircus\Cortex\Domains\McpServer\Actions;
 
-use JayI\Cortex\Domains\McpServer\Events\McpServersListedActionEvent;
-use JayI\Cortex\Domains\McpServer\Events\McpServersListingActionEvent;
-use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Domains\McpServer\Events\McpServersListedActionEvent;
+use RefactorCircus\Cortex\Domains\McpServer\Events\McpServersListingActionEvent;
+use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
 use Laravel\Mcp\Server as McpServer;
 
 final class ListMcpServersAction

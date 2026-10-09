@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Mcp\Requests;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests;
 
-use JayI\Cortex\Domains\ConcreteAgent\Actions\DeleteConcreteAgentOverrideAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\DeleteConcreteAgentOverrideAction;
 use Laravel\Mcp\Response;
 
 final class DeleteConcreteAgentOverrideMcpRequest extends ConcreteAgentMcpRequest

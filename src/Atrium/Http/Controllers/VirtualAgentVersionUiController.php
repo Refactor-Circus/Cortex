@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Atrium\Http\Controllers;
+namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
-use JayI\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
-use JayI\Cortex\Domains\VirtualAgent\Actions\PublishVirtualAgentVersionAction;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\PublishVirtualAgentVersionAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 /**
  * New prompt versions are saved through the agent form; this only moves the

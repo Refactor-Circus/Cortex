@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Actions;
+namespace RefactorCircus\Cortex\Domains\Tool\Actions;
 
-use JayI\Cortex\Domains\Tool\Events\ToolDescriptionVersionPublishedActionEvent;
-use JayI\Cortex\Domains\Tool\Events\ToolDescriptionVersionPublishingActionEvent;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
-use JayI\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionVersionPublishedActionEvent;
+use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionVersionPublishingActionEvent;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
+use RefactorCircus\Cortex\Support\PublicationCache;
 
 final class PublishToolDescriptionVersionAction
 {

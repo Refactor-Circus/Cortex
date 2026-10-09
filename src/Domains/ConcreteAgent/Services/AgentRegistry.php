@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Services;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Services;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use JayI\Cortex\Domains\ConcreteAgent\Concerns\HasCortexOverrides;
-use JayI\Cortex\Domains\ConcreteAgent\Exceptions\AgentNotFoundException;
-use JayI\Cortex\Domains\ConcreteAgent\Support\Agent;
-use JayI\Cortex\Domains\ConcreteAgent\Support\LockedTools;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\Tool\Support\ToolName;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Concerns\HasCortexOverrides;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Exceptions\AgentNotFoundException;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Support\Agent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Support\LockedTools;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Support\ToolName;
 use Laravel\Ai\Contracts\Agent as AgentContract;
 use Laravel\Ai\Contracts\HasTools;
 use ReflectionClass;

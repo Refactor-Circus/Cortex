@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Collection;
-use JayI\Cortex\Mcp\CortexServer;
+use RefactorCircus\Cortex\Mcp\CortexServer;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Content\Text;

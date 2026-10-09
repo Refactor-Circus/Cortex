@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Actions;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Actions;
 
 use Closure;
 use Illuminate\Validation\Rule;
-use JayI\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentToolsUpdatedActionEvent;
-use JayI\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentToolsUpdatingActionEvent;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentToolsUpdatedActionEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentToolsUpdatingActionEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Support\PublicationCache;
 
 final class UpdateConcreteAgentToolsAction
 {

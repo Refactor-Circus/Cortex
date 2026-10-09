@@ -3,7 +3,7 @@
 ## Scope
 
 A packaged, prebuilt frontend dashboard for the Cortex REST API, shipped inside the
-`jayi/cortex` package (Horizon/Telescope model). Consumers enable it via config —
+`refactor-circus/cortex` package (Horizon/Telescope model). Consumers enable it via config —
 no npm work on their side. The frontend is headless with respect to the parent app:
 it mounts at a configurable route, is gated by consumer-chosen middleware, and rides
 the parent app's authentication whether that is web sessions, JWT, or OAuth tokens.

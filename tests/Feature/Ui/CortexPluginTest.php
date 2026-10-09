@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use JayI\Atrium\Domains\Navigation\Data\NavItem;
-use JayI\Atrium\Domains\Plugins\Services\PluginRegistry;
-use JayI\Cortex\Atrium\CortexPlugin;
-use JayI\Cortex\Tests\Fixtures\OrphanedSupportFeature;
+use RefactorCircus\Atrium\Domains\Navigation\Data\NavItem;
+use RefactorCircus\Atrium\Domains\Plugins\Services\PluginRegistry;
+use RefactorCircus\Cortex\Atrium\CortexPlugin;
+use RefactorCircus\Cortex\Tests\Fixtures\OrphanedSupportFeature;
 
 it('registers itself with atrium', function (): void {
     expect(app(PluginRegistry::class)->has('cortex'))->toBeTrue();
@@ -47,7 +47,7 @@ it('gives every navigation item an icon', function (): void {
 });
 
 it('skips a feature class whose parent is not installed rather than failing', function (): void {
-    // As CortexSupportFeature is without jayi/pennantplus.
+    // As CortexSupportFeature is without refactor-circus/pennantplus.
     config()->set('cortex.atrium.features', [OrphanedSupportFeature::class, 'App\\Features\\Missing', 'plain-feature']);
 
     expect(app(CortexPlugin::class)->features())->toBe(['plain-feature']);

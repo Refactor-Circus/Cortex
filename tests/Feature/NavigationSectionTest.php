@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use JayI\Atrium\Support\Icons;
-use JayI\Cortex\Atrium\CortexPlugin;
+use RefactorCircus\Atrium\Support\Icons;
+use RefactorCircus\Cortex\Atrium\CortexPlugin;
 
 it('gives its sidebar section its own icon', function (): void {
     [$group] = app(CortexPlugin::class)->navigationGroups();

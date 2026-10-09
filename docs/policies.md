@@ -4,14 +4,14 @@ Cortex registers a policy for each of its models from `cortex.policies`, and the
 
 ```php
 'policies' => [
-    VirtualAgentModel::class => \JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy::class,
-    VirtualAgentVersionModel::class => \JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentVersionPolicy::class,
-    ConcreteAgentOverrideModel::class => \JayI\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverridePolicy::class,
-    ConcreteAgentOverrideVersionModel::class => \JayI\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverrideVersionPolicy::class,
-    ToolDescriptionModel::class => \JayI\Cortex\Domains\Tool\Policies\ToolDescriptionPolicy::class,
-    ToolDescriptionVersionModel::class => \JayI\Cortex\Domains\Tool\Policies\ToolDescriptionVersionPolicy::class,
-    McpInstructionModel::class => \JayI\Cortex\Domains\McpServer\Policies\McpInstructionPolicy::class,
-    McpInstructionVersionModel::class => \JayI\Cortex\Domains\McpServer\Policies\McpInstructionVersionPolicy::class,
+    VirtualAgentModel::class => \RefactorCircus\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy::class,
+    VirtualAgentVersionModel::class => \RefactorCircus\Cortex\Domains\VirtualAgent\Policies\VirtualAgentVersionPolicy::class,
+    ConcreteAgentOverrideModel::class => \RefactorCircus\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverridePolicy::class,
+    ConcreteAgentOverrideVersionModel::class => \RefactorCircus\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverrideVersionPolicy::class,
+    ToolDescriptionModel::class => \RefactorCircus\Cortex\Domains\Tool\Policies\ToolDescriptionPolicy::class,
+    ToolDescriptionVersionModel::class => \RefactorCircus\Cortex\Domains\Tool\Policies\ToolDescriptionVersionPolicy::class,
+    McpInstructionModel::class => \RefactorCircus\Cortex\Domains\McpServer\Policies\McpInstructionPolicy::class,
+    McpInstructionVersionModel::class => \RefactorCircus\Cortex\Domains\McpServer\Policies\McpInstructionVersionPolicy::class,
 ],
 ```
 
@@ -67,14 +67,14 @@ An HTTP call that is refused returns `403`. An MCP call that is refused returns 
 
 ## The dashboard
 
-The Atrium pages ask the same questions, through `JayI\Cortex\Atrium\ScreenAccess`: each page and each action checks the ability and subject in the table above and answers `403` when refused, and each control on a page - a navigation item, button, form or card - is shown only when its action would be allowed. Views ask with the `@cortexCan` Blade conditional, which is the same check:
+The Atrium pages ask the same questions, through `RefactorCircus\Cortex\Atrium\ScreenAccess`: each page and each action checks the ability and subject in the table above and answers `403` when refused, and each control on a page - a navigation item, button, form or card - is shown only when its action would be allowed. Views ask with the `@cortexCan` Blade conditional, which is the same check:
 
 ```blade
 @cortexCan('update', $agent)
     ...
 @endcortexCan
 
-@cortexCan('create', \JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel::class, [$agent])
+@cortexCan('create', \RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel::class, [$agent])
     ...
 @endcortexCan
 ```
@@ -96,8 +96,8 @@ A tool description or server instruction page with no override yet is checked ag
   namespace App\Policies;
 
   use Illuminate\Contracts\Auth\Authenticatable;
-  use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-  use JayI\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy as CortexVirtualAgentPolicy;
+  use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+  use RefactorCircus\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy as CortexVirtualAgentPolicy;
 
   class VirtualAgentPolicy extends CortexVirtualAgentPolicy
   {

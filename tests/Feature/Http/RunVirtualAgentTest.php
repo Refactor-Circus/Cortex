@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Support\DbAgent;
 
 it('runs an agent and returns text with usage', function () {
     DbAgent::fake(['Hello from the agent.']);

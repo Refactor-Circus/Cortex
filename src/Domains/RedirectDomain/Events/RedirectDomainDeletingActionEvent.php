@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\RedirectDomain\Events;
+namespace RefactorCircus\Cortex\Domains\RedirectDomain\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
-use JayI\Foundation\Contracts\ActionStartingEvent;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use RefactorCircus\Foundation\Contracts\ActionStartingEvent;
 
 /**
  * A redirect domain is about to be removed.

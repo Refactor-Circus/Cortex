@@ -3,21 +3,21 @@
 declare(strict_types=1);
 
 use Illuminate\Validation\ValidationException;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\DeleteVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentsAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentVersionsAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\PublishVirtualAgentVersionAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentVersionAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
-use JayI\Cortex\Tests\Fixtures\EchoAgent;
-use JayI\Cortex\Tests\Fixtures\EchoTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\DeleteVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentsAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentVersionsAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\PublishVirtualAgentVersionAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentVersionAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoAgent;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
 
 it('creates an agent with its prompt published as version 1', function () {
     app(ToolRegistry::class)->register('echo', EchoTool::class);

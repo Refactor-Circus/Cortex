@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Concerns;
+namespace RefactorCircus\Cortex\Domains\McpServer\Concerns;
 
-use JayI\Cortex\Domains\McpServer\Services\McpInstructionOverrides;
-use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
-use JayI\Cortex\Domains\McpServer\Support\Server;
+use RefactorCircus\Cortex\Domains\McpServer\Services\McpInstructionOverrides;
+use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Domains\McpServer\Support\Server;
 use Laravel\Mcp\Server\ServerContext;
 
 /**

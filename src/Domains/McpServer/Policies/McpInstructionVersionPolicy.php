@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Policies;
+namespace RefactorCircus\Cortex\Domains\McpServer\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use JayI\Cortex\Support\Policies\Policy;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Support\Policies\Policy;
 
 /**
  * Versions belong to their override, so each check defers to it through the Gate:

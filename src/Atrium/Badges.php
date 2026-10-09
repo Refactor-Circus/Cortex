@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Atrium;
+namespace RefactorCircus\Cortex\Atrium;
 
 /**
  * Atrium status-dot variants for the states Cortex screens show, in one place

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Mcp\CortexServer;
-use JayI\Cortex\Tests\PennantPlusTestCase;
-use JayI\Cortex\Tests\TestCase;
+use RefactorCircus\Cortex\Mcp\CortexServer;
+use RefactorCircus\Cortex\Tests\PennantPlusTestCase;
+use RefactorCircus\Cortex\Tests\TestCase;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Server\Testing\TestResponse;
 use Laravel\Mcp\Server\Tool;

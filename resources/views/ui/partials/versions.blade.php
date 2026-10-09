@@ -23,7 +23,7 @@
                         <div class="flex items-center gap-2">
                             v{{ $version->version }}
                             @if ($isPublished)
-                                <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('published')" :label="__('cortex::cortex.published')" data-status="published" />
+                                <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('published')" :label="__('cortex::cortex.published')" data-status="published" />
                             @endif
                         </div>
                     </x-atrium::table.cell>
@@ -44,7 +44,7 @@
                                                        data-testid="hide-{{ $version->version }}" />
                             </span>
 
-                            @if (! $isPublished && \JayI\Cortex\Atrium\ScreenAccess::allows('publish', $version))
+                            @if (! $isPublished && \RefactorCircus\Cortex\Atrium\ScreenAccess::allows('publish', $version))
                                 <form method="POST" action="{{ $publishRoute($version->version) }}">
                                     @csrf
                                     <x-atrium::icon-button icon="check-badge" :label="__('cortex::cortex.publish')" size="sm" variant="outline" type="submit"

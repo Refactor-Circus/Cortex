@@ -1,13 +1,13 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "jayi/cortex",
+    "name": "refactor-circus/cortex",
     "description": "AI Orchestration",
     "keywords": [
         "laravel",
-        "jayi",
+        "refactor-circus",
         "cortex"
     ],
-    "homepage": "https://github.com/jayi/cortex",
+    "homepage": "https://github.com/refactor-circus/cortex",
     "license": "MIT",
     "authors": [
         {
@@ -18,14 +18,14 @@
     ],
     "require": {
         "php": "^8.4",
-        "jayi/atrium": "dev-main",
-        "jayi/foundation": "dev-main",
+        "refactor-circus/atrium": "dev-main",
+        "refactor-circus/foundation": "dev-main",
         "laravel/ai": "^1.0",
         "laravel/framework": "^13.15",
         "laravel/mcp": "^1.0"
     },
     "require-dev": {
-        "jayi/pennantplus": "dev-main",
+        "refactor-circus/pennantplus": "dev-main",
         "larastan/larastan": "^3.12",
         "laravel/pao": "^1.0",
         "laravel/pint": "^1.29",
@@ -36,17 +36,17 @@
         "phpstan/extension-installer": "^1.4"
     },
     "suggest": {
-        "jayi/pennantplus": "Switch Cortex in Atrium on and off with the CortexSupportFeature Pennant feature (dev-main)."
+        "refactor-circus/pennantplus": "Switch Cortex in Atrium on and off with the CortexSupportFeature Pennant feature (dev-main)."
     },
     "autoload": {
         "psr-4": {
-            "JayI\\Cortex\\": "src/"
+            "RefactorCircus\\Cortex\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "JayI\\Cortex\\Tests\\": "tests/",
-            "JayI\\Cortex\\Database\\Factories\\": "database/factories/",
+            "RefactorCircus\\Cortex\\Tests\\": "tests/",
+            "RefactorCircus\\Cortex\\Database\\Factories\\": "database/factories/",
             "Workbench\\App\\": "workbench/app/",
             "Workbench\\Database\\Factories\\": "workbench/database/factories/",
             "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
@@ -97,15 +97,15 @@
     "extra": {
         "laravel": {
             "providers": [
-                "JayI\\Cortex\\CortexServiceProvider"
+                "RefactorCircus\\Cortex\\CortexServiceProvider"
             ],
             "aliases": {
-                "Cortex": "JayI\\Cortex\\Facades\\Cortex"
+                "Cortex": "RefactorCircus\\Cortex\\Facades\\Cortex"
             }
         },
         "atrium": {
             "plugins": [
-                "JayI\\Cortex\\Atrium\\CortexPlugin"
+                "RefactorCircus\\Cortex\\Atrium\\CortexPlugin"
             ]
         }
     },
@@ -121,15 +121,15 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/jayjfletcher/Foundation.git"
+            "url": "https://github.com/Refactor-Circus/Foundation.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/jayjfletcher/Atrium.git"
+            "url": "https://github.com/Refactor-Circus/Atrium.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/jayjfletcher/PennantPlus.git"
+            "url": "https://github.com/Refactor-Circus/PennantPlus.git"
         }
     ]
 }

@@ -9,7 +9,7 @@
     @include('cortex::ui.partials.override', [
         'override' => $instruction,
         'subject' => $subject,
-        'versionClass' => \JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel::class,
+        'versionClass' => \RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel::class,
         'fallback' => $codeInstructions,
         'versions' => $versions,
         'storeRoute' => route('atrium.cortex.servers.instructions.store', $server),

@@ -2,7 +2,7 @@
 
 ## Scope
 
-API-first + MCP-first package (`jayi/cortex`) to manage prompts (with immutable versioning and a published pointer), tools, and agents/subagents on top of `laravel/ai`, with full API↔MCP tool parity. Includes execution: run an agent via API endpoint and MCP tool.
+API-first + MCP-first package (`refactor-circus/cortex`) to manage prompts (with immutable versioning and a published pointer), tools, and agents/subagents on top of `laravel/ai`, with full API↔MCP tool parity. Includes execution: run an agent via API endpoint and MCP tool.
 
 ## Decisions
 

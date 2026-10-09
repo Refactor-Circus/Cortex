@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Mcp;
+namespace RefactorCircus\Cortex\Mcp;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
-use JayI\Foundation\Mcp\Requests\Request as FoundationRequest;
+use RefactorCircus\Foundation\Mcp\Requests\Request as FoundationRequest;
 
 /**
  * Base MCP request: mirrors the HTTP FormRequest `persist()` pattern so

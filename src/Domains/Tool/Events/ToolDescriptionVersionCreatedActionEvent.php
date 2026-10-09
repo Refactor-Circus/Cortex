@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Events;
+namespace RefactorCircus\Cortex\Domains\Tool\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
-use JayI\Foundation\Contracts\ActionFinishedEvent;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
+use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
 
 /**
  * A new version of a tool's description override was created, and published when asked.

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\McpServer\Http\Requests;
 
 use Illuminate\Http\Response;
-use JayI\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
 
 final class DeleteMcpInstructionRequest extends McpInstructionRequest
 {

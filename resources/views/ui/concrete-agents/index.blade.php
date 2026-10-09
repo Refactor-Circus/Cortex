@@ -19,7 +19,7 @@
 
                 @foreach ($agents as $agent)
                     @php($published = $agent['override']?->publishedVersion?->version)
-                    @php($subject = \JayI\Cortex\Atrium\ScreenAccess::concreteAgent($agent['name'], $agent['override']))
+                    @php($subject = \RefactorCircus\Cortex\Atrium\ScreenAccess::concreteAgent($agent['name'], $agent['override']))
 
                     <x-atrium::table.row>
                         <x-atrium::table.cell>
@@ -33,21 +33,21 @@
                         <x-atrium::table.cell>
                             <div class="flex items-center gap-2">
                                 @if ($published !== null)
-                                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('overridden')" :label="__('cortex::cortex.override', ['version' => $published])" data-status="overridden" />
+                                    <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('overridden')" :label="__('cortex::cortex.override', ['version' => $published])" data-status="overridden" />
                                     <span class="text-xs opacity-75">v{{ $published }}</span>
                                 @else
-                                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('from_code')" :label="__('cortex::cortex.from_code')" data-status="from_code" />
+                                    <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('from_code')" :label="__('cortex::cortex.from_code')" data-status="from_code" />
                                 @endif
                             </div>
                         </x-atrium::table.cell>
                         <x-atrium::table.cell>
                             <div class="flex items-center gap-2">
                                 @if (! $agent['tools_overridable'])
-                                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('locked')" :label="__('cortex::cortex.locked')" data-status="locked" />
+                                    <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('locked')" :label="__('cortex::cortex.locked')" data-status="locked" />
                                 @elseif ($agent['override']?->tools !== null)
-                                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('overridden')" :label="__('cortex::cortex.overridden')" data-status="overridden" />
+                                    <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('overridden')" :label="__('cortex::cortex.overridden')" data-status="overridden" />
                                 @else
-                                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('from_code')" :label="__('cortex::cortex.from_code')" data-status="from_code" />
+                                    <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('from_code')" :label="__('cortex::cortex.from_code')" data-status="from_code" />
                                 @endif
                                 <span class="text-xs opacity-75">{{ count($agent['tools']) }}</span>
                             </div>

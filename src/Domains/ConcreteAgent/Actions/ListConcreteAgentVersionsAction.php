@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Actions;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Actions;
 
 use Illuminate\Database\Eloquent\Collection;
-use JayI\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionsListedActionEvent;
-use JayI\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionsListingActionEvent;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionsListedActionEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionsListingActionEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 
 final class ListConcreteAgentVersionsAction
 {

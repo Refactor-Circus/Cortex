@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Tests\Fixtures\Policies;
+namespace RefactorCircus\Cortex\Tests\Fixtures\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverridePolicy;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverridePolicy;
 
 /**
  * Each ability only for users granted "concrete-agents.{ability}".

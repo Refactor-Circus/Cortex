@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Mcp\Requests;
+namespace RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests;
 
-use JayI\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
-use JayI\Cortex\Domains\McpServer\Resources\McpInstructionResource;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\McpServer\Resources\McpInstructionResource;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 

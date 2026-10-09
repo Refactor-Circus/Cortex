@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Http;
+namespace RefactorCircus\Cortex\Http;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
-use JayI\Foundation\Http\Requests\Request as FoundationRequest;
+use RefactorCircus\Foundation\Http\Requests\Request as FoundationRequest;
 
 /**
  * Base HTTP request.

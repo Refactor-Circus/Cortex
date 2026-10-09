@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Mcp\Requests;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests;
 
-use JayI\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Resources\ConcreteAgentResource;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Resources\ConcreteAgentResource;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 

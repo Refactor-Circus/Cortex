@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Events;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Events;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
-use JayI\Foundation\Contracts\ModelLifecycleEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
+use RefactorCircus\Foundation\Contracts\ModelLifecycleEvent;
 
 /**
  * The ConcreteAgentOverrideVersionModel `retrieved` Eloquent event.

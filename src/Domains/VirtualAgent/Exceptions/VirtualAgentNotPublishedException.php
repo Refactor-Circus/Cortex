@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Exceptions;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Exceptions;
 
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RuntimeException;
 
 final class VirtualAgentNotPublishedException extends RuntimeException

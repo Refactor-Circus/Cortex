@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer;
+namespace RefactorCircus\Cortex\Domains\McpServer;
 
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use JayI\Cortex\Domains\McpServer\Services\McpInstructionOverrides;
-use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
-use JayI\Foundation\Support\ServiceProvider;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Services\McpInstructionOverrides;
+use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Foundation\Support\ServiceProvider;
 
 class McpServerServiceProvider extends ServiceProvider
 {
@@ -21,11 +21,6 @@ class McpServerServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->keepMorphAliases([
-            'JayI\Cortex\Models\McpInstruction' => McpInstructionModel::class,
-            'JayI\Cortex\Models\McpInstructionVersion' => McpInstructionVersionModel::class,
-        ]);
-
         $this->loadApiRoutesFrom(__DIR__.'/routes.php');
     }
 }

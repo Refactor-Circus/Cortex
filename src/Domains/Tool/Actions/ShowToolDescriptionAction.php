@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Actions;
+namespace RefactorCircus\Cortex\Domains\Tool\Actions;
 
-use JayI\Cortex\Domains\Tool\Events\ToolDescriptionShowingActionEvent;
-use JayI\Cortex\Domains\Tool\Events\ToolDescriptionShownActionEvent;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionShowingActionEvent;
+use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionShownActionEvent;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 
 final class ShowToolDescriptionAction
 {

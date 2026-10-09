@@ -79,7 +79,7 @@ return [
     'overridden' => 'Overridden',
     'locked' => 'Locked',
     'tools_locked_hint' => 'This agent keeps the toolset declared in code (#[LockedTools]), so it cannot be overridden here.',
-    'not_overridable' => 'This agent does not extend JayI\\Cortex\\Agents\\Agent or use the HasCortexOverrides trait, so overrides saved here are not applied when it runs.',
+    'not_overridable' => 'This agent does not extend RefactorCircus\\Cortex\\Agents\\Agent or use the HasCortexOverrides trait, so overrides saved here are not applied when it runs.',
     'tools_override_hint' => 'The checked tools replace the toolset the class declares in code.',
     'tools_no_override_hint' => 'No override exists, so the toolset declared in code is used. Saving the checked tools creates one.',
     'no_tools_available' => 'The agent declares no tools and none are registered.',

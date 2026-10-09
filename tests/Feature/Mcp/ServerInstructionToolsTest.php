@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 use Illuminate\Testing\Fluent\AssertableJson;
-use JayI\Cortex\Domains\McpServer\Mcp\Tools\CreateServerInstructionVersionTool;
-use JayI\Cortex\Domains\McpServer\Mcp\Tools\DeleteServerInstructionsTool;
-use JayI\Cortex\Domains\McpServer\Mcp\Tools\ListServerInstructionVersionsTool;
-use JayI\Cortex\Domains\McpServer\Mcp\Tools\ListServersTool;
-use JayI\Cortex\Domains\McpServer\Mcp\Tools\PublishServerInstructionVersionTool;
-use JayI\Cortex\Domains\McpServer\Mcp\Tools\ShowServerInstructionsTool;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
-use JayI\Cortex\Tests\Fixtures\EchoServer;
+use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\CreateServerInstructionVersionTool;
+use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\DeleteServerInstructionsTool;
+use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\ListServerInstructionVersionsTool;
+use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\ListServersTool;
+use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\PublishServerInstructionVersionTool;
+use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\ShowServerInstructionsTool;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoServer;
 
 beforeEach(function () {
     app(McpServerRegistry::class)->register('echo', EchoServer::class);

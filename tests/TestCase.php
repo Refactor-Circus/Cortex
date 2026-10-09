@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Tests;
+namespace RefactorCircus\Cortex\Tests;
 
-use JayI\Atrium\AtriumServiceProvider;
-use JayI\Cortex\CortexServiceProvider;
+use RefactorCircus\Atrium\AtriumServiceProvider;
+use RefactorCircus\Cortex\CortexServiceProvider;
 use Laravel\Ai\AiServiceProvider;
 use Laravel\Mcp\Server\McpServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;

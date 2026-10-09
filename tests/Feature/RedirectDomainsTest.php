@@ -5,16 +5,16 @@ declare(strict_types=1);
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Testing\TestResponse;
-use JayI\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
-use JayI\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
-use JayI\Cortex\Domains\RedirectDomain\Events\RedirectDomainCreatedActionEvent;
-use JayI\Cortex\Domains\RedirectDomain\Events\RedirectDomainDeletedActionEvent;
-use JayI\Cortex\Domains\RedirectDomain\Mcp\Tools\CreateRedirectDomainTool;
-use JayI\Cortex\Domains\RedirectDomain\Mcp\Tools\DeleteRedirectDomainTool;
-use JayI\Cortex\Domains\RedirectDomain\Mcp\Tools\ListRedirectDomainsTool;
-use JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
-use JayI\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainCreatedActionEvent;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainDeletedActionEvent;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Tools\CreateRedirectDomainTool;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Tools\DeleteRedirectDomainTool;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Tools\ListRedirectDomainsTool;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use Laravel\Mcp\Facades\Mcp;
 
 /**

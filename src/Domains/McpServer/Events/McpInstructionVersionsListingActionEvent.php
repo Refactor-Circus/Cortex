@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Events;
+namespace RefactorCircus\Cortex\Domains\McpServer\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Foundation\Contracts\ActionStartingEvent;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Foundation\Contracts\ActionStartingEvent;
 
 /**
  * The versions of an MCP server's instructions override are about to be listed.

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\RedirectDomain\Http\Controllers;
+namespace RefactorCircus\Cortex\Domains\RedirectDomain\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use JayI\Cortex\Domains\RedirectDomain\Http\Requests\DeleteRedirectDomainRequest;
-use JayI\Cortex\Domains\RedirectDomain\Http\Requests\IndexRedirectDomainsRequest;
-use JayI\Cortex\Domains\RedirectDomain\Http\Requests\StoreRedirectDomainRequest;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Http\Requests\DeleteRedirectDomainRequest;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Http\Requests\IndexRedirectDomainsRequest;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Http\Requests\StoreRedirectDomainRequest;
 
 final class RedirectDomainController
 {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\RedirectDomain\Mcp\Requests;
+namespace RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Requests;
 
 use Illuminate\Support\Arr;
-use JayI\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
-use JayI\Cortex\Domains\RedirectDomain\Actions\ListRedirectDomainsAction;
-use JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
-use JayI\Cortex\Domains\RedirectDomain\Resources\RedirectDomainResource;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\ListRedirectDomainsAction;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Resources\RedirectDomainResource;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 

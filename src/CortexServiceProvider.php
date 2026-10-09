@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex;
+namespace RefactorCircus\Cortex;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
-use JayI\Cortex\Atrium\CortexPlugin;
-use JayI\Cortex\Atrium\ScreenAccess;
-use JayI\Cortex\Domains\DomainServiceProvider;
-use JayI\Cortex\Mcp\CortexServer;
-use JayI\Foundation\Packages\Package;
-use JayI\Foundation\Support\PackageServiceProvider;
+use RefactorCircus\Cortex\Atrium\CortexPlugin;
+use RefactorCircus\Cortex\Atrium\ScreenAccess;
+use RefactorCircus\Cortex\Domains\DomainServiceProvider;
+use RefactorCircus\Cortex\Mcp\CortexServer;
+use RefactorCircus\Foundation\Packages\Package;
+use RefactorCircus\Foundation\Support\PackageServiceProvider;
 use Laravel\Mcp\Request as McpRequest;
 
 class CortexServiceProvider extends PackageServiceProvider

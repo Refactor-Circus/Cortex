@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Http\Controllers;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\VirtualAgent\Http\Requests\IndexVirtualAgentVersionsRequest;
-use JayI\Cortex\Domains\VirtualAgent\Http\Requests\PublishVirtualAgentVersionRequest;
-use JayI\Cortex\Domains\VirtualAgent\Http\Requests\ShowVirtualAgentVersionRequest;
-use JayI\Cortex\Domains\VirtualAgent\Http\Requests\StoreVirtualAgentVersionRequest;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests\IndexVirtualAgentVersionsRequest;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests\PublishVirtualAgentVersionRequest;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests\ShowVirtualAgentVersionRequest;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests\StoreVirtualAgentVersionRequest;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 final class VirtualAgentVersionController
 {

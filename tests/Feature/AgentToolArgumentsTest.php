@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentTool;
-use JayI\Cortex\Tests\Fixtures\EchoMcpTool;
-use JayI\Cortex\Tests\Fixtures\EchoRequestTool;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentTool;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoMcpTool;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoRequestTool;
 use Laravel\Ai\Tools\Request;
 
 it('gives a tool its own request class, filled, when an agent calls it', function () {

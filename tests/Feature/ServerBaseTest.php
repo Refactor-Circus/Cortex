@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Domains\McpServer\Services\McpServerRegistry;
-use JayI\Cortex\Mcp\CortexServer;
-use JayI\Cortex\Support\PublicationCache;
-use JayI\Cortex\Tests\Fixtures\EchoServer;
-use JayI\Cortex\Tests\Fixtures\PlainServer;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Mcp\CortexServer;
+use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoServer;
+use RefactorCircus\Cortex\Tests\Fixtures\PlainServer;
 use Laravel\Mcp\Server\Transport\FakeTransporter;
 
 function publishServerInstructionOverride(string $server, string $content): void

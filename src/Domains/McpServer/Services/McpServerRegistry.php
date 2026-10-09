@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Services;
+namespace RefactorCircus\Cortex\Domains\McpServer\Services;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use JayI\Cortex\Domains\McpServer\Exceptions\McpServerNotFoundException;
-use JayI\Cortex\Mcp\CortexServer;
+use RefactorCircus\Cortex\Domains\McpServer\Exceptions\McpServerNotFoundException;
+use RefactorCircus\Cortex\Mcp\CortexServer;
 use Laravel\Mcp\Server as McpServer;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;

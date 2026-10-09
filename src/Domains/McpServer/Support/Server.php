@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Support;
+namespace RefactorCircus\Cortex\Domains\McpServer\Support;
 
-use JayI\Cortex\Domains\McpServer\Concerns\HasVersionedInstructions;
+use RefactorCircus\Cortex\Domains\McpServer\Concerns\HasVersionedInstructions;
 use Laravel\Mcp\Server as McpServer;
 
 /**

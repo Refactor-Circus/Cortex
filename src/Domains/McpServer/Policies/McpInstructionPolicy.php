@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Policies;
+namespace RefactorCircus\Cortex\Domains\McpServer\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Support\Policies\Policy;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Support\Policies\Policy;
 
 /**
  * Answers `$user->can(...)` for MCP server instruction overrides.

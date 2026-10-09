@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentsAction;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentVersionsAction;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\PublishConcreteAgentVersionAction;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\RunConcreteAgentAction;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Services\AgentFactory;
-use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
-use JayI\Cortex\Tests\Fixtures\EchoAgent;
-use JayI\Cortex\Tests\Fixtures\EchoCortexTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentsAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentVersionsAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\PublishConcreteAgentVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\RunConcreteAgentAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Services\AgentFactory;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Support\DbAgent;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoAgent;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoCortexTool;
 
 beforeEach(function () {
     app(AgentRegistry::class)->register('echo-agent', EchoAgent::class);

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Actions;
+namespace RefactorCircus\Cortex\Domains\Tool\Actions;
 
 use Illuminate\Support\Facades\DB;
-use JayI\Cortex\Domains\Tool\Events\ToolDescriptionVersionCreatedActionEvent;
-use JayI\Cortex\Domains\Tool\Events\ToolDescriptionVersionCreatingActionEvent;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
-use JayI\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionVersionCreatedActionEvent;
+use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionVersionCreatingActionEvent;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
+use RefactorCircus\Cortex\Support\PublicationCache;
 
 final class CreateToolDescriptionVersionAction
 {

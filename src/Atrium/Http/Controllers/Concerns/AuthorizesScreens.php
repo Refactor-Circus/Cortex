@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Atrium\Http\Controllers\Concerns;
+namespace RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns;
 
 use Illuminate\Database\Eloquent\Model;
-use JayI\Cortex\Atrium\ScreenAccess;
+use RefactorCircus\Cortex\Atrium\ScreenAccess;
 
 /**
  * The same policy checks the JSON API and MCP tools make, for Atrium screens.

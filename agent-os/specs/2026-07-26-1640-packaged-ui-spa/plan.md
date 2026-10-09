@@ -2,7 +2,7 @@
 
 ## Context
 
-Cortex (`jayi/cortex`) is a headless Laravel AI-orchestration package: Prompts (immutable versions + published pointer), Tools (registry), Agents (CRUD + run), exposed via 16 REST endpoints (`routes/cortex.php`, prefix `cortex`, JsonResource envelope, slug identifiers) and a parity MCP server. It has zero frontend today — `public/` holds only `.gitkeep`, the sole view is `placeholder.blade.php`, no package.json.
+Cortex (`refactor-circus/cortex`) is a headless Laravel AI-orchestration package: Prompts (immutable versions + published pointer), Tools (registry), Agents (CRUD + run), exposed via 16 REST endpoints (`routes/cortex.php`, prefix `cortex`, JsonResource envelope, slug identifiers) and a parity MCP server. It has zero frontend today — `public/` holds only `.gitkeep`, the sole view is `placeholder.blade.php`, no package.json.
 
 Goal: ship a **packaged, prebuilt Vue 3 SPA** (Horizon/Telescope model) so consumers get a dashboard with `composer require` + `vendor:publish` — no npm on their side — that registers into the parent app and rides the parent app's auth (session, JWT, or OAuth token).
 

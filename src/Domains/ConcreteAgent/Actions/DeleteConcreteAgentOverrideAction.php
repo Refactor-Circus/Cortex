@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Actions;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Actions;
 
-use JayI\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentOverrideDeletedActionEvent;
-use JayI\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentOverrideDeletingActionEvent;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentOverrideDeletedActionEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentOverrideDeletingActionEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Support\PublicationCache;
 
 final class DeleteConcreteAgentOverrideAction
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Mcp\Requests;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests;
 
-use JayI\Cortex\Domains\VirtualAgent\Actions\DeleteVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\DeleteVirtualAgentAction;
 use Laravel\Mcp\Response;
 
 final class DeleteVirtualAgentMcpRequest extends VirtualAgentMcpRequest

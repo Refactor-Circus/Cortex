@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Mcp\Requests;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests;
 
 use Illuminate\Support\Arr;
-use JayI\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 

@@ -9,10 +9,10 @@
     <x-atrium::card :title="$liveTitle ?? __('cortex::cortex.live_description')">
         <div class="mb-3 flex items-center gap-2">
             @if ($override?->publishedVersion)
-                <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('overridden')" :label="__('cortex::cortex.override', ['version' => $override->publishedVersion->version])" data-status="overridden" />
+                <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('overridden')" :label="__('cortex::cortex.override', ['version' => $override->publishedVersion->version])" data-status="overridden" />
                 <p class="text-sm text-on-surface dark:text-on-surface-dark">{{ __('cortex::cortex.override_hint') }}</p>
             @else
-                <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('from_code')" :label="__('cortex::cortex.from_code')" data-status="from_code" />
+                <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('from_code')" :label="__('cortex::cortex.from_code')" data-status="from_code" />
                 <p class="text-sm text-on-surface dark:text-on-surface-dark">{{ __('cortex::cortex.no_override_hint') }}</p>
             @endif
         </div>
@@ -44,7 +44,7 @@
     </x-atrium::card>
     @endcortexCan
 
-    @if ($override && \JayI\Cortex\Atrium\ScreenAccess::allows('delete', $override))
+    @if ($override && \RefactorCircus\Cortex\Atrium\ScreenAccess::allows('delete', $override))
         <x-atrium::card :title="__('cortex::cortex.remove_override')">
             <form method="POST" action="{{ $destroyRoute }}"
                   onsubmit="return confirm(@js(__('cortex::cortex.confirm_delete')))">

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Http\Controllers;
+namespace RefactorCircus\Cortex\Domains\Tool\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use JayI\Cortex\Domains\Tool\Http\Requests\DeleteToolDescriptionRequest;
-use JayI\Cortex\Domains\Tool\Http\Requests\IndexToolDescriptionVersionsRequest;
-use JayI\Cortex\Domains\Tool\Http\Requests\PublishToolDescriptionVersionRequest;
-use JayI\Cortex\Domains\Tool\Http\Requests\ShowToolDescriptionRequest;
-use JayI\Cortex\Domains\Tool\Http\Requests\StoreToolDescriptionVersionRequest;
+use RefactorCircus\Cortex\Domains\Tool\Http\Requests\DeleteToolDescriptionRequest;
+use RefactorCircus\Cortex\Domains\Tool\Http\Requests\IndexToolDescriptionVersionsRequest;
+use RefactorCircus\Cortex\Domains\Tool\Http\Requests\PublishToolDescriptionVersionRequest;
+use RefactorCircus\Cortex\Domains\Tool\Http\Requests\ShowToolDescriptionRequest;
+use RefactorCircus\Cortex\Domains\Tool\Http\Requests\StoreToolDescriptionVersionRequest;
 
 final class ToolDescriptionController
 {

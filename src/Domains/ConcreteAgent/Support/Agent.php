@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Support;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Support;
 
-use JayI\Cortex\Domains\ConcreteAgent\Concerns\HasCortexOverrides;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Concerns\HasCortexOverrides;
 use Laravel\Ai\Contracts\Agent as AgentContract;
 use Laravel\Ai\Contracts\HasTools;
 use Laravel\Ai\Promptable;

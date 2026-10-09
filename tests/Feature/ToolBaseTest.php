@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentTool;
-use JayI\Cortex\Support\PublicationCache;
-use JayI\Cortex\Tests\Fixtures\EchoCortexTool;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentTool;
+use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoCortexTool;
 
 function publishToolDescriptionOverride(string $tool, string $content): void
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests;
 
 use Illuminate\Http\Response;
-use JayI\Cortex\Domains\VirtualAgent\Actions\DeleteVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\DeleteVirtualAgentAction;
 
 final class DeleteVirtualAgentRequest extends VirtualAgentRequest
 {

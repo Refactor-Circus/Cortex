@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Http\Controllers;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\VirtualAgent\Http\Requests\IndexProvidersRequest;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests\IndexProvidersRequest;
 
 final class ProviderController
 {

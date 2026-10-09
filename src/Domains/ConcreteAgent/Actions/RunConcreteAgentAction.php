@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\ConcreteAgent\Actions;
+namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Actions;
 
-use JayI\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentRanActionEvent;
-use JayI\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentRunningActionEvent;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentRanActionEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentRunningActionEvent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use Laravel\Ai\Responses\AgentResponse;
 
 final class RunConcreteAgentAction

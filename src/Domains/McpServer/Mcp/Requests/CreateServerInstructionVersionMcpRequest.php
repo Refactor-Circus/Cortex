@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Mcp\Requests;
+namespace RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests;
 
 use Illuminate\Support\Arr;
-use JayI\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use JayI\Cortex\Domains\McpServer\Resources\McpInstructionVersionResource;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Resources\McpInstructionVersionResource;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\McpServer\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
-use JayI\Cortex\Domains\McpServer\Resources\McpInstructionResource;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\McpServer\Resources\McpInstructionResource;
 
 final class PublishMcpInstructionVersionRequest extends McpInstructionRequest
 {

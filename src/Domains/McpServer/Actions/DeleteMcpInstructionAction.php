@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Actions;
+namespace RefactorCircus\Cortex\Domains\McpServer\Actions;
 
-use JayI\Cortex\Domains\McpServer\Events\McpInstructionDeletedActionEvent;
-use JayI\Cortex\Domains\McpServer\Events\McpInstructionDeletingActionEvent;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Domains\McpServer\Events\McpInstructionDeletedActionEvent;
+use RefactorCircus\Cortex\Domains\McpServer\Events\McpInstructionDeletingActionEvent;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Support\PublicationCache;
 
 final class DeleteMcpInstructionAction
 {

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use JayI\Cortex\Cortex;
-use JayI\Cortex\Domains\Tool\Actions\ListToolsAction;
-use JayI\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Tests\Fixtures\EchoMcpTool;
-use JayI\Cortex\Tests\Fixtures\EchoTool;
+use RefactorCircus\Cortex\Cortex;
+use RefactorCircus\Cortex\Domains\Tool\Actions\ListToolsAction;
+use RefactorCircus\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoMcpTool;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
 use Laravel\Ai\Tools\McpServerTool;
 
 it('registers and resolves tools at runtime', function () {
@@ -82,5 +82,5 @@ it('describes registered MCP tools with serialized schemas', function () {
 
 it('exposes the registry through the manager and facade', function () {
     expect(app(Cortex::class)->tools())->toBe(app(ToolRegistry::class))
-        ->and(JayI\Cortex\Facades\Cortex::tools())->toBe(app(ToolRegistry::class));
+        ->and(RefactorCircus\Cortex\Facades\Cortex::tools())->toBe(app(ToolRegistry::class));
 });

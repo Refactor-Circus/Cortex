@@ -22,7 +22,7 @@
     @include('cortex::ui.partials.override', [
         'override' => $override,
         'subject' => $subject,
-        'versionClass' => \JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel::class,
+        'versionClass' => \RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel::class,
         'fallback' => $agent['default_instructions'],
         'liveTitle' => __('cortex::cortex.live_prompt'),
         'versions' => $versions,
@@ -35,20 +35,20 @@
         <x-atrium::card :title="__('cortex::cortex.tools')">
             <div class="mb-3 flex items-center gap-2">
                 @if (! $agent['tools_overridable'])
-                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('locked')" :label="__('cortex::cortex.locked')" data-status="locked" />
+                    <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('locked')" :label="__('cortex::cortex.locked')" data-status="locked" />
                     @if ($agent['overridable'])
                         <p class="text-sm text-on-surface dark:text-on-surface-dark">{{ __('cortex::cortex.tools_locked_hint') }}</p>
                     @endif
                 @elseif ($toolsOverridden)
-                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('overridden')" :label="__('cortex::cortex.overridden')" data-status="overridden" />
+                    <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('overridden')" :label="__('cortex::cortex.overridden')" data-status="overridden" />
                     <p class="text-sm text-on-surface dark:text-on-surface-dark">{{ __('cortex::cortex.tools_override_hint') }}</p>
                 @else
-                    <x-atrium::status-dot :variant="\JayI\Cortex\Atrium\Badges::forStatus('from_code')" :label="__('cortex::cortex.from_code')" data-status="from_code" />
+                    <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('from_code')" :label="__('cortex::cortex.from_code')" data-status="from_code" />
                     <p class="text-sm text-on-surface dark:text-on-surface-dark">{{ __('cortex::cortex.tools_no_override_hint') }}</p>
                 @endif
             </div>
 
-            @php($mayUpdateTools = \JayI\Cortex\Atrium\ScreenAccess::allows('update', $subject))
+            @php($mayUpdateTools = \RefactorCircus\Cortex\Atrium\ScreenAccess::allows('update', $subject))
 
             <form method="POST" action="{{ route('atrium.cortex.concrete-agents.tools', $agent['name']) }}" class="flex flex-col gap-4">
                 @csrf

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\RedirectDomain\Actions;
+namespace RefactorCircus\Cortex\Domains\RedirectDomain\Actions;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use JayI\Cortex\Domains\RedirectDomain\Events\RedirectDomainsListedActionEvent;
-use JayI\Cortex\Domains\RedirectDomain\Events\RedirectDomainsListingActionEvent;
-use JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainsListedActionEvent;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainsListingActionEvent;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
 
 final class ListRedirectDomainsAction
 {

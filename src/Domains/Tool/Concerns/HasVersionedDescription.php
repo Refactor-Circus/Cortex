@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Concerns;
+namespace RefactorCircus\Cortex\Domains\Tool\Concerns;
 
-use JayI\Cortex\Domains\Tool\Services\ToolDescriptionOverrides;
-use JayI\Cortex\Domains\Tool\Support\Tool;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolDescriptionOverrides;
+use RefactorCircus\Cortex\Domains\Tool\Support\Tool;
 
 /**
  * Serve the published Cortex description override, when one exists, in place

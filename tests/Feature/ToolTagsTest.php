@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
-use JayI\Cortex\Domains\Tool\Mcp\Tools\ListToolsTool;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Tests\Fixtures\EchoAgent;
-use JayI\Cortex\Tests\Fixtures\EchoMcpTool;
-use JayI\Cortex\Tests\Fixtures\EchoTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
+use RefactorCircus\Cortex\Domains\Tool\Mcp\Tools\ListToolsTool;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoAgent;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoMcpTool;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
 
 beforeEach(function (): void {
     config()->set('cortex.tool_tags.namespaces', []);
@@ -39,12 +39,12 @@ it('tags config entries given as arrays', function (): void {
 });
 
 it('derives tags from namespace patterns', function (): void {
-    config()->set('cortex.tool_tags.namespaces', ['JayI\\Cortex\\{tag}\\', 'App\\Domains\\{tag}\\']);
+    config()->set('cortex.tool_tags.namespaces', ['RefactorCircus\\Cortex\\{tag}\\', 'App\\Domains\\{tag}\\']);
 
     $registry = app(ToolRegistry::class);
     $registry->register('echo', EchoTool::class, ['orders']);
 
-    // JayI\Cortex\Tests\Fixtures\EchoTool matches the first pattern only.
+    // RefactorCircus\Cortex\Tests\Fixtures\EchoTool matches the first pattern only.
     expect($registry->tagsFor('echo'))->toBe(['orders', 'tests']);
 });
 

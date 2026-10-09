@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\McpServer\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\McpServer\Actions\ListMcpInstructionVersionsAction;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use JayI\Cortex\Domains\McpServer\Resources\McpInstructionVersionResource;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\ListMcpInstructionVersionsAction;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Resources\McpInstructionVersionResource;
 
 final class IndexMcpInstructionVersionsRequest extends McpInstructionRequest
 {

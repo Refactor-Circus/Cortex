@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Exceptions;
+namespace RefactorCircus\Cortex\Domains\Tool\Exceptions;
 
 use InvalidArgumentException;
 

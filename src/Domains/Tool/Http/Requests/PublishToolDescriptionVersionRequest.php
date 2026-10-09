@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\Tool\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\Tool\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\Tool\Actions\PublishToolDescriptionVersionAction;
-use JayI\Cortex\Domains\Tool\Resources\ToolDescriptionResource;
+use RefactorCircus\Cortex\Domains\Tool\Actions\PublishToolDescriptionVersionAction;
+use RefactorCircus\Cortex\Domains\Tool\Resources\ToolDescriptionResource;
 
 final class PublishToolDescriptionVersionRequest extends ToolDescriptionRequest
 {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Tests\Fixtures\Policies;
+namespace RefactorCircus\Cortex\Tests\Fixtures\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use JayI\Cortex\Domains\Tool\Policies\ToolDescriptionPolicy;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Domains\Tool\Policies\ToolDescriptionPolicy;
 
 /**
  * Each ability only for users granted "tool-descriptions.{ability}".

@@ -2,7 +2,7 @@
 
 ## Context
 
-`jayi/cortex` is a pristine Laravel package skeleton ("AI Orchestration") with zero domain code. Goal: API-first + MCP-first package to manage **prompts (immutable versioning + published pointer), tools, and agents/subagents**, built on `laravel/ai` (^0.10) and `laravel/mcp` (^0.9). API and MCP must have full tool parity.
+`refactor-circus/cortex` is a pristine Laravel package skeleton ("AI Orchestration") with zero domain code. Goal: API-first + MCP-first package to manage **prompts (immutable versioning + published pointer), tools, and agents/subagents**, built on `laravel/ai` (^0.10) and `laravel/mcp` (^0.9). API and MCP must have full tool parity.
 
 Pattern source: `~/Herd/mono` — Controller → FormRequest `persist()` → `app(Action::class)->execute()` → Resource; MCP mirrors with `Laravel\Mcp\Server\Tool` → custom `Mcp\Request` `persist()` → **same Action** → `Response::structured()` of the same Resource. The Action is the shared unit.
 
@@ -27,7 +27,7 @@ Pattern source: `~/Herd/mono` — Controller → FormRequest `persist()` → `ap
 
 ## Architecture
 
-One vertical per operation. HTTP controllers and MCP tools are one-liners (`return $request->persist();`); both resolve the same plain `final` Action. Namespace `JayI\Cortex\`:
+One vertical per operation. HTTP controllers and MCP tools are one-liners (`return $request->persist();`); both resolve the same plain `final` Action. Namespace `RefactorCircus\Cortex\`:
 
 ```
 src/
@@ -44,7 +44,7 @@ src/
   Mcp/CortexServer.php
   Mcp/Tools/  Mcp/Requests/
   Exceptions/                    # ToolNotFound, PromptNotPublished, CircularAgentReference
-database/factories/              # autoload-dev, JayI\Cortex\Database\Factories
+database/factories/              # autoload-dev, RefactorCircus\Cortex\Database\Factories
 ```
 
 ## Database

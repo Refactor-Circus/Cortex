@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\RedirectDomain\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\RedirectDomain\Http\Requests;
 
 use Illuminate\Database\Eloquent\Model;
-use JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
-use JayI\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
-use JayI\Cortex\Http\Request;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
+use RefactorCircus\Cortex\Http\Request;
 
 abstract class RedirectDomainRequest extends Request
 {

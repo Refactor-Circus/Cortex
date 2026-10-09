@@ -8,7 +8,7 @@
             <x-atrium::alert variant="warning">{{ __('cortex::cortex.redirect_domains_disabled') }}</x-atrium::alert>
         @endunless
 
-        @cortexCan('create', \JayI\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel::class, [null])
+        @cortexCan('create', \RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel::class, [null])
             <x-atrium::card :title="__('cortex::cortex.add_domain')">
                 <form method="POST" action="{{ route('atrium.cortex.redirect-domains.store') }}" class="flex flex-wrap items-end gap-3">
                     @csrf

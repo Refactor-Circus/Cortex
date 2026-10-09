@@ -3,18 +3,18 @@
 declare(strict_types=1);
 
 use Illuminate\Testing\Fluent\AssertableJson;
-use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\CreateConcreteAgentVersionTool;
-use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\DeleteConcreteAgentOverrideTool;
-use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\ListConcreteAgentsTool;
-use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\ListConcreteAgentVersionsTool;
-use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\PublishConcreteAgentVersionTool;
-use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\RunConcreteAgentTool;
-use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\ShowConcreteAgentTool;
-use JayI\Cortex\Domains\ConcreteAgent\Mcp\Tools\UpdateConcreteAgentToolsTool;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Tests\Fixtures\EchoAgent;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\CreateConcreteAgentVersionTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\DeleteConcreteAgentOverrideTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\ListConcreteAgentsTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\ListConcreteAgentVersionsTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\PublishConcreteAgentVersionTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\RunConcreteAgentTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\ShowConcreteAgentTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\UpdateConcreteAgentToolsTool;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoAgent;
 
 beforeEach(function () {
     app(AgentRegistry::class)->register('echo-agent', EchoAgent::class);

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\McpServer\Http\Controllers;
+namespace RefactorCircus\Cortex\Domains\McpServer\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use JayI\Cortex\Domains\McpServer\Http\Requests\DeleteMcpInstructionRequest;
-use JayI\Cortex\Domains\McpServer\Http\Requests\IndexMcpInstructionVersionsRequest;
-use JayI\Cortex\Domains\McpServer\Http\Requests\PublishMcpInstructionVersionRequest;
-use JayI\Cortex\Domains\McpServer\Http\Requests\ShowMcpInstructionRequest;
-use JayI\Cortex\Domains\McpServer\Http\Requests\StoreMcpInstructionVersionRequest;
+use RefactorCircus\Cortex\Domains\McpServer\Http\Requests\DeleteMcpInstructionRequest;
+use RefactorCircus\Cortex\Domains\McpServer\Http\Requests\IndexMcpInstructionVersionsRequest;
+use RefactorCircus\Cortex\Domains\McpServer\Http\Requests\PublishMcpInstructionVersionRequest;
+use RefactorCircus\Cortex\Domains\McpServer\Http\Requests\ShowMcpInstructionRequest;
+use RefactorCircus\Cortex\Domains\McpServer\Http\Requests\StoreMcpInstructionVersionRequest;
 
 final class McpInstructionController
 {

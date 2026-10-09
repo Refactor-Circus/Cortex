@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use JayI\Cortex\Domains\McpServer\Http\Controllers\McpInstructionController;
-use JayI\Cortex\Domains\McpServer\Http\Controllers\McpServerController;
+use RefactorCircus\Cortex\Domains\McpServer\Http\Controllers\McpInstructionController;
+use RefactorCircus\Cortex\Domains\McpServer\Http\Controllers\McpServerController;
 
 Route::get('servers', [McpServerController::class, 'index'])->name('servers.index');
 

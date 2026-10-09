@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Services;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Services;
 
-use JayI\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Exceptions\CircularAgentReferenceException;
-use JayI\Cortex\Domains\VirtualAgent\Exceptions\VirtualAgentNotPublishedException;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
-use JayI\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Exceptions\CircularAgentReferenceException;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Exceptions\VirtualAgentNotPublishedException;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Support\DbAgent;
+use RefactorCircus\Cortex\Support\PublicationCache;
 
 final class AgentFactory
 {

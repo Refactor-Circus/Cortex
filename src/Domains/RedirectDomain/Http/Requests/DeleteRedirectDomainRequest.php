@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\RedirectDomain\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\RedirectDomain\Http\Requests;
 
 use Illuminate\Http\Response;
-use JayI\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
 
 final class DeleteRedirectDomainRequest extends RedirectDomainRequest
 {

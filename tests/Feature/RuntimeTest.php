@@ -3,17 +3,17 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\DB;
-use JayI\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
-use JayI\Cortex\Domains\Tool\Services\ToolRegistry;
-use JayI\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\RunVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Exceptions\CircularAgentReferenceException;
-use JayI\Cortex\Domains\VirtualAgent\Exceptions\VirtualAgentNotPublishedException;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Services\AgentFactory;
-use JayI\Cortex\Domains\VirtualAgent\Support\DbAgent;
-use JayI\Cortex\Facades\Cortex;
-use JayI\Cortex\Tests\Fixtures\EchoTool;
+use RefactorCircus\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\RunVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Exceptions\CircularAgentReferenceException;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Exceptions\VirtualAgentNotPublishedException;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Services\AgentFactory;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Support\DbAgent;
+use RefactorCircus\Cortex\Facades\Cortex;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
 
 it('builds an agent from its published prompt version', function () {
     $agent = VirtualAgentModel::factory()->published('Published.')->create();

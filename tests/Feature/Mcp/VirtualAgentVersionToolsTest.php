@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 use Illuminate\Testing\Fluent\AssertableJson;
-use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentVersionTool;
-use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\ListVirtualAgentVersionsTool;
-use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\PublishVirtualAgentVersionTool;
-use JayI\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentVersionTool;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentVersionTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ListVirtualAgentVersionsTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\PublishVirtualAgentVersionTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentVersionTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 it('creates a version with parity to the http payload', function () {
     VirtualAgentModel::factory()->published('v1')->create(['slug' => 'helper']);

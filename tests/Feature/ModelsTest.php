@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\QueryException;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
-use JayI\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use JayI\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use JayI\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
 
 it('relates virtual agents to versions and a published version', function () {
     $agent = VirtualAgentModel::factory()->create();
@@ -149,20 +149,20 @@ it('keeps the class names the models were stored under before they moved', funct
     expect(Relation::getMorphedModel($old))->toBe($model)
         ->and((new $model)->getMorphClass())->toBe($old);
 })->with([
-    ['JayI\\Cortex\\Models\\VirtualAgent', VirtualAgentModel::class],
-    ['JayI\\Cortex\\Models\\VirtualAgentVersion', VirtualAgentVersionModel::class],
-    ['JayI\\Cortex\\Models\\ConcreteAgentOverride', ConcreteAgentOverrideModel::class],
-    ['JayI\\Cortex\\Models\\ConcreteAgentOverrideVersion', ConcreteAgentOverrideVersionModel::class],
-    ['JayI\\Cortex\\Models\\ToolDescription', ToolDescriptionModel::class],
-    ['JayI\\Cortex\\Models\\ToolDescriptionVersion', ToolDescriptionVersionModel::class],
-    ['JayI\\Cortex\\Models\\McpInstruction', McpInstructionModel::class],
-    ['JayI\\Cortex\\Models\\McpInstructionVersion', McpInstructionVersionModel::class],
+    ['RefactorCircus\\Cortex\\Models\\VirtualAgent', VirtualAgentModel::class],
+    ['RefactorCircus\\Cortex\\Models\\VirtualAgentVersion', VirtualAgentVersionModel::class],
+    ['RefactorCircus\\Cortex\\Models\\ConcreteAgentOverride', ConcreteAgentOverrideModel::class],
+    ['RefactorCircus\\Cortex\\Models\\ConcreteAgentOverrideVersion', ConcreteAgentOverrideVersionModel::class],
+    ['RefactorCircus\\Cortex\\Models\\ToolDescription', ToolDescriptionModel::class],
+    ['RefactorCircus\\Cortex\\Models\\ToolDescriptionVersion', ToolDescriptionVersionModel::class],
+    ['RefactorCircus\\Cortex\\Models\\McpInstruction', McpInstructionModel::class],
+    ['RefactorCircus\\Cortex\\Models\\McpInstructionVersion', McpInstructionVersionModel::class],
 ]);
 
 it('resolves a polymorphic value stored under an old class name', function (): void {
     $agent = VirtualAgentModel::factory()->create();
 
-    $class = Relation::getMorphedModel('JayI\\Cortex\\Models\\VirtualAgent');
+    $class = Relation::getMorphedModel('RefactorCircus\\Cortex\\Models\\VirtualAgent');
 
     expect($class::query()->find($agent->getKey())?->is($agent))->toBeTrue();
 });

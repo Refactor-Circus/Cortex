@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Actions;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Actions;
 
-use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishedActionEvent;
-use JayI\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishingActionEvent;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
-use JayI\Cortex\Support\PublicationCache;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishedActionEvent;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishingActionEvent;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
+use RefactorCircus\Cortex\Support\PublicationCache;
 
 final class PublishVirtualAgentVersionAction
 {

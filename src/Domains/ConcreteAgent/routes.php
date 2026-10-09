@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Controllers\ConcreteAgentController;
-use JayI\Cortex\Domains\ConcreteAgent\Http\Controllers\ConcreteAgentVersionController;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Controllers\ConcreteAgentController;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Controllers\ConcreteAgentVersionController;
 
 Route::get('concrete-agents', [ConcreteAgentController::class, 'index'])->name('concrete-agents.index');
 Route::get('concrete-agents/{agent}', [ConcreteAgentController::class, 'show'])->name('concrete-agents.show');

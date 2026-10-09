@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Domains\VirtualAgent\Http\Requests;
+namespace RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
-use JayI\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentsAction;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use JayI\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
-use JayI\Cortex\Http\Request;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentsAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
+use RefactorCircus\Cortex\Http\Request;
 
 final class IndexVirtualAgentsRequest extends Request
 {

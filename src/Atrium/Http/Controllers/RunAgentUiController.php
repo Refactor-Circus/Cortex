@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace JayI\Cortex\Atrium\Http\Controllers;
+namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use JayI\Cortex\Atrium\CortexPlugin;
-use JayI\Cortex\Atrium\RunnableAgents;
-use JayI\Cortex\Domains\ConcreteAgent\Actions\RunConcreteAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Actions\RunVirtualAgentAction;
-use JayI\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Atrium\CortexPlugin;
+use RefactorCircus\Cortex\Atrium\RunnableAgents;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\RunConcreteAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\RunVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 /**
  * Runs either kind of agent. The select submits `virtual:{slug}` or

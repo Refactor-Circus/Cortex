@@ -1,14 +1,14 @@
 laravel: '@testbench'
 
 providers:
-  - JayI\Atrium\AtriumServiceProvider
-  - JayI\Cortex\CortexServiceProvider
+  - RefactorCircus\Atrium\AtriumServiceProvider
+  - RefactorCircus\Cortex\CortexServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
 
 migrations:
   - workbench/database/migrations
   - database/migrations
-  # jayi/pennantplus (dev dependency, auto-discovered) decides CortexSupportFeature
+  # refactor-circus/pennantplus (dev dependency, auto-discovered) decides CortexSupportFeature
   # through Pennant, whose features table lives here.
   - vendor/laravel/pennant/database/migrations
 
