@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Mcp;
 
+use Laravel\Mcp\Server\Attributes\Instructions;
+use Laravel\Mcp\Server\Attributes\Name;
+use Laravel\Mcp\Server\Attributes\Version;
+use Laravel\Mcp\Server\Tool;
+use Laravel\Mcp\Server\Tools\ToolSearch;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\CreateConcreteAgentVersionTool;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\DeleteConcreteAgentOverrideTool;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\ListConcreteAgentsTool;
@@ -34,11 +39,6 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentVersion
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\UpdateVirtualAgentTool;
 use RefactorCircus\Cortex\Mcp\Tools\ListCortexHistoryTool;
 use RefactorCircus\Foundation\Mcp\Server;
-use Laravel\Mcp\Server\Attributes\Instructions;
-use Laravel\Mcp\Server\Attributes\Name;
-use Laravel\Mcp\Server\Attributes\Version;
-use Laravel\Mcp\Server\Tool;
-use Laravel\Mcp\Server\Tools\ToolSearch;
 
 #[Name('Cortex')]
 #[Version('1.0.0')]

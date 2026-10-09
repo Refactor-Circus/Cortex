@@ -6,9 +6,9 @@ namespace RefactorCircus\Cortex\Domains\VirtualAgent\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Laravel\Ai\Responses\AgentResponse;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
-use Laravel\Ai\Responses\AgentResponse;
 
 /**
  * A virtual agent ran and responded.

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use RefactorCircus\Cortex\Domains\VirtualAgent\Concerns\DescribesVirtualAgentPayload;
-use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\UpdateVirtualAgentMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Concerns\DescribesVirtualAgentPayload;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\UpdateVirtualAgentMcpRequest;
+use RefactorCircus\Foundation\Mcp\Tool;
 
 #[Description('Update a Cortex virtual agent. The tools and sub-agent lists replace the current lists entirely. Changed instructions are saved as a new prompt version and published.')]
 final class UpdateVirtualAgentTool extends Tool

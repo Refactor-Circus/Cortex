@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex;
 
+use Laravel\Ai\Contracts\Agent;
+use Laravel\Ai\Responses\AgentResponse;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Services\AgentFactory;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Support\DbAgent;
-use Laravel\Ai\Contracts\Agent;
-use Laravel\Ai\Responses\AgentResponse;
 
 class Cortex
 {

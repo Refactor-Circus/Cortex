@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\McpServer\Support;
 
-use RefactorCircus\Cortex\Domains\McpServer\Concerns\HasVersionedInstructions;
 use Laravel\Mcp\Server as McpServer;
+use RefactorCircus\Cortex\Domains\McpServer\Concerns\HasVersionedInstructions;
 
 /**
  * Base class for MCP servers whose instructions Cortex manages: register the

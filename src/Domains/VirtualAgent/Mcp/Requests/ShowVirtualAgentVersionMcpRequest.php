@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests;
 
-use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentVersionAction;
-use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentVersionResource;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentVersionAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentVersionResource;
 
 final class ShowVirtualAgentVersionMcpRequest extends VirtualAgentMcpRequest
 {

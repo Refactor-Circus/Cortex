@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\ShowVirtualAgentMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\ShowVirtualAgentMcpRequest;
+use RefactorCircus\Foundation\Mcp\Tool;
 
 #[Description('Show a Cortex virtual agent by slug, including its published prompt, tools, and sub-agents.')]
 final class ShowVirtualAgentTool extends Tool

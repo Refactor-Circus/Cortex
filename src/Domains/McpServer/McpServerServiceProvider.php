@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\McpServer;
 
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
 use RefactorCircus\Cortex\Domains\McpServer\Services\McpInstructionOverrides;
 use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
 use RefactorCircus\Foundation\Support\ServiceProvider;

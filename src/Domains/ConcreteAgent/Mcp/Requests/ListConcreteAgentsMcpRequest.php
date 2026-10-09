@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests;
 
+use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentsAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Resources\ConcreteAgentResource;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Mcp\Request;
-use Laravel\Mcp\ResponseFactory;
 
 final class ListConcreteAgentsMcpRequest extends Request
 {

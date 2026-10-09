@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Workbench\App\Mcp\Servers;
 
-use RefactorCircus\Cortex\Domains\McpServer\Support\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Version;
+use RefactorCircus\Cortex\Domains\McpServer\Support\Server;
 use Workbench\App\Domains\Orders\Tools\LookupOrderTool;
 use Workbench\App\Domains\Support\Tools\CreateTicketTool;
 use Workbench\App\Domains\Support\Tools\SearchKnowledgeBaseTool;

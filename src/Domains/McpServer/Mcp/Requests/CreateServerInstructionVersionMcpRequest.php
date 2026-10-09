@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests;
 
 use Illuminate\Support\Arr;
+use Laravel\Mcp\Response;
+use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
 use RefactorCircus\Cortex\Domains\McpServer\Resources\McpInstructionVersionResource;
-use Laravel\Mcp\Response;
-use Laravel\Mcp\ResponseFactory;
 
 final class CreateServerInstructionVersionMcpRequest extends ServerMcpRequest
 {

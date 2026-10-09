@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests;
 
-use RefactorCircus\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
 use Laravel\Mcp\Response;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
 
 final class DeleteServerInstructionsMcpRequest extends ServerMcpRequest
 {

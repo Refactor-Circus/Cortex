@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Requests\ListRedirectDomainsMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Requests\ListRedirectDomainsMcpRequest;
+use RefactorCircus\Foundation\Mcp\Tool;
 
 #[Description('List the stored origins MCP clients may register OAuth redirect URIs on, beside the configured mcp.redirect_domains. Filter to one owner with owner_type and owner_id.')]
 final class ListRedirectDomainsTool extends Tool

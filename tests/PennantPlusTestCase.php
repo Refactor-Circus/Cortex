@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Tests;
 
-use RefactorCircus\PennantPlus\PennantPlusServiceProvider;
 use Laravel\Pennant\PennantServiceProvider;
+use RefactorCircus\PennantPlus\PennantPlusServiceProvider;
 
 /**
  * Cortex booted with refactor-circus/pennantplus answering Atrium's feature checks.

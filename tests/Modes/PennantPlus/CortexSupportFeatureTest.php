@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Pennant\Feature;
 use RefactorCircus\Atrium\Domains\Navigation\Data\NavItem;
 use RefactorCircus\Atrium\Domains\Navigation\Services\NavigationRegistry;
 use RefactorCircus\Cortex\Atrium\CortexPlugin;
 use RefactorCircus\Cortex\Atrium\Features\CortexSupportFeature;
-use Laravel\Pennant\Feature;
 use Workbench\App\Models\User;
 
 beforeEach(function (): void {
@@ -83,16 +83,4 @@ it('uses a subclass named in the config instead', function (): void {
     Feature::for(null)->activate(OffCortexSupportFeature::class);
 
     expect(pennantNavigation(pennantUser()))->toContain('Virtual agents');
-});
-
-it('keeps the stored name it had before it moved', function (): void {
-    // Values stored before the class moved from RefactorCircus\Cortex\Features.
-    Feature::for(null)->deactivate('RefactorCircus\\Cortex\\Features\\CortexSupportFeature');
-
-    expect(Feature::for(null)->active(CortexSupportFeature::class))->toBeFalse()
-        ->and(pennantNavigation(pennantUser()))->not->toContain('Virtual agents');
-
-    Feature::define(OffCortexSupportFeature::class);
-
-    expect(Feature::defined())->toContain('RefactorCircus\\Cortex\\Features\\CortexSupportFeature', OffCortexSupportFeature::class);
 });

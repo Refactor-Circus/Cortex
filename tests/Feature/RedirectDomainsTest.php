@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Testing\TestResponse;
+use Laravel\Mcp\Facades\Mcp;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainCreatedActionEvent;
@@ -15,7 +16,6 @@ use RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Tools\ListRedirectDomainsTo
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use Laravel\Mcp\Facades\Mcp;
 
 /**
  * Register an MCP client the way a client does, returning the response.

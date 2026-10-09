@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\RedirectDomain;
 
+use Laravel\Mcp\Server\Http\Controllers\OAuthRegisterController as BaseOAuthRegisterController;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Http\Controllers\OAuthRegisterController;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
 use RefactorCircus\Foundation\Support\ServiceProvider;
-use Laravel\Mcp\Server\Http\Controllers\OAuthRegisterController as BaseOAuthRegisterController;
 
 class RedirectDomainServiceProvider extends ServiceProvider
 {

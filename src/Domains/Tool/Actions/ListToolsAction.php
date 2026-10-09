@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\Tool\Actions;
 
+use Laravel\Ai\Contracts\Tool;
+use Laravel\Mcp\Server\Tool as McpTool;
 use RefactorCircus\Cortex\Domains\Tool\Events\ToolsListedActionEvent;
 use RefactorCircus\Cortex\Domains\Tool\Events\ToolsListingActionEvent;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
-use Laravel\Ai\Contracts\Tool;
-use Laravel\Mcp\Server\Tool as McpTool;
 
 final class ListToolsAction
 {

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use RefactorCircus\Cortex\Domains\VirtualAgent\Concerns\DescribesVirtualAgentPayload;
-use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\CreateVirtualAgentMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Concerns\DescribesVirtualAgentPayload;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\CreateVirtualAgentMcpRequest;
+use RefactorCircus\Foundation\Mcp\Tool;
 
 #[Description('Create a Cortex virtual agent. Its instructions become prompt version 1, published immediately. Attach registered tools and virtual or concrete sub-agents to delegate to.')]
 final class CreateVirtualAgentTool extends Tool

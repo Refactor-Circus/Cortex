@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests\ListServersMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests\ListServersMcpRequest;
+use RefactorCircus\Foundation\Mcp\Tool;
 
 #[Description('List the MCP servers registered with Cortex, including the instructions each currently serves.')]
 final class ListServersTool extends Tool

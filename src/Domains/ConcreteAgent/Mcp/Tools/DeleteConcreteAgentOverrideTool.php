@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests\DeleteConcreteAgentOverrideMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests\DeleteConcreteAgentOverrideMcpRequest;
+use RefactorCircus\Foundation\Mcp\Tool;
 
 #[Description('Remove every override of a registered concrete agent (prompt versions and toolset); its code-declared prompt and tools take over.')]
 final class DeleteConcreteAgentOverrideTool extends Tool

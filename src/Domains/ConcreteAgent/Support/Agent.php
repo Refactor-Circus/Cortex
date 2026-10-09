@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Support;
 
-use RefactorCircus\Cortex\Domains\ConcreteAgent\Concerns\HasCortexOverrides;
 use Laravel\Ai\Contracts\Agent as AgentContract;
 use Laravel\Ai\Contracts\HasTools;
 use Laravel\Ai\Promptable;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Concerns\HasCortexOverrides;
 
 /**
  * Base class for concrete agents whose prompt and toolset Cortex manages:

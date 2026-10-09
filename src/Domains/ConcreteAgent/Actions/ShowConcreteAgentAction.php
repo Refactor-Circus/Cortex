@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Actions;
 
+use Laravel\Ai\Contracts\Agent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentShowingActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentShownActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use Laravel\Ai\Contracts\Agent;
 
 final class ShowConcreteAgentAction
 {

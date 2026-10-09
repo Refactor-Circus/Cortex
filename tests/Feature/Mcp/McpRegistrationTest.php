@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use RefactorCircus\Cortex\CortexServiceProvider;
 use Laravel\Mcp\Facades\Mcp;
+use RefactorCircus\Cortex\CortexServiceProvider;
 
 it('does not register mcp transports by default', function () {
     expect(Mcp::getWebServer('mcp/cortex'))->toBeNull()

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Requests;
 
-use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
 use Laravel\Mcp\Response;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
 
 final class DeleteRedirectDomainMcpRequest extends RedirectDomainMcpRequest
 {

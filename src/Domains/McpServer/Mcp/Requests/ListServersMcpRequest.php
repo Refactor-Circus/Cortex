@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests;
 
+use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\ListMcpServersAction;
 use RefactorCircus\Cortex\Domains\McpServer\Http\Resources\McpServerResource;
 use RefactorCircus\Cortex\Mcp\Request;
-use Laravel\Mcp\ResponseFactory;
 
 final class ListServersMcpRequest extends Request
 {

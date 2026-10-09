@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests\CreateServerInstructionVersionMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests\CreateServerInstructionVersionMcpRequest;
+use RefactorCircus\Foundation\Mcp\Tool;
 
 #[Description('Create a new immutable instruction version for a registered MCP server. Not published unless requested.')]
 final class CreateServerInstructionVersionTool extends Tool

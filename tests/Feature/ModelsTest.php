@@ -2,14 +2,11 @@
 
 declare(strict_types=1);
 
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\QueryException;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
-use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
 
@@ -145,24 +142,15 @@ it('deletes versions when the concrete agent override is deleted', function () {
     expect(ConcreteAgentOverrideVersionModel::query()->count())->toBe(0);
 });
 
-it('keeps the class names the models were stored under before they moved', function (string $old, string $model): void {
-    expect(Relation::getMorphedModel($old))->toBe($model)
-        ->and((new $model)->getMorphClass())->toBe($old);
+it('stores models under their own class names', function (string $model): void {
+    expect((new $model)->getMorphClass())->toBe($model);
 })->with([
-    ['RefactorCircus\\Cortex\\Models\\VirtualAgent', VirtualAgentModel::class],
-    ['RefactorCircus\\Cortex\\Models\\VirtualAgentVersion', VirtualAgentVersionModel::class],
-    ['RefactorCircus\\Cortex\\Models\\ConcreteAgentOverride', ConcreteAgentOverrideModel::class],
-    ['RefactorCircus\\Cortex\\Models\\ConcreteAgentOverrideVersion', ConcreteAgentOverrideVersionModel::class],
-    ['RefactorCircus\\Cortex\\Models\\ToolDescription', ToolDescriptionModel::class],
-    ['RefactorCircus\\Cortex\\Models\\ToolDescriptionVersion', ToolDescriptionVersionModel::class],
-    ['RefactorCircus\\Cortex\\Models\\McpInstruction', McpInstructionModel::class],
-    ['RefactorCircus\\Cortex\\Models\\McpInstructionVersion', McpInstructionVersionModel::class],
+    VirtualAgentModel::class,
+    VirtualAgentVersionModel::class,
+    ConcreteAgentOverrideModel::class,
+    ConcreteAgentOverrideVersionModel::class,
+    ToolDescriptionModel::class,
+    ToolDescriptionVersionModel::class,
+    McpInstructionModel::class,
+    McpInstructionVersionModel::class,
 ]);
-
-it('resolves a polymorphic value stored under an old class name', function (): void {
-    $agent = VirtualAgentModel::factory()->create();
-
-    $class = Relation::getMorphedModel('RefactorCircus\\Cortex\\Models\\VirtualAgent');
-
-    expect($class::query()->find($agent->getKey())?->is($agent))->toBeTrue();
-});

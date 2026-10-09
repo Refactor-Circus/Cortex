@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use RefactorCircus\Cortex\Mcp\CortexServer;
-use RefactorCircus\Cortex\Tests\PennantPlusTestCase;
-use RefactorCircus\Cortex\Tests\TestCase;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Server\Testing\TestResponse;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Transport\FakeTransporter;
 use Laravel\Mcp\Transport\JsonRpcResponse;
+use RefactorCircus\Cortex\Mcp\CortexServer;
+use RefactorCircus\Cortex\Tests\PennantPlusTestCase;
+use RefactorCircus\Cortex\Tests\TestCase;
 
 uses(TestCase::class)->in('ArchTest.php', 'Feature', 'Unit');
 uses(PennantPlusTestCase::class)->in('Modes/PennantPlus');

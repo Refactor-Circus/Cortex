@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\RunVirtualAgentMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\RunVirtualAgentMcpRequest;
+use RefactorCircus\Foundation\Mcp\Tool;
 
 #[Description('Run a Cortex virtual agent with the given input and return its response text and token usage.')]
 final class RunVirtualAgentTool extends Tool

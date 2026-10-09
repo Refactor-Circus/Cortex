@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\McpServer\Actions;
 
+use Laravel\Mcp\Server as McpServer;
 use RefactorCircus\Cortex\Domains\McpServer\Events\McpServersListedActionEvent;
 use RefactorCircus\Cortex\Domains\McpServer\Events\McpServersListingActionEvent;
 use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
-use Laravel\Mcp\Server as McpServer;
 
 final class ListMcpServersAction
 {

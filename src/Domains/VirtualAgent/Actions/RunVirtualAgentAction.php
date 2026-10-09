@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Actions;
 
+use Laravel\Ai\Responses\AgentResponse;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentRanActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentRunningActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Services\AgentFactory;
-use Laravel\Ai\Responses\AgentResponse;
 
 final class RunVirtualAgentAction
 {

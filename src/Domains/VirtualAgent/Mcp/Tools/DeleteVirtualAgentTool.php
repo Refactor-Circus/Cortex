@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\DeleteVirtualAgentMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\DeleteVirtualAgentMcpRequest;
+use RefactorCircus\Foundation\Mcp\Tool;
 
 #[Description('Delete a Cortex virtual agent and its prompt versions. Sub-agent links are removed; the linked agents themselves are kept.')]
 final class DeleteVirtualAgentTool extends Tool

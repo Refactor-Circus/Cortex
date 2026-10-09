@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Tests;
 
-use RefactorCircus\Atrium\AtriumServiceProvider;
-use RefactorCircus\Cortex\CortexServiceProvider;
 use Laravel\Ai\AiServiceProvider;
 use Laravel\Mcp\Server\McpServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use RefactorCircus\Atrium\AtriumServiceProvider;
+use RefactorCircus\Cortex\CortexServiceProvider;
 
 abstract class TestCase extends Orchestra
 {

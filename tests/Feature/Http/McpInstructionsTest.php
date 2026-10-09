@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
+use Laravel\Mcp\Server\Transport\FakeTransporter;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
 use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoServer;
-use Laravel\Mcp\Server\Transport\FakeTransporter;
 
 beforeEach(function () {
     app(McpServerRegistry::class)->register('echo', EchoServer::class);

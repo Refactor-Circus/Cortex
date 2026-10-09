@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\McpServer\Concerns;
 
+use Laravel\Mcp\Server\ServerContext;
 use RefactorCircus\Cortex\Domains\McpServer\Services\McpInstructionOverrides;
 use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
 use RefactorCircus\Cortex\Domains\McpServer\Support\Server;
-use Laravel\Mcp\Server\ServerContext;
 
 /**
  * Serve the published Cortex instructions override, when one exists, in

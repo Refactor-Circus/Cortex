@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests;
 
-use RefactorCircus\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
-use RefactorCircus\Cortex\Domains\McpServer\Resources\McpInstructionResource;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
+use RefactorCircus\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\McpServer\Resources\McpInstructionResource;
 
 final class PublishServerInstructionVersionMcpRequest extends ServerMcpRequest
 {

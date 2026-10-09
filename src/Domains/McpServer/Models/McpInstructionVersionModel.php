@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use LogicException;
 use RefactorCircus\Cortex\Database\Factories\McpInstructionVersionFactory;
 use RefactorCircus\Foundation\Models\Concerns\DispatchesModelEvents;
-use LogicException;
 
 /**
  * @property string $id

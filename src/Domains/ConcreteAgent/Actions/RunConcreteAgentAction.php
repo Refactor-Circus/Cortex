@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Actions;
 
+use Laravel\Ai\Responses\AgentResponse;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentRanActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentRunningActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use Laravel\Ai\Responses\AgentResponse;
 
 final class RunConcreteAgentAction
 {

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests\CreateConcreteAgentVersionMcpRequest;
-use RefactorCircus\Foundation\Mcp\Tool;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests\CreateConcreteAgentVersionMcpRequest;
+use RefactorCircus\Foundation\Mcp\Tool;
 
 #[Description('Create a new immutable prompt override version for a registered concrete agent. Not published unless requested.')]
 final class CreateConcreteAgentVersionTool extends Tool

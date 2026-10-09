@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Workbench\App\Domains\Orders\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
-use RefactorCircus\Cortex\Domains\Tool\Support\Tool;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
+use RefactorCircus\Cortex\Domains\Tool\Support\Tool;
 
 /**
  * Demo tool: answers with canned data so the workbench never calls out.

@@ -6,8 +6,8 @@ namespace RefactorCircus\Cortex\Domains\RedirectDomain\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
 use Laravel\Mcp\Server\Http\Controllers\OAuthRegisterController as BaseOAuthRegisterController;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
 
 /**
  * laravel/mcp's dynamic client registration, allowing the stored redirect

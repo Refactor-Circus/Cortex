@@ -6,8 +6,8 @@ namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
 use Laravel\Ai\Responses\AgentResponse;
+use RefactorCircus\Foundation\Contracts\ActionFinishedEvent;
 
 /**
  * A concrete agent ran and responded.

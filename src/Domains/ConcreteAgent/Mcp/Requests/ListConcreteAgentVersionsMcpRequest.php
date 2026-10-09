@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests;
 
+use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentVersionsAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Resources\ConcreteAgentOverrideVersionResource;
-use Laravel\Mcp\ResponseFactory;
 
 final class ListConcreteAgentVersionsMcpRequest extends ConcreteAgentMcpRequest
 {
