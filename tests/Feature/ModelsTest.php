@@ -7,6 +7,8 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideMode
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
 
