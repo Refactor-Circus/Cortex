@@ -1,4 +1,5 @@
 <div align="center">
+    <img src="art/icon.png" width="160" alt="Cortex icon">
     <h1>Cortex</h1>
 </div>
 
