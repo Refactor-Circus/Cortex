@@ -14,7 +14,7 @@
 
 ### Breaking
 
-- Cortex stands on [refactor-circus/keystone](https://github.com/jayjfletcher/Foundation), the shared runtime of the Refactor Circus suite, which it now requires. The package-local copies are gone; update imports:
+- Cortex stands on [refactor-circus/keystone](https://github.com/Refactor-Circus/Keystone), the shared runtime of the Refactor Circus suite, which it now requires. The package-local copies are gone; update imports:
   - `RefactorCircus\Cortex\Contracts\{ActionStartingEvent,ActionFinishedEvent,ModelLifecycleEvent}` → `RefactorCircus\Keystone\Contracts\...`, so one listener hears every package of the suite
   - `RefactorCircus\Cortex\Support\Models\Concerns\DispatchesModelEvents` → `RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents`
   - `RefactorCircus\Cortex\Support\ServiceProvider` → `RefactorCircus\Keystone\Support\ServiceProvider`; `CortexServiceProvider` extends `RefactorCircus\Keystone\Support\PackageServiceProvider` and registers Cortex with the `PackageRegistry` as `cortex`
