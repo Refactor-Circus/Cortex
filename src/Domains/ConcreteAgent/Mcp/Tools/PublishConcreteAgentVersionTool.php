@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests\PublishConcreteAgentVersionMcpRequest;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Resources\ConcreteAgentOverrideResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Publish a specific prompt override version of a registered concrete agent, replacing its code-declared prompt.')]
@@ -25,5 +26,10 @@ final class PublishConcreteAgentVersionTool extends Tool
             'agent' => $schema->string()->description('The registered concrete agent name.')->required(),
             'version' => $schema->integer()->description('The version number to publish.')->min(1)->required(),
         ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return ConcreteAgentOverrideResource::structuredSchema($schema);
     }
 }

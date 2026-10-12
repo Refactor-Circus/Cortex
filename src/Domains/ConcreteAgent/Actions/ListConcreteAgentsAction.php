@@ -12,14 +12,6 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 
 final class ListConcreteAgentsAction
 {
-    /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
-
     public function __construct(private readonly AgentRegistry $registry) {}
 
     /**

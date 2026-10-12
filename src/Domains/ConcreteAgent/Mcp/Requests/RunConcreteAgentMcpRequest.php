@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests;
 
-use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\RunConcreteAgentAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\RunConcreteAgentData;
 use RefactorCircus\Cortex\Http\Resources\AgentRunResource;
 
 final class RunConcreteAgentMcpRequest extends ConcreteAgentMcpRequest
@@ -18,19 +18,16 @@ final class RunConcreteAgentMcpRequest extends ConcreteAgentMcpRequest
 
     protected function rules(): array
     {
-        return [
-            'agent' => ['required', 'string'],
-            ...RunConcreteAgentAction::rules(),
-        ];
+        return $this->agentRules() + RunConcreteAgentData::rules();
     }
 
     protected function handle(array $validated): ResponseFactory
     {
         $response = app(RunConcreteAgentAction::class)->execute(
             $this->agentName(),
-            (string) $validated['input'],
+            RunConcreteAgentData::fromValidated($validated),
         );
 
-        return Response::structured((new AgentRunResource($response))->resolve());
+        return (new AgentRunResource($response))->toStructuredResponse();
     }
 }

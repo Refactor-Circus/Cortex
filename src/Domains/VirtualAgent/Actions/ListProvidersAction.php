@@ -11,14 +11,6 @@ use Throwable;
 
 final class ListProvidersAction
 {
-    /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
-
     public function __construct(private readonly AiManager $manager) {}
 
     /**

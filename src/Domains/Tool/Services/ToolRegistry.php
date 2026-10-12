@@ -31,6 +31,21 @@ final class ToolRegistry
 
     private bool $configLoaded = false;
 
+    /**
+     * Each tool's resolved tags, keyed by tool name; cleared on register()
+     * and whenever `cortex.tool_tags.namespaces` changes.
+     *
+     * @var array<string, list<string>>
+     */
+    private array $resolvedTags = [];
+
+    /**
+     * The namespace patterns the resolved tags were built from.
+     *
+     * @var list<string>|null
+     */
+    private ?array $tagPatterns = null;
+
     public function __construct(private readonly Container $container) {}
 
     /**
@@ -49,6 +64,7 @@ final class ToolRegistry
 
         $this->tools[$name] = $class;
         $this->tags[$name] = $this->normalizeTags($tags);
+        $this->resolvedTags = [];
     }
 
     public function has(string $name): bool
@@ -97,14 +113,26 @@ final class ToolRegistry
             throw ToolNotFoundException::forName($name);
         }
 
+        /** @var list<string> $patterns */
+        $patterns = $this->container->make('config')->get('cortex.tool_tags.namespaces', []);
+
+        if ($this->tagPatterns !== $patterns) {
+            $this->tagPatterns = $patterns;
+            $this->resolvedTags = [];
+        }
+
+        if (isset($this->resolvedTags[$name])) {
+            return $this->resolvedTags[$name];
+        }
+
         $tags = array_values(array_unique([
             ...$this->tags[$name],
-            ...$this->namespaceTags($this->tools[$name]),
+            ...$this->namespaceTags($this->tools[$name], $patterns),
         ]));
 
         sort($tags);
 
-        return $tags;
+        return $this->resolvedTags[$name] = $tags;
     }
 
     /**
@@ -122,16 +150,25 @@ final class ToolRegistry
     }
 
     /**
+     * The registered tools by name, class and tags only: no tool is
+     * instantiated and no schema built, for lists that show nothing more.
+     *
+     * @return list<array{name: string, class: class-string<Tool>|class-string<McpTool>, tags: list<string>}>
+     */
+    public function summaries(?string $tag = null): array
+    {
+        return array_map(fn (string $name): array => [
+            'name' => $name,
+            'class' => $this->tools[$name],
+            'tags' => $this->tagsFor($name),
+        ], $this->namesTagged($tag));
+    }
+
+    /**
      * @return list<array{name: string, class: class-string<Tool>|class-string<McpTool>, description: string, schema: array<string, mixed>, tags: list<string>}>
      */
     public function all(?string $tag = null): array
     {
-        $this->loadConfigTools();
-
-        $names = $tag === null
-            ? $this->names()
-            : array_values(array_filter($this->names(), fn (string $name): bool => in_array($tag, $this->tagsFor($name), true)));
-
         return array_map(function (string $name): array {
             $tool = $this->get($name);
 
@@ -142,7 +179,19 @@ final class ToolRegistry
                 'schema' => JsonSchema::object($tool->schema(...))->toArray(),
                 'tags' => $this->tagsFor($name),
             ];
-        }, $names);
+        }, $this->namesTagged($tag));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function namesTagged(?string $tag): array
+    {
+        $names = $this->names();
+
+        return $tag === null
+            ? $names
+            : array_values(array_filter($names, fn (string $name): bool => in_array($tag, $this->tagsFor($name), true)));
     }
 
     private function loadConfigTools(): void
@@ -170,13 +219,11 @@ final class ToolRegistry
      * so `App\Domains\{tag}\` tags `App\Domains\Order\Mcp\ShowOrderTool`
      * as `order`.
      *
+     * @param  list<string>  $patterns
      * @return list<string>
      */
-    private function namespaceTags(string $class): array
+    private function namespaceTags(string $class, array $patterns): array
     {
-        /** @var list<string> $patterns */
-        $patterns = $this->container->make('config')->get('cortex.tool_tags.namespaces', []);
-
         $tags = [];
 
         foreach ($patterns as $pattern) {

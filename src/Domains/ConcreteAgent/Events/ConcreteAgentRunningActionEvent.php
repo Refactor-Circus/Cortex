@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\RunConcreteAgentData;
 use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
 
 /**
@@ -18,6 +19,6 @@ final class ConcreteAgentRunningActionEvent implements ActionStartingEvent
 
     public function __construct(
         public string $agent,
-        public string $input,
+        public RunConcreteAgentData $data,
     ) {}
 }

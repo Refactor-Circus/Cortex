@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\PublishVirtualAgentVersionMcpRequest;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Publish a specific prompt version of a Cortex virtual agent, making it the prompt the agent runs with.')]
@@ -25,5 +26,10 @@ final class PublishVirtualAgentVersionTool extends Tool
             'slug' => $schema->string()->description('The virtual agent slug.')->required(),
             'version' => $schema->integer()->description('The version number to publish.')->min(1)->required(),
         ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return VirtualAgentResource::structuredSchema($schema);
     }
 }

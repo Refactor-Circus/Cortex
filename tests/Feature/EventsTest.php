@@ -13,6 +13,9 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\PublishConcreteAgentVers
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\RunConcreteAgentAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionData;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\RunConcreteAgentData;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\UpdateConcreteAgentToolsData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
@@ -20,15 +23,18 @@ use RefactorCircus\Cortex\Domains\McpServer\Actions\ListMcpInstructionVersionsAc
 use RefactorCircus\Cortex\Domains\McpServer\Actions\ListMcpServersAction;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\ShowMcpInstructionAction;
+use RefactorCircus\Cortex\Domains\McpServer\Data\CreateMcpInstructionVersionData;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\ListRedirectDomainsAction;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Data\CreateRedirectDomainData;
 use RefactorCircus\Cortex\Domains\Tool\Actions\CreateToolDescriptionVersionAction;
 use RefactorCircus\Cortex\Domains\Tool\Actions\DeleteToolDescriptionAction;
 use RefactorCircus\Cortex\Domains\Tool\Actions\ListToolDescriptionVersionsAction;
 use RefactorCircus\Cortex\Domains\Tool\Actions\ListToolsAction;
 use RefactorCircus\Cortex\Domains\Tool\Actions\PublishToolDescriptionVersionAction;
 use RefactorCircus\Cortex\Domains\Tool\Actions\ShowToolDescriptionAction;
+use RefactorCircus\Cortex\Domains\Tool\Data\CreateToolDescriptionVersionData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\DeleteVirtualAgentAction;
@@ -40,6 +46,10 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\RunVirtualAgentAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentVersionAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\CreateVirtualAgentData;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\CreateVirtualAgentVersionData;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\RunVirtualAgentData;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\UpdateVirtualAgentData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentCreatedActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentCreatingActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentCreatingEvent;
@@ -98,10 +108,10 @@ it('fires every lifecycle event of an agent', function (): void {
 it('fires the lifecycle events of versions and overrides', function (): void {
     $seen = recordEvents(ModelLifecycleEvent::class);
 
-    app(CreateVirtualAgentAction::class)->execute(['name' => 'Helper', 'slug' => 'helper', 'instructions' => 'Be kind.']);
-    app(CreateToolDescriptionVersionAction::class)->execute('echo', ['content' => 'Echo.', 'publish' => true]);
-    app(CreateMcpInstructionVersionAction::class)->execute('cortex', ['content' => 'Use tools.', 'publish' => true]);
-    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', ['content' => 'Echo.', 'publish' => true]);
+    app(CreateVirtualAgentAction::class)->execute(new CreateVirtualAgentData(name: 'Helper', slug: 'helper', instructions: 'Be kind.'));
+    app(CreateToolDescriptionVersionAction::class)->execute('echo', new CreateToolDescriptionVersionData(content: 'Echo.', publish: true));
+    app(CreateMcpInstructionVersionAction::class)->execute('cortex', new CreateMcpInstructionVersionData(content: 'Use tools.', publish: true));
+    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', new CreateConcreteAgentVersionData(content: 'Echo.', publish: true));
 
     $models = collect($seen)
         ->map(fn (ModelLifecycleEvent $event): string => class_basename($event->model()).'.'.$event->hook())
@@ -118,7 +128,7 @@ it('fires the lifecycle events of versions and overrides', function (): void {
 it('carries the model on the event', function (): void {
     Event::fake([VirtualAgentVersionCreatedEvent::class]);
 
-    $agent = app(CreateVirtualAgentAction::class)->execute(['name' => 'Helper', 'slug' => 'helper', 'instructions' => 'Be kind.']);
+    $agent = app(CreateVirtualAgentAction::class)->execute(new CreateVirtualAgentData(name: 'Helper', slug: 'helper', instructions: 'Be kind.'));
 
     Event::assertDispatched(
         VirtualAgentVersionCreatedEvent::class,
@@ -144,39 +154,39 @@ it('starts and finishes every action once, in order', function (): void {
     DbAgent::fake(['Hello.']);
     EchoAgent::fake(['Echoed.']);
 
-    $agent = app(CreateVirtualAgentAction::class)->execute(['name' => 'Helper', 'slug' => 'helper', 'instructions' => 'Be kind.']);
-    app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'Be kinder.']);
+    $agent = app(CreateVirtualAgentAction::class)->execute(new CreateVirtualAgentData(name: 'Helper', slug: 'helper', instructions: 'Be kind.'));
+    app(CreateVirtualAgentVersionAction::class)->execute($agent, new CreateVirtualAgentVersionData(content: 'Be kinder.'));
     app(PublishVirtualAgentVersionAction::class)->execute($agent, 2);
     app(ShowVirtualAgentVersionAction::class)->execute($agent, 1);
     app(ListVirtualAgentVersionsAction::class)->execute($agent);
-    app(UpdateVirtualAgentAction::class)->execute($agent, ['description' => 'Helps.']);
+    app(UpdateVirtualAgentAction::class)->execute($agent, new UpdateVirtualAgentData(description: 'Helps.'));
     app(ShowVirtualAgentAction::class)->execute($agent);
     app(ListVirtualAgentsAction::class)->execute();
-    app(RunVirtualAgentAction::class)->execute($agent, 'Hi');
+    app(RunVirtualAgentAction::class)->execute($agent, new RunVirtualAgentData('Hi'));
     app(DeleteVirtualAgentAction::class)->execute($agent);
 
-    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', ['content' => 'Echo louder.']);
+    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', new CreateConcreteAgentVersionData(content: 'Echo louder.'));
     $override = app(ShowConcreteAgentAction::class)->execute('echo-agent')['override'];
     app(PublishConcreteAgentVersionAction::class)->execute($override, 1);
     app(ListConcreteAgentVersionsAction::class)->execute($override);
-    app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', ['EchoTool']);
+    app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', new UpdateConcreteAgentToolsData(['EchoTool']));
     app(ListConcreteAgentsAction::class)->execute();
-    app(RunConcreteAgentAction::class)->execute('echo-agent', 'Hi');
+    app(RunConcreteAgentAction::class)->execute('echo-agent', new RunConcreteAgentData('Hi'));
     app(DeleteConcreteAgentOverrideAction::class)->execute($override);
 
-    app(CreateToolDescriptionVersionAction::class)->execute('echo', ['content' => 'Echo.']);
+    app(CreateToolDescriptionVersionAction::class)->execute('echo', new CreateToolDescriptionVersionData(content: 'Echo.'));
     $description = app(ShowToolDescriptionAction::class)->execute('echo');
     app(PublishToolDescriptionVersionAction::class)->execute($description, 1);
     app(ListToolDescriptionVersionsAction::class)->execute($description);
     app(DeleteToolDescriptionAction::class)->execute($description);
 
-    app(CreateMcpInstructionVersionAction::class)->execute('cortex', ['content' => 'Use tools.']);
+    app(CreateMcpInstructionVersionAction::class)->execute('cortex', new CreateMcpInstructionVersionData(content: 'Use tools.'));
     $instruction = app(ShowMcpInstructionAction::class)->execute('cortex');
     app(PublishMcpInstructionVersionAction::class)->execute($instruction, 1);
     app(ListMcpInstructionVersionsAction::class)->execute($instruction);
     app(DeleteMcpInstructionAction::class)->execute($instruction);
 
-    $domain = app(CreateRedirectDomainAction::class)->execute(['domain' => 'claude.ai']);
+    $domain = app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'claude.ai'));
     app(ListRedirectDomainsAction::class)->execute();
     app(DeleteRedirectDomainAction::class)->execute($domain);
 
@@ -229,11 +239,11 @@ it('carries the input on the start event and the result on the finish event', fu
 
     Event::fake([VirtualAgentRanActionEvent::class]);
 
-    app(RunVirtualAgentAction::class)->execute($agent, 'Hi');
+    app(RunVirtualAgentAction::class)->execute($agent, new RunVirtualAgentData('Hi'));
 
     Event::assertDispatched(
         VirtualAgentRanActionEvent::class,
-        fn (VirtualAgentRanActionEvent $event): bool => $event->agent->is($agent) && $event->input === 'Hi' && $event->response->text === 'Hello.',
+        fn (VirtualAgentRanActionEvent $event): bool => $event->agent->is($agent) && $event->data->input === 'Hi' && $event->response->text === 'Hello.',
     );
 });
 
@@ -247,7 +257,7 @@ it('starts before the work and finishes only once it is committed', function ():
     $finished = recordEvents(VirtualAgentCreatedActionEvent::class);
 
     DB::transaction(function () use ($finished): void {
-        app(CreateVirtualAgentAction::class)->execute(['name' => 'Helper', 'slug' => 'helper', 'instructions' => 'Be kind.']);
+        app(CreateVirtualAgentAction::class)->execute(new CreateVirtualAgentData(name: 'Helper', slug: 'helper', instructions: 'Be kind.'));
 
         expect($finished)->toHaveCount(0);
     });
@@ -255,6 +265,27 @@ it('starts before the work and finishes only once it is committed', function ():
     expect($agentsAtStart)->toBe(0)
         ->and($finished)->toHaveCount(1)
         ->and($finished[0]->agent->slug)->toBe('helper');
+});
+
+it('never finishes an action whose transaction rolls back', function (): void {
+    $agent = VirtualAgentModel::factory()->published()->create();
+    $agent->versions()->create(['version' => 2, 'content' => 'Be brief.']);
+    $published = $agent->published_version_id;
+
+    $finished = recordEvents(VirtualAgentVersionPublishedActionEvent::class);
+
+    try {
+        DB::transaction(function () use ($agent): void {
+            app(PublishVirtualAgentVersionAction::class)->execute($agent, 2);
+
+            throw new RuntimeException('rolled back');
+        });
+    } catch (RuntimeException) {
+        //
+    }
+
+    expect($finished)->toHaveCount(0)
+        ->and($agent->fresh()?->published_version_id)->toBe($published);
 });
 
 it('starts a failed action but never finishes it', function (): void {

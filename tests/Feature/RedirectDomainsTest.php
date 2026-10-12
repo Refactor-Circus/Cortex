@@ -8,6 +8,7 @@ use Illuminate\Testing\TestResponse;
 use Laravel\Mcp\Facades\Mcp;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Data\CreateRedirectDomainData;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainCreatedActionEvent;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainDeletedActionEvent;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Tools\CreateRedirectDomainTool;
@@ -62,7 +63,7 @@ it('rejects redirect uris on domains that are neither configured nor stored', fu
 });
 
 it('accepts redirect uris on stored domains', function (): void {
-    app(CreateRedirectDomainAction::class)->execute(['domain' => 'claude.ai']);
+    app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'claude.ai'));
 
     expect(redirectAccepted(registerClient('https://claude.ai/api/mcp/auth_callback')))->toBeTrue()
         ->and(redirectAccepted(registerClient('https://claude.ai.evil.test/callback')))->toBeFalse();
@@ -71,14 +72,14 @@ it('accepts redirect uris on stored domains', function (): void {
 it('accepts domains owned by anyone', function (): void {
     $owner = VirtualAgentModel::factory()->create();
 
-    app(CreateRedirectDomainAction::class)->execute(['domain' => 'https://chatgpt.com'], $owner);
+    app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'https://chatgpt.com'), $owner);
 
     expect(redirectAccepted(registerClient('https://chatgpt.com/connector_platform_oauth_redirect')))->toBeTrue();
 });
 
 it('keeps the configured domains and leaves the config as it was', function (): void {
     config(['mcp.redirect_domains' => ['https://cursor.com']]);
-    app(CreateRedirectDomainAction::class)->execute(['domain' => 'claude.ai']);
+    app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'claude.ai'));
 
     expect(redirectAccepted(registerClient('https://cursor.com/callback')))->toBeTrue()
         ->and(redirectAccepted(registerClient('https://claude.ai/callback')))->toBeTrue()
@@ -86,7 +87,7 @@ it('keeps the configured domains and leaves the config as it was', function (): 
 });
 
 it('stops accepting a domain once removed', function (): void {
-    $domain = app(CreateRedirectDomainAction::class)->execute(['domain' => 'claude.ai']);
+    $domain = app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'claude.ai'));
     expect(redirectAccepted(registerClient('https://claude.ai/callback')))->toBeTrue();
 
     app(DeleteRedirectDomainAction::class)->execute($domain);
@@ -96,7 +97,7 @@ it('stops accepting a domain once removed', function (): void {
 
 it('ignores stored domains when switched off', function (): void {
     config(['cortex.redirect_domains.enabled' => false]);
-    app(CreateRedirectDomainAction::class)->execute(['domain' => 'claude.ai']);
+    app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'claude.ai'));
 
     expect(redirectAccepted(registerClient('https://claude.ai/callback')))->toBeFalse();
 });
@@ -105,9 +106,9 @@ it('adds a domain once per owner and fires its action events', function (): void
     Event::fake([RedirectDomainCreatedActionEvent::class, RedirectDomainDeletedActionEvent::class]);
     $owner = VirtualAgentModel::factory()->create();
 
-    $first = app(CreateRedirectDomainAction::class)->execute(['domain' => 'claude.ai'], $owner);
-    $again = app(CreateRedirectDomainAction::class)->execute(['domain' => 'https://claude.ai/'], $owner);
-    $global = app(CreateRedirectDomainAction::class)->execute(['domain' => 'claude.ai']);
+    $first = app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'claude.ai'), $owner);
+    $again = app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'https://claude.ai/'), $owner);
+    $global = app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'claude.ai'));
 
     expect($again->id)->toBe($first->id)
         ->and($global->id)->not->toBe($first->id)
@@ -179,7 +180,7 @@ it('creates and deletes domains over mcp with parity to the http payload', funct
     ])->assertOk();
 
     $http = $this->getJson(route('cortex.redirect-domains.index'))->json('data.0');
-    $response->assertStructuredContent($http);
+    $response->assertStructuredContent(['data' => $http]);
 
     mcpTool(DeleteRedirectDomainTool::class, ['id' => $http['id']])->assertOk();
 
@@ -191,13 +192,13 @@ it('manages domains from the dashboard', function (): void {
     app()->detectEnvironment(fn (): string => 'local');
     config(['mcp.redirect_domains' => ['https://cursor.com']]);
     $owner = VirtualAgentModel::factory()->create(['name' => 'Acme agent']);
-    app(CreateRedirectDomainAction::class)->execute(['domain' => 'chatgpt.com'], $owner);
+    app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'chatgpt.com'), $owner);
 
-    app(CreateRedirectDomainAction::class)->execute(['domain' => 'perplexity.ai']);
+    app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'perplexity.ai'));
 
     $this->get(route('atrium.cortex.redirect-domains.index'))
         ->assertOk()
-        ->assertSeeInOrder(['https://chatgpt.com', 'https://cursor.com', 'https://perplexity.ai'])
+        ->assertSeeInOrder(['https://cursor.com', 'https://chatgpt.com', 'https://perplexity.ai'])
         ->assertSee('Acme agent')
         ->assertSee('data-testid="redirect-domain-config"', false)
         ->assertSee('data-testid="redirect-domain-global"', false)

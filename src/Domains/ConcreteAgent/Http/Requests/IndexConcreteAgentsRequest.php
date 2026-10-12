@@ -17,11 +17,6 @@ final class IndexConcreteAgentsRequest extends Request
         return $this->allows('viewAny', ConcreteAgentOverrideModel::class);
     }
 
-    public function rules(): array
-    {
-        return ListConcreteAgentsAction::rules();
-    }
-
     public function persist(): JsonResponse
     {
         $agents = app(ListConcreteAgentsAction::class)->execute();

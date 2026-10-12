@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Actions;
 
+use Illuminate\Support\Facades\DB;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionPublishedActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionPublishingActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
@@ -13,14 +14,6 @@ use RefactorCircus\Cortex\Support\PublicationCache;
 final class PublishConcreteAgentVersionAction
 {
     public function __construct(private readonly PublicationCache $cache) {}
-
-    /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
 
     public function execute(ConcreteAgentOverrideModel $override, int $version): ConcreteAgentOverrideModel
     {
@@ -35,14 +28,16 @@ final class PublishConcreteAgentVersionAction
 
     private function perform(ConcreteAgentOverrideModel $override, int $version): ConcreteAgentOverrideModel
     {
-        /** @var ConcreteAgentOverrideVersionModel $overrideVersion */
-        $overrideVersion = $override->versions()->where('version', $version)->firstOrFail();
+        return DB::transaction(function () use ($override, $version): ConcreteAgentOverrideModel {
+            /** @var ConcreteAgentOverrideVersionModel $overrideVersion */
+            $overrideVersion = $override->versions()->where('version', $version)->firstOrFail();
 
-        $override->published_version_id = (string) $overrideVersion->getKey();
-        $override->save();
+            $override->published_version_id = (string) $overrideVersion->getKey();
+            $override->save();
 
-        $this->cache->forget($this->cache->concreteAgentsKey());
+            DB::afterCommit(fn () => $this->cache->forget($this->cache->concreteAgentsKey()));
 
-        return $override->load('publishedVersion');
+            return $override->load('publishedVersion');
+        });
     }
 }

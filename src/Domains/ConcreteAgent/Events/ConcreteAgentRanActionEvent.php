@@ -7,6 +7,7 @@ namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Laravel\Ai\Responses\AgentResponse;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\RunConcreteAgentData;
 use RefactorCircus\Keystone\Contracts\ActionFinishedEvent;
 
 /**
@@ -19,7 +20,7 @@ final class ConcreteAgentRanActionEvent implements ActionFinishedEvent
 
     public function __construct(
         public string $agent,
-        public string $input,
+        public RunConcreteAgentData $data,
         public AgentResponse $response,
     ) {}
 }

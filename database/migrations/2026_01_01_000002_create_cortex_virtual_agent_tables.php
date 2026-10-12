@@ -5,12 +5,13 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use RefactorCircus\Cortex\Support\Tables;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('cortex_virtual_agents', function (Blueprint $table): void {
+        Schema::create(Tables::name('virtual_agents'), function (Blueprint $table): void {
             $table->ulid('id')->primary();
             $table->string('name');
             $table->string('slug')->unique();
@@ -26,9 +27,9 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('cortex_virtual_agent_versions', function (Blueprint $table): void {
+        Schema::create(Tables::name('virtual_agent_versions'), function (Blueprint $table): void {
             $table->ulid('id')->primary();
-            $table->foreignUlid('virtual_agent_id')->constrained('cortex_virtual_agents')->cascadeOnDelete();
+            $table->foreignUlid('virtual_agent_id')->constrained(Tables::name('virtual_agents'))->cascadeOnDelete();
             $table->unsignedInteger('version');
             $table->longText('content');
             $table->timestamps();
@@ -36,9 +37,9 @@ return new class extends Migration
             $table->unique(['virtual_agent_id', 'version']);
         });
 
-        Schema::create('cortex_virtual_agent_sub_agents', function (Blueprint $table): void {
-            $table->foreignUlid('virtual_agent_id')->constrained('cortex_virtual_agents')->cascadeOnDelete();
-            $table->foreignUlid('sub_agent_id')->constrained('cortex_virtual_agents')->cascadeOnDelete();
+        Schema::create(Tables::name('virtual_agent_sub_agents'), function (Blueprint $table): void {
+            $table->foreignUlid('virtual_agent_id')->constrained(Tables::name('virtual_agents'))->cascadeOnDelete();
+            $table->foreignUlid('sub_agent_id')->constrained(Tables::name('virtual_agents'))->cascadeOnDelete();
 
             $table->unique(['virtual_agent_id', 'sub_agent_id'], 'cortex_virtual_agent_sub_agents_unique');
         });
@@ -46,8 +47,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('cortex_virtual_agent_sub_agents');
-        Schema::dropIfExists('cortex_virtual_agent_versions');
-        Schema::dropIfExists('cortex_virtual_agents');
+        Schema::dropIfExists(Tables::name('virtual_agent_sub_agents'));
+        Schema::dropIfExists(Tables::name('virtual_agent_versions'));
+        Schema::dropIfExists(Tables::name('virtual_agents'));
     }
 };

@@ -15,11 +15,6 @@ final class ShowVirtualAgentRequest extends VirtualAgentRequest
         return $this->allows('view', $this->agent());
     }
 
-    public function rules(): array
-    {
-        return ShowVirtualAgentAction::rules();
-    }
-
     public function persist(): JsonResponse
     {
         $agent = app(ShowVirtualAgentAction::class)->execute($this->agent());

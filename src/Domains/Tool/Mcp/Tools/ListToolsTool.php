@@ -8,6 +8,7 @@ use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\Tool\Http\Resources\ToolResource;
 use RefactorCircus\Cortex\Domains\Tool\Mcp\Requests\ListToolsMcpRequest;
 use RefactorCircus\Keystone\Mcp\Tool;
 
@@ -23,6 +24,13 @@ final class ListToolsTool extends Tool
     {
         return [
             'tag' => $schema->string()->description('Only list tools carrying this tag, e.g. "orders".'),
+        ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return [
+            'data' => $schema->array()->items($schema->object(ToolResource::schema($schema)))->required(),
         ];
     }
 }

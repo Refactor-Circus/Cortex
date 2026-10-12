@@ -18,13 +18,13 @@ final class ListRedirectDomainsMcpRequest extends RedirectDomainMcpRequest
 
     protected function rules(): array
     {
-        return ListRedirectDomainsAction::rules();
+        return $this->ownerRules();
     }
 
     protected function handle(array $validated): ResponseFactory
     {
         $domains = app(ListRedirectDomainsAction::class)->execute($this->owner());
 
-        return $this->structuredCollection(RedirectDomainResource::collection($domains)->resolve());
+        return RedirectDomainResource::collection($domains)->toStructuredResponse();
     }
 }

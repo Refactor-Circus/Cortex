@@ -32,7 +32,7 @@ it('creates a virtual agent with parity to the http payload', function () {
 
     $http = $this->getJson(route('cortex.virtual-agents.show', 'coordinator'))->json('data');
 
-    $mcp->assertStructuredContent($http);
+    $mcp->assertStructuredContent(['data' => $http]);
 
     expect($http['tools'])->toBe(['echo'])
         ->and($http['instructions'])->toBe('Coordinate.')
@@ -59,6 +59,22 @@ it('lists virtual agents in a data envelope', function () {
             fn (AssertableJson $json) => $json
                 ->count('data', 1)
                 ->where('data.0.slug', 'helper')
+                ->etc(),
+        );
+});
+
+it('pages virtual agents by per_page, with the page under meta', function () {
+    VirtualAgentModel::factory()->create(['name' => 'Alpha', 'slug' => 'alpha']);
+    VirtualAgentModel::factory()->create(['name' => 'Beta', 'slug' => 'beta']);
+
+    mcpTool(ListVirtualAgentsTool::class, ['per_page' => 1, 'page' => 2])
+        ->assertOk()
+        ->assertStructuredContent(
+            fn (AssertableJson $json) => $json
+                ->count('data', 1)
+                ->where('data.0.slug', 'beta')
+                ->where('meta.per_page', 1)
+                ->where('meta.total', 2)
                 ->etc(),
         );
 });

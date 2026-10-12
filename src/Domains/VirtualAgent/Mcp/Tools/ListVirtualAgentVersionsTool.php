@@ -8,7 +8,9 @@ use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\ListVirtualAgentVersionsData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\ListVirtualAgentVersionsMcpRequest;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentVersionResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('List a Cortex virtual agent\'s prompt versions, newest first. Paginated.')]
@@ -23,7 +25,11 @@ final class ListVirtualAgentVersionsTool extends Tool
     {
         return [
             'slug' => $schema->string()->description('The virtual agent slug.')->required(),
-            'page' => $schema->integer()->description('Page number, starting at 1.')->min(1),
-        ];
+        ] + ListVirtualAgentVersionsData::pagination()->schema($schema);
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return VirtualAgentVersionResource::collectionSchema($schema, ListVirtualAgentVersionsData::pagination());
     }
 }

@@ -10,14 +10,6 @@ use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 
 final class ShowToolDescriptionAction
 {
-    /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
-
     public function execute(string $tool): ToolDescriptionModel
     {
         ToolDescriptionShowingActionEvent::dispatch($tool);

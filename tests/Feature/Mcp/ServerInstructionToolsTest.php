@@ -38,9 +38,9 @@ it('creates an instruction version with parity to the http payload', function ()
         ->assertOk()
         ->assertStructuredContent(
             fn (AssertableJson $json) => $json
-                ->where('server', 'echo')
-                ->where('published_version', $http['version'])
-                ->where('published_content', $http['content'])
+                ->where('data.server', 'echo')
+                ->where('data.published_version', $http['version'])
+                ->where('data.published_content', $http['content'])
                 ->etc(),
         );
 });
@@ -56,7 +56,7 @@ it('shows instructions with parity to the http payload', function () {
 
     mcpTool(ShowServerInstructionsTool::class, ['server' => 'echo'])
         ->assertOk()
-        ->assertStructuredContent($http);
+        ->assertStructuredContent(['data' => $http]);
 });
 
 it('lists instruction versions newest first with parity to the http payload', function () {
@@ -87,7 +87,7 @@ it('publishes an instruction version with parity to the http payload', function 
 
     $http = $this->getJson(route('cortex.servers.instructions.show', ['server' => 'echo']))->json('data');
 
-    $mcp->assertStructuredContent($http);
+    $mcp->assertStructuredContent(['data' => $http]);
 
     expect($http['published_version'])->toBe(1);
 });

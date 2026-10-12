@@ -72,6 +72,33 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Tables
+    |--------------------------------------------------------------------------
+    |
+    | The table each of Cortex's records is stored in. Set these before
+    | running the migrations: the migrations, models, validation rules and
+    | queries all read them. Keys left out keep their default.
+    |
+    | virtual_agent_sub_agents: The pivot linking a virtual agent to the
+    |                           virtual agents it may call as sub-agents.
+    |
+    */
+
+    'tables' => [
+        'virtual_agents' => 'cortex_virtual_agents',
+        'virtual_agent_versions' => 'cortex_virtual_agent_versions',
+        'virtual_agent_sub_agents' => 'cortex_virtual_agent_sub_agents',
+        'tool_descriptions' => 'cortex_tool_descriptions',
+        'tool_description_versions' => 'cortex_tool_description_versions',
+        'mcp_instructions' => 'cortex_mcp_instructions',
+        'mcp_instruction_versions' => 'cortex_mcp_instruction_versions',
+        'concrete_agent_overrides' => 'cortex_concrete_agent_overrides',
+        'concrete_agent_override_versions' => 'cortex_concrete_agent_override_versions',
+        'redirect_domains' => 'cortex_redirect_domains',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Dashboard UI
     |--------------------------------------------------------------------------
     |
@@ -180,6 +207,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Auditing
+    |--------------------------------------------------------------------------
+    |
+    | Cortex keeps no audit log of its own. With refactor-circus/keen
+    | installed, Keen records every change Cortex makes, and Cortex shows the
+    | history on its Atrium pages, its `GET /cortex/history` route and its
+    | history MCP tool. Without Keen none of that exists.
+    |
+    | enabled: Set to false to keep Cortex out of the audit log even while
+    |          Keen is installed: Keen records nothing of Cortex's, and Cortex
+    |          offers no history.
+    |
+    */
+
+    'audit' => [
+        'enabled' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Publication Cache
     |--------------------------------------------------------------------------
     |
@@ -192,6 +239,11 @@ return [
     | until invalidation. Set `store` to pin a store, or
     | `enabled` to false to read straight from the
     | database on every pull.
+    |
+    | On Redis a publish clears the key, but a read or background refresh
+    | already under way can write the previous content back, so a publish
+    | may take up to `fresh` seconds to reach every worker. Lower `fresh`
+    | (or pin a non-Redis `store`) where a publish must show at once.
     |
     */
 

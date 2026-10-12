@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests\ShowServerInstructionsMcpRequest;
+use RefactorCircus\Cortex\Domains\McpServer\Resources\McpInstructionResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Show the instruction override for a registered MCP server, including its published version.')]
@@ -24,5 +25,10 @@ final class ShowServerInstructionsTool extends Tool
         return [
             'server' => $schema->string()->description('The registered MCP server name.')->required(),
         ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return McpInstructionResource::structuredSchema($schema);
     }
 }

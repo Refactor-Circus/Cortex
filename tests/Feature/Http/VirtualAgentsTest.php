@@ -71,7 +71,9 @@ it('shows a virtual agent', function () {
 });
 
 it('returns 404 for unknown virtual agents', function () {
-    $this->getJson(route('cortex.virtual-agents.show', 'missing'))->assertNotFound();
+    $this->getJson(route('cortex.virtual-agents.show', 'missing'))
+        ->assertNotFound()
+        ->assertExactJson(['message' => 'Not found.']);
 });
 
 it('updates a virtual agent with sync semantics and versions changed instructions', function () {

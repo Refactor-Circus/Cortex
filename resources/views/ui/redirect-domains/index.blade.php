@@ -29,33 +29,57 @@
             @endforeach
         </div>
 
-        @if ($rows === [])
+        @if ($configured === [] && $rows === [])
             <x-atrium::empty-state :title="__('cortex::cortex.no_redirect_domains')" />
         @else
-            <x-atrium::table striped>
-                <x-slot:head>
-                    <x-atrium::table.row>
-                        <x-atrium::table.cell heading>{{ __('cortex::cortex.domain') }}</x-atrium::table.cell>
-                        <x-atrium::table.cell heading>{{ __('cortex::cortex.source') }}</x-atrium::table.cell>
-                        <x-atrium::table.cell heading>{{ __('cortex::cortex.created') }}</x-atrium::table.cell>
-                        <x-atrium::table.cell heading class="text-right">{{ __('cortex::cortex.actions') }}</x-atrium::table.cell>
-                    </x-atrium::table.row>
-                </x-slot:head>
+            {{-- Configured domains come from config, so they stand in their own block;
+                 the stored ones below page. --}}
+            @if ($configured !== [])
+                <x-atrium::table striped data-testid="configured-redirect-domains">
+                    <x-slot:head>
+                        <x-atrium::table.row>
+                            <x-atrium::table.cell heading>{{ __('cortex::cortex.domain') }}</x-atrium::table.cell>
+                            <x-atrium::table.cell heading>{{ __('cortex::cortex.source') }}</x-atrium::table.cell>
+                            <x-atrium::table.cell heading class="text-right">{{ __('cortex::cortex.actions') }}</x-atrium::table.cell>
+                        </x-atrium::table.row>
+                    </x-slot:head>
 
-                @foreach ($rows as $row)
-                    <x-atrium::table.row data-testid="redirect-domain-{{ $row['source'] }}">
-                        <x-atrium::table.cell><code class="text-xs">{{ $row['domain'] }}</code></x-atrium::table.cell>
-                        <x-atrium::table.cell>
-                            @if ($row['source'] === 'owned')
-                                {{ $row['owner'] }}
-                                <span class="text-xs opacity-60">{{ $row['type'] }}</span>
-                            @else
-                                <x-atrium::badge>{{ __('cortex::cortex.source_'.$row['source']) }}</x-atrium::badge>
-                            @endif
-                        </x-atrium::table.cell>
-                        <x-atrium::table.cell>{{ $row['model']?->created_at?->diffForHumans() }}</x-atrium::table.cell>
-                        <x-atrium::table.cell>
-                            @if ($row['model'] !== null)
+                    @foreach ($configured as $domain)
+                        <x-atrium::table.row data-testid="redirect-domain-config">
+                            <x-atrium::table.cell><code class="text-xs">{{ $domain }}</code></x-atrium::table.cell>
+                            <x-atrium::table.cell><x-atrium::badge>{{ __('cortex::cortex.source_config') }}</x-atrium::badge></x-atrium::table.cell>
+                            <x-atrium::table.cell>
+                                <span class="block text-right text-xs opacity-60">{{ __('cortex::cortex.configured_redirect_domains_hint') }}</span>
+                            </x-atrium::table.cell>
+                        </x-atrium::table.row>
+                    @endforeach
+                </x-atrium::table>
+            @endif
+
+            @if ($rows !== [])
+                <x-atrium::table striped data-testid="stored-redirect-domains">
+                    <x-slot:head>
+                        <x-atrium::table.row>
+                            <x-atrium::table.cell heading>{{ __('cortex::cortex.domain') }}</x-atrium::table.cell>
+                            <x-atrium::table.cell heading>{{ __('cortex::cortex.source') }}</x-atrium::table.cell>
+                            <x-atrium::table.cell heading>{{ __('cortex::cortex.created') }}</x-atrium::table.cell>
+                            <x-atrium::table.cell heading class="text-right">{{ __('cortex::cortex.actions') }}</x-atrium::table.cell>
+                        </x-atrium::table.row>
+                    </x-slot:head>
+
+                    @foreach ($rows as $row)
+                        <x-atrium::table.row data-testid="redirect-domain-{{ $row['source'] }}">
+                            <x-atrium::table.cell><code class="text-xs">{{ $row['domain'] }}</code></x-atrium::table.cell>
+                            <x-atrium::table.cell>
+                                @if ($row['source'] === 'owned')
+                                    {{ $row['owner'] }}
+                                    <span class="text-xs opacity-60">{{ $row['type'] }}</span>
+                                @else
+                                    <x-atrium::badge>{{ __('cortex::cortex.source_'.$row['source']) }}</x-atrium::badge>
+                                @endif
+                            </x-atrium::table.cell>
+                            <x-atrium::table.cell>{{ $row['model']->created_at?->diffForHumans() }}</x-atrium::table.cell>
+                            <x-atrium::table.cell>
                                 @cortexCan('delete', $row['model'])
                                     <form method="POST" action="{{ route('atrium.cortex.redirect-domains.destroy', $row['model']->id) }}" class="flex justify-end">
                                         @csrf
@@ -64,13 +88,13 @@
                                                                data-testid="remove-redirect-domain-{{ $row['model']->id }}" />
                                     </form>
                                 @endcortexCan
-                            @else
-                                <span class="block text-right text-xs opacity-60">{{ __('cortex::cortex.configured_redirect_domains_hint') }}</span>
-                            @endif
-                        </x-atrium::table.cell>
-                    </x-atrium::table.row>
-                @endforeach
-            </x-atrium::table>
+                            </x-atrium::table.cell>
+                        </x-atrium::table.row>
+                    @endforeach
+                </x-atrium::table>
+
+                <x-atrium::pagination :paginator="$stored" />
+            @endif
         @endif
     </div>
 </x-atrium::layout>

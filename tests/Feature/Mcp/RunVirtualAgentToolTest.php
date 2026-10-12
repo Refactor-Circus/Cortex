@@ -15,8 +15,8 @@ it('runs an agent and returns text with usage', function () {
         ->assertOk()
         ->assertStructuredContent(
             fn (AssertableJson $json) => $json
-                ->where('text', 'Hello from the agent.')
-                ->has('usage.input_tokens')
+                ->where('data.text', 'Hello from the agent.')
+                ->has('data.usage.input_tokens')
                 ->etc(),
         );
 

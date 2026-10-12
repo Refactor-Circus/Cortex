@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\McpServer\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use RefactorCircus\Cortex\Domains\McpServer\Data\CreateMcpInstructionVersionData;
 use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
 
 /**
@@ -16,11 +17,8 @@ final class McpInstructionVersionCreatingActionEvent implements ActionStartingEv
     use Dispatchable;
     use SerializesModels;
 
-    /**
-     * @param  array<string, mixed>  $data
-     */
     public function __construct(
         public string $server,
-        public array $data,
+        public CreateMcpInstructionVersionData $data,
     ) {}
 }

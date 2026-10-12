@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests\CreateConcreteAgentVersionMcpRequest;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Resources\ConcreteAgentOverrideVersionResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Create a new immutable prompt override version for a registered concrete agent. Not published unless requested.')]
@@ -26,5 +27,10 @@ final class CreateConcreteAgentVersionTool extends Tool
             'content' => $schema->string()->description('The new version\'s prompt.')->required(),
             'publish' => $schema->boolean()->description('Publish this version immediately. Defaults to false.'),
         ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return ConcreteAgentOverrideVersionResource::structuredSchema($schema);
     }
 }

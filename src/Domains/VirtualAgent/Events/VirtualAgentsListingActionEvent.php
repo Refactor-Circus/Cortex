@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\VirtualAgent\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\ListVirtualAgentsData;
 use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
 
 /**
@@ -17,6 +18,6 @@ final class VirtualAgentsListingActionEvent implements ActionStartingEvent
     use SerializesModels;
 
     public function __construct(
-        public ?int $page,
+        public ListVirtualAgentsData $filters,
     ) {}
 }

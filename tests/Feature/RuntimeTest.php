@@ -7,17 +7,20 @@ use RefactorCircus\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\RunVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\CreateVirtualAgentVersionData;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\RunVirtualAgentData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Exceptions\CircularAgentReferenceException;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Exceptions\VirtualAgentNotPublishedException;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Services\AgentFactory;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Support\DbAgent;
 use RefactorCircus\Cortex\Facades\Cortex;
+use RefactorCircus\Cortex\Support\Tables;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
 
 it('builds an agent from its published prompt version', function () {
     $agent = VirtualAgentModel::factory()->published('Published.')->create();
-    app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'Draft.']);
+    app(CreateVirtualAgentVersionAction::class)->execute($agent, new CreateVirtualAgentVersionData(content: 'Draft.'));
 
     expect((string) app(AgentFactory::class)->make($agent->fresh())->instructions())->toBe('Published.');
 });
@@ -51,7 +54,7 @@ it('guards against circular sub-agent graphs at build time', function () {
     $a = VirtualAgentModel::factory()->published()->create();
     $b = VirtualAgentModel::factory()->published()->create();
     $a->subAgents()->attach($b);
-    DB::table('cortex_virtual_agent_sub_agents')->insert([
+    DB::table(Tables::name('virtual_agent_sub_agents'))->insert([
         'virtual_agent_id' => $b->getKey(),
         'sub_agent_id' => $a->getKey(),
     ]);
@@ -89,7 +92,7 @@ it('runs an agent through the run action', function () {
     DbAgent::fake(['Hello from the agent.']);
     $agent = VirtualAgentModel::factory()->published()->create();
 
-    $response = app(RunVirtualAgentAction::class)->execute($agent, 'Hi');
+    $response = app(RunVirtualAgentAction::class)->execute($agent, new RunVirtualAgentData('Hi'));
 
     expect($response->text)->toBe('Hello from the agent.');
     DbAgent::assertPrompted(fn ($prompt): bool => $prompt->prompt === 'Hi');

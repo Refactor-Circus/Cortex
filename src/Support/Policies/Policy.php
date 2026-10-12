@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Support\Policies;
 
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Gate;
 use RefactorCircus\Keystone\Policies\Policy as KeystonePolicy;
 
 /**
@@ -19,19 +16,10 @@ use RefactorCircus\Keystone\Policies\Policy as KeystonePolicy;
  * configuration. The bundled policies therefore allow every ability, for
  * guests too, which keeps the JSON API and MCP tools behind your route
  * middleware exactly as before. Type the user parameter as non-nullable in
- * your own policy to require a signed-in user.
- *
- * The shared runtime's `allowsOn()` needs a signed-in user, so the bundled
- * policies keep `allowsOnParent()`, which also asks for guests.
+ * your own policy to require a signed-in user. A version follows its parent
+ * through the shared runtime's `allowsOn()`, guests included.
  */
 abstract class Policy extends KeystonePolicy
 {
-    /**
-     * Ask the Gate about the parent record, so a version follows whichever
-     * policy is registered for the prompt or override it belongs to.
-     */
-    protected function allowsOnParent(?Authenticatable $user, string $ability, Model $parent): bool
-    {
-        return Gate::forUser($user)->allows($ability, $parent);
-    }
+    //
 }

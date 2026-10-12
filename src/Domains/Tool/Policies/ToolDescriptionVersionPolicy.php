@@ -18,21 +18,21 @@ class ToolDescriptionVersionPolicy extends Policy
 {
     public function viewAny(?Authenticatable $user, ToolDescriptionModel $description): bool
     {
-        return $this->allowsOnParent($user, 'view', $description);
+        return $this->allowsOn($user, 'view', $description);
     }
 
     public function view(?Authenticatable $user, ToolDescriptionVersionModel $version): bool
     {
-        return $this->allowsOnParent($user, 'view', $version->toolDescription);
+        return $this->allowsOn($user, 'view', $version->toolDescription);
     }
 
     public function create(?Authenticatable $user, ToolDescriptionModel $description): bool
     {
-        return $this->allowsOnParent($user, 'update', $description);
+        return $this->allowsOn($user, 'update', $description);
     }
 
     public function publish(?Authenticatable $user, ToolDescriptionVersionModel $version): bool
     {
-        return $this->allowsOnParent($user, 'update', $version->toolDescription);
+        return $this->allowsOn($user, 'update', $version->toolDescription);
     }
 }

@@ -11,6 +11,9 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\PublishConcreteAgentVers
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\RunConcreteAgentAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionData;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\RunConcreteAgentData;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\UpdateConcreteAgentToolsData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
@@ -35,7 +38,7 @@ it('lists agents without an override', function () {
 });
 
 it('lists agents with their override', function () {
-    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', ['content' => 'Overridden.', 'publish' => true]);
+    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', new CreateConcreteAgentVersionData(content: 'Overridden.', publish: true));
 
     $agents = app(ListConcreteAgentsAction::class)->execute();
 
@@ -45,7 +48,7 @@ it('lists agents with their override', function () {
 });
 
 it('shows an agent with its defaults and live configuration', function () {
-    app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', []);
+    app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', new UpdateConcreteAgentToolsData([]));
     app()->forgetScopedInstances();
 
     $agent = app(ShowConcreteAgentAction::class)->execute('echo-agent');
@@ -62,7 +65,7 @@ it('shows an agent with its defaults and live configuration', function () {
 it('only accepts code tools and registered tools in a toolset override', function () {
     app(ToolRegistry::class)->register('echo-cortex', EchoCortexTool::class);
 
-    $rules = UpdateConcreteAgentToolsAction::rules('echo-agent');
+    $rules = UpdateConcreteAgentToolsData::rules('echo-agent');
 
     expect(Validator::make(['tools' => ['EchoTool', 'echo-cortex']], $rules)->passes())->toBeTrue()
         ->and(Validator::make(['tools' => null], $rules)->passes())->toBeTrue()
@@ -72,8 +75,8 @@ it('only accepts code tools and registered tools in a toolset override', functio
 })->throws(ValidationException::class);
 
 it('numbers versions and publishes on request', function () {
-    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', ['content' => 'v1']);
-    $second = app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', ['content' => 'v2']);
+    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', new CreateConcreteAgentVersionData(content: 'v1'));
+    $second = app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', new CreateConcreteAgentVersionData(content: 'v2'));
 
     $override = ConcreteAgentOverrideModel::query()->where('agent', 'echo-agent')->firstOrFail();
 
@@ -89,7 +92,7 @@ it('numbers versions and publishes on request', function () {
 it('runs a concrete agent', function () {
     EchoAgent::fake(['Hi back.']);
 
-    $response = app(RunConcreteAgentAction::class)->execute('echo-agent', 'Hi');
+    $response = app(RunConcreteAgentAction::class)->execute('echo-agent', new RunConcreteAgentData('Hi'));
 
     expect($response->text)->toBe('Hi back.');
     EchoAgent::assertPrompted(fn ($prompt): bool => $prompt->prompt === 'Hi');
@@ -117,7 +120,7 @@ it('names virtual sub-agents by their slug', function () {
 
 it('reports an overridden toolset by the names it was saved under', function () {
     app(ToolRegistry::class)->register('echo-cortex', EchoCortexTool::class);
-    app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', ['echo-cortex', 'retired-tool']);
+    app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', new UpdateConcreteAgentToolsData(['echo-cortex', 'retired-tool']));
     app()->forgetScopedInstances();
 
     // The registered name, not the tool's own `echo-cortex-tool`, so the

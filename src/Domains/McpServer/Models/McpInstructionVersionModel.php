@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use LogicException;
 use RefactorCircus\Cortex\Database\Factories\McpInstructionVersionFactory;
+use RefactorCircus\Cortex\Support\Tables;
 use RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents;
 
 /**
@@ -30,12 +31,15 @@ final class McpInstructionVersionModel extends Model
 
     use HasUlids;
 
-    protected $table = 'cortex_mcp_instruction_versions';
-
     protected $fillable = [
         'version',
         'content',
     ];
+
+    public function getTable(): string
+    {
+        return Tables::name('mcp_instruction_versions');
+    }
 
     protected static function booted(): void
     {

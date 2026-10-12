@@ -15,11 +15,6 @@ final class PublishVirtualAgentVersionRequest extends VirtualAgentRequest
         return $this->allows('publish', $this->version());
     }
 
-    public function rules(): array
-    {
-        return PublishVirtualAgentVersionAction::rules();
-    }
-
     public function persist(): JsonResponse
     {
         $agent = app(PublishVirtualAgentVersionAction::class)->execute(

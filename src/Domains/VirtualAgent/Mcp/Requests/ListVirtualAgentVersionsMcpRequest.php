@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests;
 
 use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentVersionsAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\ListVirtualAgentVersionsData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentVersionResource;
 
@@ -18,19 +19,16 @@ final class ListVirtualAgentVersionsMcpRequest extends VirtualAgentMcpRequest
 
     protected function rules(): array
     {
-        return [
-            'slug' => ['required', 'string'],
-            ...ListVirtualAgentVersionsAction::rules(),
-        ];
+        return $this->agentRules() + ListVirtualAgentVersionsData::rules();
     }
 
     protected function handle(array $validated): ResponseFactory
     {
         $versions = app(ListVirtualAgentVersionsAction::class)->execute(
             $this->agent(),
-            isset($validated['page']) ? (int) $validated['page'] : null,
+            ListVirtualAgentVersionsData::fromValidated($validated),
         );
 
-        return $this->structuredCollection(VirtualAgentVersionResource::collection($versions)->resolve());
+        return VirtualAgentVersionResource::collection($versions)->toStructuredResponse();
     }
 }

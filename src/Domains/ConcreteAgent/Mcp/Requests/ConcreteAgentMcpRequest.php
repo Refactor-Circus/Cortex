@@ -15,6 +15,30 @@ abstract class ConcreteAgentMcpRequest extends Request
     private ?ConcreteAgentOverrideModel $override = null;
 
     /**
+     * The input naming the concrete agent.
+     *
+     * @return array<string, array<int, string>>
+     */
+    protected function agentRules(): array
+    {
+        return [
+            'agent' => ['required', 'string'],
+        ];
+    }
+
+    /**
+     * The input naming the concrete agent and one of its prompt versions.
+     *
+     * @return array<string, array<int, string>>
+     */
+    protected function versionRules(): array
+    {
+        return $this->agentRules() + [
+            'version' => ['required', 'integer', 'min:1'],
+        ];
+    }
+
+    /**
      * The registered agent name from the tool input, verified against the
      * registry. Unknown names surface as the base request's not-found error.
      */

@@ -8,6 +8,7 @@ use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Resources\ConcreteAgentResource;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests\ListConcreteAgentsMcpRequest;
 use RefactorCircus\Keystone\Mcp\Tool;
 
@@ -22,5 +23,12 @@ final class ListConcreteAgentsTool extends Tool
     public function schema(JsonSchema $schema): array
     {
         return [];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return [
+            'data' => $schema->array()->items($schema->object(ConcreteAgentResource::schema($schema)))->required(),
+        ];
     }
 }

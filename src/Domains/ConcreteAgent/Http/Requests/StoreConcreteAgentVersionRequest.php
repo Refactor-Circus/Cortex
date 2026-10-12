@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Resources\ConcreteAgentOverrideVersionResource;
 
@@ -18,12 +19,12 @@ final class StoreConcreteAgentVersionRequest extends ConcreteAgentRequest
 
     public function rules(): array
     {
-        return CreateConcreteAgentVersionAction::rules();
+        return CreateConcreteAgentVersionData::rules();
     }
 
     public function persist(): JsonResponse
     {
-        $version = app(CreateConcreteAgentVersionAction::class)->execute($this->agentName(), $this->validated());
+        $version = app(CreateConcreteAgentVersionAction::class)->execute($this->agentName(), CreateConcreteAgentVersionData::fromValidated($this->validated()));
 
         return (new ConcreteAgentOverrideVersionResource($version))->response()->setStatusCode(201);
     }

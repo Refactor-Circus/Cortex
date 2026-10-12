@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests;
 
-use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\CreateVirtualAgentData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
 use RefactorCircus\Cortex\Mcp\Request;
@@ -20,13 +20,13 @@ final class CreateVirtualAgentMcpRequest extends Request
 
     protected function rules(): array
     {
-        return CreateVirtualAgentAction::rules();
+        return CreateVirtualAgentData::rules();
     }
 
     protected function handle(array $validated): ResponseFactory
     {
-        $agent = app(CreateVirtualAgentAction::class)->execute($validated);
+        $agent = app(CreateVirtualAgentAction::class)->execute(CreateVirtualAgentData::fromValidated($validated));
 
-        return Response::structured((new VirtualAgentResource($agent))->resolve());
+        return (new VirtualAgentResource($agent))->toStructuredResponse();
     }
 }

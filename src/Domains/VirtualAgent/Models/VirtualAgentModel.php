@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use RefactorCircus\Cortex\Database\Factories\VirtualAgentFactory;
+use RefactorCircus\Cortex\Support\Tables;
 use RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents;
 
 /**
@@ -40,8 +41,6 @@ final class VirtualAgentModel extends Model
 
     use HasUlids;
 
-    protected $table = 'cortex_virtual_agents';
-
     protected $fillable = [
         'name',
         'slug',
@@ -52,6 +51,11 @@ final class VirtualAgentModel extends Model
         'tools',
         'concrete_sub_agents',
     ];
+
+    public function getTable(): string
+    {
+        return Tables::name('virtual_agents');
+    }
 
     protected $attributes = [
         'tools' => '[]',
@@ -91,7 +95,7 @@ final class VirtualAgentModel extends Model
      */
     public function subAgents(): BelongsToMany
     {
-        return $this->belongsToMany(self::class, 'cortex_virtual_agent_sub_agents', 'virtual_agent_id', 'sub_agent_id');
+        return $this->belongsToMany(self::class, Tables::name('virtual_agent_sub_agents'), 'virtual_agent_id', 'sub_agent_id');
     }
 
     /**
@@ -99,7 +103,7 @@ final class VirtualAgentModel extends Model
      */
     public function parentAgents(): BelongsToMany
     {
-        return $this->belongsToMany(self::class, 'cortex_virtual_agent_sub_agents', 'sub_agent_id', 'virtual_agent_id');
+        return $this->belongsToMany(self::class, Tables::name('virtual_agent_sub_agents'), 'sub_agent_id', 'virtual_agent_id');
     }
 
     protected static function newFactory(): VirtualAgentFactory

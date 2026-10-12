@@ -11,11 +11,6 @@ use RefactorCircus\Cortex\Http\Request;
 
 final class IndexMcpServersRequest extends Request
 {
-    public function rules(): array
-    {
-        return ListMcpServersAction::rules();
-    }
-
     public function persist(): JsonResponse
     {
         $servers = app(ListMcpServersAction::class)->execute();

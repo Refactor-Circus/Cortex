@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\Tool\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
 use RefactorCircus\Cortex\Domains\Tool\Actions\CreateToolDescriptionVersionAction;
+use RefactorCircus\Cortex\Domains\Tool\Data\CreateToolDescriptionVersionData;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 use RefactorCircus\Cortex\Domains\Tool\Resources\ToolDescriptionVersionResource;
 
@@ -18,12 +19,12 @@ final class StoreToolDescriptionVersionRequest extends ToolDescriptionRequest
 
     public function rules(): array
     {
-        return CreateToolDescriptionVersionAction::rules();
+        return CreateToolDescriptionVersionData::rules();
     }
 
     public function persist(): JsonResponse
     {
-        $version = app(CreateToolDescriptionVersionAction::class)->execute($this->tool(), $this->validated());
+        $version = app(CreateToolDescriptionVersionAction::class)->execute($this->tool(), CreateToolDescriptionVersionData::fromValidated($this->validated()));
 
         return (new ToolDescriptionVersionResource($version))->response()->setStatusCode(201);
     }

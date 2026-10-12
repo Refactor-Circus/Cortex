@@ -63,7 +63,7 @@ Creating the first version of a tool description, server instruction or concrete
 
 `GET /tools`, `GET /servers` and `GET /providers` and their MCP tools read the tool and server registries and the provider config. No model is involved, so they check no policy.
 
-An HTTP call that is refused returns `403`. An MCP call that is refused returns the error `Unauthorized.`.
+An HTTP call that is refused returns `403`, or `401` when nobody is signed in. An MCP call that is refused returns the error `Unauthorized.`.
 
 ## The dashboard
 

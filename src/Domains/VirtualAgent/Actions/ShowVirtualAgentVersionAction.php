@@ -11,14 +11,6 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
 
 final class ShowVirtualAgentVersionAction
 {
-    /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
-
     public function execute(VirtualAgentModel $agent, int $version): VirtualAgentVersionModel
     {
         VirtualAgentVersionShowingActionEvent::dispatch($agent, $version);

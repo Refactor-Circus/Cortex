@@ -16,7 +16,7 @@ it('creates a version with parity to the http payload', function () {
 
     $http = $this->getJson(route('cortex.virtual-agents.versions.show', ['helper', 2]))->json('data');
 
-    $mcp->assertStructuredContent($http);
+    $mcp->assertStructuredContent(['data' => $http]);
 });
 
 it('lists versions in a data envelope', function () {
@@ -48,8 +48,8 @@ it('publishes a version', function () {
         ->assertOk()
         ->assertStructuredContent(
             fn (AssertableJson $json) => $json
-                ->where('published_version', 2)
-                ->where('instructions', 'v2')
+                ->where('data.published_version', 2)
+                ->where('data.instructions', 'v2')
                 ->etc(),
         );
 

@@ -5,37 +5,28 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Actions;
 
 use Laravel\Ai\Responses\AgentResponse;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\RunConcreteAgentData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentRanActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentRunningActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 
 final class RunConcreteAgentAction
 {
-    /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [
-            'input' => ['required', 'string'],
-        ];
-    }
-
     public function __construct(private readonly AgentRegistry $registry) {}
 
-    public function execute(string $agent, string $input): AgentResponse
+    public function execute(string $agent, RunConcreteAgentData $data): AgentResponse
     {
-        ConcreteAgentRunningActionEvent::dispatch($agent, $input);
+        ConcreteAgentRunningActionEvent::dispatch($agent, $data);
 
-        $result = $this->perform($agent, $input);
+        $result = $this->perform($agent, $data);
 
-        ConcreteAgentRanActionEvent::dispatch($agent, $input, $result);
+        ConcreteAgentRanActionEvent::dispatch($agent, $data, $result);
 
         return $result;
     }
 
-    private function perform(string $agent, string $input): AgentResponse
+    private function perform(string $agent, RunConcreteAgentData $data): AgentResponse
     {
-        return $this->registry->make($agent)->prompt($input);
+        return $this->registry->make($agent)->prompt($data->input);
     }
 }

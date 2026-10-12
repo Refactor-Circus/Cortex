@@ -18,16 +18,13 @@ final class ListServerInstructionVersionsMcpRequest extends ServerMcpRequest
 
     protected function rules(): array
     {
-        return [
-            'server' => ['required', 'string'],
-            ...ListMcpInstructionVersionsAction::rules(),
-        ];
+        return $this->serverRules();
     }
 
     protected function handle(array $validated): ResponseFactory
     {
         $versions = app(ListMcpInstructionVersionsAction::class)->execute($this->instruction());
 
-        return $this->structuredCollection(McpInstructionVersionResource::collection($versions)->resolve());
+        return McpInstructionVersionResource::collection($versions)->toStructuredResponse();
     }
 }

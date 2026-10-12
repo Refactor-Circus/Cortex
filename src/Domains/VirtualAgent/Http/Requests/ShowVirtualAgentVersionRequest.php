@@ -15,11 +15,6 @@ final class ShowVirtualAgentVersionRequest extends VirtualAgentRequest
         return $this->allows('view', $this->version());
     }
 
-    public function rules(): array
-    {
-        return ShowVirtualAgentVersionAction::rules();
-    }
-
     public function persist(): JsonResponse
     {
         $version = app(ShowVirtualAgentVersionAction::class)->execute(

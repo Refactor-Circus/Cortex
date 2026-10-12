@@ -107,9 +107,9 @@ it('uses a virtual agent policy swapped in the config, for agents and their vers
 
     $this->getJson(route('cortex.virtual-agents.show', 'support'))->assertOk();
     $this->getJson(route('cortex.virtual-agents.versions.show', ['support', 1]))->assertOk();
-    $this->patchJson(route('cortex.virtual-agents.update', 'support'), ['name' => 'Renamed'])->assertForbidden();
-    $this->postJson(route('cortex.virtual-agents.versions.store', 'support'), ['content' => 'New.'])->assertForbidden();
-    $this->postJson(route('cortex.virtual-agents.versions.publish', ['support', 1]))->assertForbidden();
+    $this->patchJson(route('cortex.virtual-agents.update', 'support'), ['name' => 'Renamed'])->assertUnauthorized();
+    $this->postJson(route('cortex.virtual-agents.versions.store', 'support'), ['content' => 'New.'])->assertUnauthorized();
+    $this->postJson(route('cortex.virtual-agents.versions.publish', ['support', 1]))->assertUnauthorized();
 
     mcpTool(ShowVirtualAgentVersionTool::class, ['slug' => 'support', 'version' => 1])->assertOk();
     mcpTool(UpdateVirtualAgentTool::class, ['slug' => 'support', 'name' => 'Renamed'])->assertHasErrors(['Unauthorized.']);
@@ -127,7 +127,7 @@ it('checks the custom run ability on virtual agents over HTTP and MCP', function
     VirtualAgentModel::factory()->published()->create(['slug' => 'helper']);
 
     $this->getJson(route('cortex.virtual-agents.show', 'helper'))->assertOk();
-    $this->postJson(route('cortex.virtual-agents.run', 'helper'), ['input' => 'Hi'])->assertForbidden();
+    $this->postJson(route('cortex.virtual-agents.run', 'helper'), ['input' => 'Hi'])->assertUnauthorized();
 
     mcpTool(RunVirtualAgentTool::class, ['slug' => 'helper', 'input' => 'Hi'])->assertHasErrors(['Unauthorized.']);
 
@@ -140,7 +140,7 @@ it('checks the first version of an override against the override policy', functi
     app(ToolRegistry::class)->register('echo', EchoTool::class);
 
     $this->postJson(route('cortex.tools.description.versions.store', 'echo'), ['content' => 'Echo.'])
-        ->assertForbidden();
+        ->assertUnauthorized();
 
     expect(ToolDescriptionModel::query()->count())->toBe(0);
 });
@@ -149,7 +149,7 @@ it('passes the signed-in user to the policy over HTTP and MCP', function (): voi
     usePolicies([McpInstructionModel::class => SignedInMcpInstructionPolicy::class]);
 
     $this->postJson(route('cortex.servers.instructions.versions.store', 'cortex'), ['content' => 'Guest.'])
-        ->assertForbidden();
+        ->assertUnauthorized();
     mcpTool(CreateServerInstructionVersionTool::class, ['server' => 'cortex', 'content' => 'Guest.'])
         ->assertHasErrors(['Unauthorized.']);
 

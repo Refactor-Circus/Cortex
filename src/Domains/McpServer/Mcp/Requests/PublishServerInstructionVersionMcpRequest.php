@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests;
 
-use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
 use RefactorCircus\Cortex\Domains\McpServer\Resources\McpInstructionResource;
@@ -18,10 +17,7 @@ final class PublishServerInstructionVersionMcpRequest extends ServerMcpRequest
 
     protected function rules(): array
     {
-        return [
-            'server' => ['required', 'string'],
-            'version' => ['required', 'integer', 'min:1'],
-        ];
+        return $this->versionRules();
     }
 
     protected function handle(array $validated): ResponseFactory
@@ -31,6 +27,6 @@ final class PublishServerInstructionVersionMcpRequest extends ServerMcpRequest
             (int) $validated['version'],
         );
 
-        return Response::structured((new McpInstructionResource($instruction))->resolve());
+        return (new McpInstructionResource($instruction))->toStructuredResponse();
     }
 }

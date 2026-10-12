@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests\ListConcreteAgentVersionsMcpRequest;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Resources\ConcreteAgentOverrideVersionResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('List the prompt override versions of a registered concrete agent, newest first.')]
@@ -23,6 +24,13 @@ final class ListConcreteAgentVersionsTool extends Tool
     {
         return [
             'agent' => $schema->string()->description('The registered concrete agent name.')->required(),
+        ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return [
+            'data' => $schema->array()->items($schema->object(ConcreteAgentOverrideVersionResource::schema($schema)))->required(),
         ];
     }
 }

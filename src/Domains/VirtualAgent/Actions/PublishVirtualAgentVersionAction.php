@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Actions;
 
+use Illuminate\Support\Facades\DB;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishedActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublishingActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
@@ -13,14 +14,6 @@ use RefactorCircus\Cortex\Support\PublicationCache;
 final class PublishVirtualAgentVersionAction
 {
     public function __construct(private readonly PublicationCache $cache) {}
-
-    /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
 
     public function execute(VirtualAgentModel $agent, int $version): VirtualAgentModel
     {
@@ -35,14 +28,16 @@ final class PublishVirtualAgentVersionAction
 
     private function perform(VirtualAgentModel $agent, int $version): VirtualAgentModel
     {
-        /** @var VirtualAgentVersionModel $agentVersion */
-        $agentVersion = $agent->versions()->where('version', $version)->firstOrFail();
+        return DB::transaction(function () use ($agent, $version): VirtualAgentModel {
+            /** @var VirtualAgentVersionModel $agentVersion */
+            $agentVersion = $agent->versions()->where('version', $version)->firstOrFail();
 
-        $agent->published_version_id = (string) $agentVersion->getKey();
-        $agent->save();
+            $agent->published_version_id = (string) $agentVersion->getKey();
+            $agent->save();
 
-        $this->cache->forget($this->cache->virtualAgentKey((string) $agent->getKey()));
+            DB::afterCommit(fn () => $this->cache->forget($this->cache->virtualAgentKey((string) $agent->getKey())));
 
-        return $agent->load(['publishedVersion', 'subAgents']);
+            return $agent->load(['publishedVersion', 'subAgents']);
+        });
     }
 }

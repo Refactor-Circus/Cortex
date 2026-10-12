@@ -10,7 +10,9 @@ use Illuminate\Validation\Rule;
 use RefactorCircus\Cortex\Atrium\CortexPlugin;
 use RefactorCircus\Cortex\Atrium\RunnableAgents;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\RunConcreteAgentAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\RunConcreteAgentData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\RunVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\RunVirtualAgentData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 /**
@@ -40,8 +42,7 @@ final class RunAgentUiController
     {
         $data = $request->validate([
             'agent' => ['required', 'string', Rule::in(array_keys(RunnableAgents::all()))],
-            'input' => ['required', 'string'],
-        ]);
+        ] + RunVirtualAgentData::rules() + RunConcreteAgentData::rules());
 
         abort_unless(RunnableAgents::allows($request->user(), (string) $data['agent']), 403);
 
@@ -50,9 +51,9 @@ final class RunAgentUiController
         $response = $kind === 'virtual'
             ? app(RunVirtualAgentAction::class)->execute(
                 VirtualAgentModel::query()->where('slug', $key)->firstOrFail(),
-                $data['input'],
+                RunVirtualAgentData::fromValidated($data),
             )
-            : app(RunConcreteAgentAction::class)->execute($key, $data['input']);
+            : app(RunConcreteAgentAction::class)->execute($key, RunConcreteAgentData::fromValidated($data));
 
         /** @var view-string $view */
         $view = 'cortex::ui.run';

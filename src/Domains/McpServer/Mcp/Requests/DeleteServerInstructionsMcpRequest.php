@@ -16,9 +16,7 @@ final class DeleteServerInstructionsMcpRequest extends ServerMcpRequest
 
     protected function rules(): array
     {
-        return [
-            'server' => ['required', 'string'],
-        ];
+        return $this->serverRules();
     }
 
     protected function handle(array $validated): Response

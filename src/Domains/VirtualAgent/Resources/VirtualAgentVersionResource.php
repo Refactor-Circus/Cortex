@@ -4,15 +4,29 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Resources;
 
+use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\JsonSchema\Types\Type;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
+use RefactorCircus\Keystone\Http\Resources\JsonResource;
 
 /**
  * @mixin VirtualAgentVersionModel
  */
 final class VirtualAgentVersionResource extends JsonResource
 {
+    /**
+     * @return array<string, Type>
+     */
+    public static function schema(JsonSchema $schema): array
+    {
+        return [
+            'version' => $schema->integer()->required(),
+            'content' => $schema->string()->required(),
+            'created_at' => $schema->string()->nullable()->required(),
+        ];
+    }
+
     /**
      * @return array<string, mixed>
      */

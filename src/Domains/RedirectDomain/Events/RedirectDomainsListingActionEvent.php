@@ -7,6 +7,7 @@ namespace RefactorCircus\Cortex\Domains\RedirectDomain\Events;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Data\ListRedirectDomainsData;
 use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
 
 /**
@@ -19,5 +20,6 @@ final class RedirectDomainsListingActionEvent implements ActionStartingEvent
 
     public function __construct(
         public ?Model $owner = null,
+        public ListRedirectDomainsData $filters = new ListRedirectDomainsData,
     ) {}
 }

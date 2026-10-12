@@ -14,6 +14,9 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\PublishVirtualAgentVersio
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentVersionAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\CreateVirtualAgentData;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\CreateVirtualAgentVersionData;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\UpdateVirtualAgentData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoAgent;
@@ -24,17 +27,17 @@ it('creates an agent with its prompt published as version 1', function () {
     app(AgentRegistry::class)->register('echo-agent', EchoAgent::class);
     $sub = VirtualAgentModel::factory()->create(['slug' => 'researcher']);
 
-    $agent = app(CreateVirtualAgentAction::class)->execute([
-        'name' => 'Coordinator',
-        'slug' => 'coordinator',
-        'instructions' => 'Coordinate the team.',
-        'provider' => 'anthropic',
-        'model' => 'claude-sonnet-5',
-        'settings' => ['temperature' => 0.3],
-        'tools' => ['echo'],
-        'sub_agents' => ['researcher'],
-        'concrete_sub_agents' => ['echo-agent'],
-    ]);
+    $agent = app(CreateVirtualAgentAction::class)->execute(new CreateVirtualAgentData(
+        name: 'Coordinator',
+        slug: 'coordinator',
+        instructions: 'Coordinate the team.',
+        provider: 'anthropic',
+        model: 'claude-sonnet-5',
+        settings: ['temperature' => 0.3],
+        tools: ['echo'],
+        subAgents: ['researcher'],
+        concreteSubAgents: ['echo-agent'],
+    ));
 
     expect($agent->tools)->toBe(['echo'])
         ->and($agent->publishedVersion?->version)->toBe(1)
@@ -49,7 +52,7 @@ it('creates an agent with its prompt published as version 1', function () {
 it('saves changed instructions as a new published version', function () {
     $agent = VirtualAgentModel::factory()->published('First.')->create();
 
-    $updated = app(UpdateVirtualAgentAction::class)->execute($agent, ['instructions' => 'Second.']);
+    $updated = app(UpdateVirtualAgentAction::class)->execute($agent, new UpdateVirtualAgentData(instructions: 'Second.'));
 
     expect($updated->publishedVersion?->version)->toBe(2)
         ->and($updated->publishedVersion?->content)->toBe('Second.')
@@ -59,7 +62,7 @@ it('saves changed instructions as a new published version', function () {
 it('leaves the version history alone when the instructions are unchanged', function () {
     $agent = VirtualAgentModel::factory()->published('Same.')->create();
 
-    $updated = app(UpdateVirtualAgentAction::class)->execute($agent, ['instructions' => 'Same.', 'name' => 'Renamed']);
+    $updated = app(UpdateVirtualAgentAction::class)->execute($agent, new UpdateVirtualAgentData(instructions: 'Same.', name: 'Renamed'));
 
     expect($updated->name)->toBe('Renamed')
         ->and($updated->versions()->count())->toBe(1);
@@ -70,11 +73,11 @@ it('updates an agent with whole-list sync semantics', function () {
     $agent->subAgents()->attach(VirtualAgentModel::factory()->create());
     app(ToolRegistry::class)->register('echo', EchoTool::class);
 
-    $updated = app(UpdateVirtualAgentAction::class)->execute($agent, [
-        'tools' => ['echo'],
-        'sub_agents' => [],
-        'concrete_sub_agents' => [],
-    ]);
+    $updated = app(UpdateVirtualAgentAction::class)->execute($agent, new UpdateVirtualAgentData(
+        tools: ['echo'],
+        subAgents: [],
+        concreteSubAgents: [],
+    ));
 
     expect($updated->tools)->toBe(['echo'])
         ->and($updated->subAgents)->toHaveCount(0)
@@ -86,13 +89,13 @@ it('rejects sub-agent cycles', function () {
     $b = VirtualAgentModel::factory()->create(['slug' => 'agent-b']);
     $a->subAgents()->attach($b);
 
-    app(UpdateVirtualAgentAction::class)->execute($b, ['sub_agents' => ['agent-a']]);
+    app(UpdateVirtualAgentAction::class)->execute($b, new UpdateVirtualAgentData(subAgents: ['agent-a']));
 })->throws(ValidationException::class, 'circular');
 
 it('rejects an agent as its own sub-agent', function () {
     $agent = VirtualAgentModel::factory()->create(['slug' => 'self']);
 
-    app(UpdateVirtualAgentAction::class)->execute($agent, ['sub_agents' => ['self']]);
+    app(UpdateVirtualAgentAction::class)->execute($agent, new UpdateVirtualAgentData(subAgents: ['self']));
 })->throws(ValidationException::class, 'circular');
 
 it('deletes an agent with its versions and sub-agent links', function () {
@@ -119,8 +122,8 @@ it('lists and shows agents with relations', function () {
 it('numbers versions and publishes only when asked', function () {
     $agent = VirtualAgentModel::factory()->published('v1')->create();
 
-    $v2 = app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'v2']);
-    $v3 = app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'v3', 'publish' => true]);
+    $v2 = app(CreateVirtualAgentVersionAction::class)->execute($agent, new CreateVirtualAgentVersionData(content: 'v2'));
+    $v3 = app(CreateVirtualAgentVersionAction::class)->execute($agent, new CreateVirtualAgentVersionData(content: 'v3', publish: true));
 
     expect($v2->version)->toBe(2)
         ->and($v3->version)->toBe(3)
@@ -129,7 +132,7 @@ it('numbers versions and publishes only when asked', function () {
 
 it('republishes an earlier version', function () {
     $agent = VirtualAgentModel::factory()->published('v1')->create();
-    app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'v2', 'publish' => true]);
+    app(CreateVirtualAgentVersionAction::class)->execute($agent, new CreateVirtualAgentVersionData(content: 'v2', publish: true));
 
     $restored = app(PublishVirtualAgentVersionAction::class)->execute($agent, 1);
 
@@ -138,7 +141,7 @@ it('republishes an earlier version', function () {
 
 it('lists and shows versions', function () {
     $agent = VirtualAgentModel::factory()->published('v1')->create();
-    app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'v2']);
+    app(CreateVirtualAgentVersionAction::class)->execute($agent, new CreateVirtualAgentVersionData(content: 'v2'));
 
     expect(app(ListVirtualAgentVersionsAction::class)->execute($agent)->pluck('version')->all())->toBe([2, 1])
         ->and(app(ShowVirtualAgentVersionAction::class)->execute($agent, 2)->content)->toBe('v2');

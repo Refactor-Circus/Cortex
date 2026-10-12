@@ -21,6 +21,6 @@ final class ListConcreteAgentsMcpRequest extends Request
     {
         $agents = app(ListConcreteAgentsAction::class)->execute();
 
-        return $this->structuredCollection(ConcreteAgentResource::collection($agents)->resolve());
+        return ConcreteAgentResource::collection($agents)->toStructuredResponse();
     }
 }

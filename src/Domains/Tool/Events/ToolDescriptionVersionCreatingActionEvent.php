@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\Tool\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use RefactorCircus\Cortex\Domains\Tool\Data\CreateToolDescriptionVersionData;
 use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
 
 /**
@@ -16,11 +17,8 @@ final class ToolDescriptionVersionCreatingActionEvent implements ActionStartingE
     use Dispatchable;
     use SerializesModels;
 
-    /**
-     * @param  array<string, mixed>  $data
-     */
     public function __construct(
         public string $tool,
-        public array $data,
+        public CreateToolDescriptionVersionData $data,
     ) {}
 }

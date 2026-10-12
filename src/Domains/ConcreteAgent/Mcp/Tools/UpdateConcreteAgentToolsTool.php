@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests\UpdateConcreteAgentToolsMcpRequest;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Resources\ConcreteAgentOverrideResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Override the toolset of a registered concrete agent with a list picked from its own code tools and the registered Cortex tools, or pass null to restore its code-declared toolset. Agents marked #[LockedTools] only accept null.')]
@@ -26,5 +27,10 @@ final class UpdateConcreteAgentToolsTool extends Tool
             'tools' => $schema->array()->items($schema->string())->nullable()
                 ->description('Tool names to give the agent, or null to use the toolset declared in code.')->required(),
         ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return ConcreteAgentOverrideResource::structuredSchema($schema);
     }
 }

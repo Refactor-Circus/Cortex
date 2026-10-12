@@ -16,9 +16,7 @@ final class DeleteConcreteAgentOverrideMcpRequest extends ConcreteAgentMcpReques
 
     protected function rules(): array
     {
-        return [
-            'agent' => ['required', 'string'],
-        ];
+        return $this->agentRules();
     }
 
     protected function handle(array $validated): Response

@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests\CreateServerInstructionVersionMcpRequest;
+use RefactorCircus\Cortex\Domains\McpServer\Resources\McpInstructionVersionResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Create a new immutable instruction version for a registered MCP server. Not published unless requested.')]
@@ -26,5 +27,10 @@ final class CreateServerInstructionVersionTool extends Tool
             'content' => $schema->string()->description('The new version\'s instructions.')->required(),
             'publish' => $schema->boolean()->description('Publish this version immediately. Defaults to false.'),
         ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return McpInstructionVersionResource::structuredSchema($schema);
     }
 }

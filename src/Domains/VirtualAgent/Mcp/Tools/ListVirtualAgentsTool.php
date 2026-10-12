@@ -8,7 +8,9 @@ use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\ListVirtualAgentsData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\ListVirtualAgentsMcpRequest;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('List Cortex virtual agents with their published prompts, tools, and sub-agents. Paginated.')]
@@ -21,8 +23,11 @@ final class ListVirtualAgentsTool extends Tool
 
     public function schema(JsonSchema $schema): array
     {
-        return [
-            'page' => $schema->integer()->description('Page number, starting at 1.')->min(1),
-        ];
+        return ListVirtualAgentsData::pagination()->schema($schema);
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return VirtualAgentResource::collectionSchema($schema, ListVirtualAgentsData::pagination());
     }
 }

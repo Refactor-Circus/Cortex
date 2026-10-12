@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\VirtualAgent\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\RunVirtualAgentData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
 
@@ -19,6 +20,6 @@ final class VirtualAgentRunningActionEvent implements ActionStartingEvent
 
     public function __construct(
         public VirtualAgentModel $agent,
-        public string $input,
+        public RunVirtualAgentData $data,
     ) {}
 }

@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\RedirectDomain\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Arr;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
-use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\ListRedirectDomainsAction;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Data\CreateRedirectDomainData;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Resources\RedirectDomainResource;
 
@@ -20,16 +19,13 @@ final class StoreRedirectDomainRequest extends RedirectDomainRequest
 
     public function rules(): array
     {
-        return [
-            ...CreateRedirectDomainAction::rules(),
-            ...ListRedirectDomainsAction::rules(),
-        ];
+        return $this->ownerRules() + CreateRedirectDomainData::rules();
     }
 
     public function persist(): JsonResponse
     {
         $domain = app(CreateRedirectDomainAction::class)->execute(
-            Arr::except($this->validated(), ['owner_type', 'owner_id']),
+            CreateRedirectDomainData::fromValidated($this->validated()),
             $this->owner(),
         );
 

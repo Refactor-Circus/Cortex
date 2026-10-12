@@ -12,6 +12,7 @@ use RefactorCircus\Cortex\Atrium\ScreenAccess;
 use RefactorCircus\Cortex\Domains\Tool\Actions\CreateToolDescriptionVersionAction;
 use RefactorCircus\Cortex\Domains\Tool\Actions\DeleteToolDescriptionAction;
 use RefactorCircus\Cortex\Domains\Tool\Actions\PublishToolDescriptionVersionAction;
+use RefactorCircus\Cortex\Domains\Tool\Data\CreateToolDescriptionVersionData;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
@@ -46,9 +47,7 @@ final class ToolDescriptionUiController
 
         $this->authorizeScreen('create', ToolDescriptionVersionModel::class, [ScreenAccess::toolDescription($tool, $this->override($tool))]);
 
-        $data = $request->validate(CreateToolDescriptionVersionAction::rules());
-
-        app(CreateToolDescriptionVersionAction::class)->execute($tool, $data);
+        app(CreateToolDescriptionVersionAction::class)->execute($tool, CreateToolDescriptionVersionData::from($request->all()));
 
         return redirect()
             ->route('atrium.cortex.tools.description', $tool)

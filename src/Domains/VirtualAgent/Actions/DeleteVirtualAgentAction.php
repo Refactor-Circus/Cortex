@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Actions;
 
+use Illuminate\Support\Facades\DB;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentDeletedActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentDeletingActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
@@ -12,14 +13,6 @@ use RefactorCircus\Cortex\Support\PublicationCache;
 final class DeleteVirtualAgentAction
 {
     public function __construct(private readonly PublicationCache $cache) {}
-
-    /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
 
     public function execute(VirtualAgentModel $agent): void
     {
@@ -35,8 +28,10 @@ final class DeleteVirtualAgentAction
      */
     private function perform(VirtualAgentModel $agent): void
     {
-        $agent->delete();
+        DB::transaction(function () use ($agent): void {
+            $agent->delete();
 
-        $this->cache->forget($this->cache->virtualAgentKey((string) $agent->getKey()));
+            DB::afterCommit(fn () => $this->cache->forget($this->cache->virtualAgentKey((string) $agent->getKey())));
+        });
     }
 }

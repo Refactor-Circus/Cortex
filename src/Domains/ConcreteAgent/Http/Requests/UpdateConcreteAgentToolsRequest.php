@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\UpdateConcreteAgentToolsData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Resources\ConcreteAgentOverrideResource;
 
 final class UpdateConcreteAgentToolsRequest extends ConcreteAgentRequest
@@ -17,15 +18,15 @@ final class UpdateConcreteAgentToolsRequest extends ConcreteAgentRequest
 
     public function rules(): array
     {
-        return UpdateConcreteAgentToolsAction::rules($this->agentName());
+        return UpdateConcreteAgentToolsData::rules($this->agentName());
     }
 
     public function persist(): JsonResponse
     {
-        /** @var list<string>|null $tools */
-        $tools = $this->validated('tools');
-
-        $override = app(UpdateConcreteAgentToolsAction::class)->execute($this->agentName(), $tools);
+        $override = app(UpdateConcreteAgentToolsAction::class)->execute(
+            $this->agentName(),
+            UpdateConcreteAgentToolsData::fromValidated($this->validated()),
+        );
 
         // PUT sets state, so it answers 200 even when it first creates the row.
         return (new ConcreteAgentOverrideResource($override))->response()->setStatusCode(200);

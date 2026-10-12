@@ -12,6 +12,7 @@ use RefactorCircus\Cortex\Atrium\ScreenAccess;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\McpServer\Data\CreateMcpInstructionVersionData;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
 use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
@@ -46,9 +47,7 @@ final class McpInstructionUiController
 
         $this->authorizeScreen('create', McpInstructionVersionModel::class, [ScreenAccess::serverInstruction($server, $this->override($server))]);
 
-        $data = $request->validate(CreateMcpInstructionVersionAction::rules());
-
-        app(CreateMcpInstructionVersionAction::class)->execute($server, $data);
+        app(CreateMcpInstructionVersionAction::class)->execute($server, CreateMcpInstructionVersionData::from($request->all()));
 
         return redirect()
             ->route('atrium.cortex.servers.instructions', $server)

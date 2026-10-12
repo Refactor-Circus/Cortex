@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use LogicException;
 use RefactorCircus\Cortex\Database\Factories\ConcreteAgentOverrideVersionFactory;
+use RefactorCircus\Cortex\Support\Tables;
 use RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents;
 
 /**
@@ -32,12 +33,15 @@ final class ConcreteAgentOverrideVersionModel extends Model
 
     use HasUlids;
 
-    protected $table = 'cortex_concrete_agent_override_versions';
-
     protected $fillable = [
         'version',
         'content',
     ];
+
+    public function getTable(): string
+    {
+        return Tables::name('concrete_agent_override_versions');
+    }
 
     protected static function booted(): void
     {

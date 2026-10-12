@@ -16,9 +16,7 @@ final class DeleteVirtualAgentMcpRequest extends VirtualAgentMcpRequest
 
     protected function rules(): array
     {
-        return [
-            'slug' => ['required', 'string'],
-        ];
+        return $this->agentRules();
     }
 
     protected function handle(array $validated): Response

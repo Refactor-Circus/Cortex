@@ -1,0 +1,30 @@
+<?php
+
+declare(strict_types=1);
+
+namespace RefactorCircus\Cortex\Domains\Tool\Data;
+
+use RefactorCircus\Keystone\Data\Data;
+
+/**
+ * Input for CreateToolDescriptionVersionAction: the new description for the tool's override, and
+ * whether to publish it straight away.
+ */
+final readonly class CreateToolDescriptionVersionData extends Data
+{
+    public function __construct(
+        public string $content,
+        public bool $publish = false,
+    ) {}
+
+    /**
+     * @return array<string, array<int, mixed>>
+     */
+    public static function rules(): array
+    {
+        return [
+            'content' => ['required', 'string'],
+            'publish' => ['sometimes', 'boolean'],
+        ];
+    }
+}

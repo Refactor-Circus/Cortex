@@ -18,16 +18,13 @@ final class ListConcreteAgentVersionsMcpRequest extends ConcreteAgentMcpRequest
 
     protected function rules(): array
     {
-        return [
-            'agent' => ['required', 'string'],
-            ...ListConcreteAgentVersionsAction::rules(),
-        ];
+        return $this->agentRules();
     }
 
     protected function handle(array $validated): ResponseFactory
     {
         $versions = app(ListConcreteAgentVersionsAction::class)->execute($this->override());
 
-        return $this->structuredCollection(ConcreteAgentOverrideVersionResource::collection($versions)->resolve());
+        return ConcreteAgentOverrideVersionResource::collection($versions)->toStructuredResponse();
     }
 }

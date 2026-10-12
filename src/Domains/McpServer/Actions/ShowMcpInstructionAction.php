@@ -10,14 +10,6 @@ use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
 
 final class ShowMcpInstructionAction
 {
-    /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
-
     public function execute(string $server): McpInstructionModel
     {
         McpInstructionShowingActionEvent::dispatch($server);

@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentVersionsAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\ListVirtualAgentVersionsData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentVersionResource;
 
@@ -18,12 +19,12 @@ final class IndexVirtualAgentVersionsRequest extends VirtualAgentRequest
 
     public function rules(): array
     {
-        return ListVirtualAgentVersionsAction::rules();
+        return ListVirtualAgentVersionsData::rules();
     }
 
     public function persist(): JsonResponse
     {
-        $versions = app(ListVirtualAgentVersionsAction::class)->execute($this->agent());
+        $versions = app(ListVirtualAgentVersionsAction::class)->execute($this->agent(), ListVirtualAgentVersionsData::fromValidated($this->validated()));
 
         return VirtualAgentVersionResource::collection($versions)->response();
     }

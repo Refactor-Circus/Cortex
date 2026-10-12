@@ -4,14 +4,27 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\McpServer\Http\Resources;
 
+use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\JsonSchema\Types\Type;
+use RefactorCircus\Keystone\Http\Resources\JsonResource;
 
 /**
  * @property array{name: string, class: string, instructions: string} $resource
  */
 final class McpServerResource extends JsonResource
 {
+    /**
+     * @return array<string, Type>
+     */
+    public static function schema(JsonSchema $schema): array
+    {
+        return [
+            'name' => $schema->string()->required(),
+            'instructions' => $schema->string()->required(),
+        ];
+    }
+
     /**
      * @return array<string, mixed>
      */

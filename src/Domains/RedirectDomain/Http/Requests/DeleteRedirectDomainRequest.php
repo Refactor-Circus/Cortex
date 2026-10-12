@@ -14,11 +14,6 @@ final class DeleteRedirectDomainRequest extends RedirectDomainRequest
         return $this->allows('delete', $this->domain());
     }
 
-    public function rules(): array
-    {
-        return DeleteRedirectDomainAction::rules();
-    }
-
     public function persist(): Response
     {
         app(DeleteRedirectDomainAction::class)->execute($this->domain());

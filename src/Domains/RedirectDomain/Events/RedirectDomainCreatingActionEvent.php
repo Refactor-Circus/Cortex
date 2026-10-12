@@ -7,6 +7,7 @@ namespace RefactorCircus\Cortex\Domains\RedirectDomain\Events;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Data\CreateRedirectDomainData;
 use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
 
 /**
@@ -17,11 +18,8 @@ final class RedirectDomainCreatingActionEvent implements ActionStartingEvent
     use Dispatchable;
     use SerializesModels;
 
-    /**
-     * @param  array<string, mixed>  $data
-     */
     public function __construct(
-        public array $data,
+        public CreateRedirectDomainData $data,
         public ?Model $owner = null,
     ) {}
 }

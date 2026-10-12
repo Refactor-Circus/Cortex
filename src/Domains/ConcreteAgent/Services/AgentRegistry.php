@@ -32,6 +32,21 @@ final class AgentRegistry
 
     private bool $configLoaded = false;
 
+    /**
+     * Whether each agent class reads overrides, by class. Class traits only
+     * change on deploy, so the memo is safe to keep for the process.
+     *
+     * @var array<class-string, bool>
+     */
+    private static array $overridable = [];
+
+    /**
+     * Whether each agent class is marked {@see LockedTools}, by class.
+     *
+     * @var array<class-string, bool>
+     */
+    private static array $locked = [];
+
     public function __construct(
         private readonly Container $container,
         private readonly ToolRegistry $tools,
@@ -106,7 +121,9 @@ final class AgentRegistry
      */
     public function supportsOverrides(string $name): bool
     {
-        return in_array(HasCortexOverrides::class, class_uses_recursive($this->get($name)), true);
+        $class = $this->get($name);
+
+        return self::$overridable[$class] ??= in_array(HasCortexOverrides::class, class_uses_recursive($class), true);
     }
 
     /**
@@ -125,7 +142,7 @@ final class AgentRegistry
      */
     public static function locksTools(string $class): bool
     {
-        return (new ReflectionClass($class))->getAttributes(LockedTools::class) !== [];
+        return self::$locked[$class] ??= (new ReflectionClass($class))->getAttributes(LockedTools::class) !== [];
     }
 
     /**
@@ -134,8 +151,11 @@ final class AgentRegistry
      */
     public function defaultInstructions(string $name): string
     {
-        $agent = $this->make($name);
+        return $this->defaultInstructionsOf($name, $this->make($name));
+    }
 
+    private function defaultInstructionsOf(string $name, AgentContract $agent): string
+    {
         return (string) (method_exists($agent, 'defaultInstructions') && $this->supportsOverrides($name)
             ? $agent->defaultInstructions()
             : $agent->instructions());
@@ -149,8 +169,14 @@ final class AgentRegistry
      */
     public function defaultTools(string $name): array
     {
-        $agent = $this->make($name);
+        return $this->defaultToolsOf($name, $this->make($name));
+    }
 
+    /**
+     * @return list<string>
+     */
+    private function defaultToolsOf(string $name, AgentContract $agent): array
+    {
         if (method_exists($agent, 'defaultTools') && $this->supportsOverrides($name)) {
             return $this->toolNames($agent->defaultTools());
         }
@@ -168,8 +194,15 @@ final class AgentRegistry
      */
     public function effectiveTools(string $name): array
     {
-        $defaults = $this->defaultTools($name);
+        return $this->effectiveToolsFrom($name, $this->defaultTools($name));
+    }
 
+    /**
+     * @param  list<string>  $defaults
+     * @return list<string>
+     */
+    private function effectiveToolsFrom(string $name, array $defaults): array
+    {
         $selected = $this->supportsToolOverrides($name)
             ? $this->container->make(ConcreteAgentOverrides::class)->toolsFor($name)
             : null;
@@ -221,18 +254,34 @@ final class AgentRegistry
     public function all(): array
     {
         return array_map(function (string $name): array {
-            $agent = $this->make($name);
+            $described = $this->describe($name);
 
-            return [
-                'name' => $name,
-                'class' => $this->agents[$name],
-                'overridable' => $this->supportsOverrides($name),
-                'tools_overridable' => $this->supportsToolOverrides($name),
-                'instructions' => (string) $agent->instructions(),
-                'tools' => $this->effectiveTools($name),
-                'default_tools' => $this->defaultTools($name),
-            ];
+            unset($described['default_instructions']);
+
+            return $described;
         }, $this->names());
+    }
+
+    /**
+     * Everything Cortex shows about one agent, built from a single instance.
+     *
+     * @return array{name: string, class: class-string<AgentContract>, overridable: bool, tools_overridable: bool, instructions: string, tools: list<string>, default_instructions: string, default_tools: list<string>}
+     */
+    public function describe(string $name): array
+    {
+        $agent = $this->make($name);
+        $defaults = $this->defaultToolsOf($name, $agent);
+
+        return [
+            'name' => $name,
+            'class' => $this->get($name),
+            'overridable' => $this->supportsOverrides($name),
+            'tools_overridable' => $this->supportsToolOverrides($name),
+            'instructions' => (string) $agent->instructions(),
+            'tools' => $this->effectiveToolsFrom($name, $defaults),
+            'default_instructions' => $this->defaultInstructionsOf($name, $agent),
+            'default_tools' => $defaults,
+        ];
     }
 
     /**

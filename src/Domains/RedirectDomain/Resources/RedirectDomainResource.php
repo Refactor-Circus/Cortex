@@ -4,15 +4,32 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\RedirectDomain\Resources;
 
+use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\JsonSchema\Types\Type;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use RefactorCircus\Keystone\Http\Resources\JsonResource;
 
 /**
  * @mixin RedirectDomainModel
  */
 final class RedirectDomainResource extends JsonResource
 {
+    /**
+     * @return array<string, Type>
+     */
+    public static function schema(JsonSchema $schema): array
+    {
+        return [
+            'id' => $schema->string()->required(),
+            'domain' => $schema->string()->required(),
+            'owner_type' => $schema->string()->nullable()->required(),
+            'owner_id' => $schema->string()->nullable()->required(),
+            'created_at' => $schema->string()->nullable()->required(),
+            'updated_at' => $schema->string()->nullable()->required(),
+        ];
+    }
+
     /**
      * @return array<string, mixed>
      */

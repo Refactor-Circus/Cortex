@@ -95,6 +95,9 @@ class CortexServiceProvider extends PackageServiceProvider
     {
         $this->registerPolicies();
 
+        // Missing records on Cortex's routes answer a plain "Not found.", as its MCP tools do.
+        $this->registerNotFoundResponses();
+
         $this->registerAtriumPlugin(CortexPlugin::class);
 
         $this->registerMcpServer();

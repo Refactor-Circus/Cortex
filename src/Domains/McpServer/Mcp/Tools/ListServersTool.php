@@ -8,6 +8,7 @@ use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\McpServer\Http\Resources\McpServerResource;
 use RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests\ListServersMcpRequest;
 use RefactorCircus\Keystone\Mcp\Tool;
 
@@ -22,5 +23,12 @@ final class ListServersTool extends Tool
     public function schema(JsonSchema $schema): array
     {
         return [];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return [
+            'data' => $schema->array()->items($schema->object(McpServerResource::schema($schema)))->required(),
+        ];
     }
 }

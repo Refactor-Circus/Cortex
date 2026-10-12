@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests;
 
-use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\UpdateConcreteAgentToolsData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Resources\ConcreteAgentOverrideResource;
 
 final class UpdateConcreteAgentToolsMcpRequest extends ConcreteAgentMcpRequest
@@ -18,19 +18,16 @@ final class UpdateConcreteAgentToolsMcpRequest extends ConcreteAgentMcpRequest
 
     protected function rules(): array
     {
-        return [
-            'agent' => ['required', 'string'],
-            ...UpdateConcreteAgentToolsAction::rules($this->agentName()),
-        ];
+        return $this->agentRules() + UpdateConcreteAgentToolsData::rules($this->agentName());
     }
 
     protected function handle(array $validated): ResponseFactory
     {
-        /** @var list<string>|null $tools */
-        $tools = $validated['tools'];
+        $override = app(UpdateConcreteAgentToolsAction::class)->execute(
+            $this->agentName(),
+            UpdateConcreteAgentToolsData::fromValidated($validated),
+        );
 
-        $override = app(UpdateConcreteAgentToolsAction::class)->execute($this->agentName(), $tools);
-
-        return Response::structured((new ConcreteAgentOverrideResource($override))->resolve());
+        return (new ConcreteAgentOverrideResource($override))->toStructuredResponse();
     }
 }

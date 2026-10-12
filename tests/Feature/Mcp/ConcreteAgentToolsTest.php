@@ -36,7 +36,7 @@ it('shows a concrete agent with parity to the http payload', function () {
 
     mcpTool(ShowConcreteAgentTool::class, ['agent' => 'echo-agent'])
         ->assertOk()
-        ->assertStructuredContent($http);
+        ->assertStructuredContent(['data' => $http]);
 });
 
 it('errors not found for unregistered agents', function () {
@@ -47,7 +47,7 @@ it('errors not found for unregistered agents', function () {
 it('creates, lists and publishes prompt versions', function () {
     mcpTool(CreateConcreteAgentVersionTool::class, ['agent' => 'echo-agent', 'content' => 'v1'])
         ->assertOk()
-        ->assertStructuredContent(fn (AssertableJson $json) => $json->where('version', 1)->etc());
+        ->assertStructuredContent(fn (AssertableJson $json) => $json->where('data.version', 1)->etc());
     mcpTool(CreateConcreteAgentVersionTool::class, ['agent' => 'echo-agent', 'content' => 'v2'])->assertOk();
 
     mcpTool(ListConcreteAgentVersionsTool::class, ['agent' => 'echo-agent'])
@@ -59,7 +59,7 @@ it('creates, lists and publishes prompt versions', function () {
     mcpTool(PublishConcreteAgentVersionTool::class, ['agent' => 'echo-agent', 'version' => 2])
         ->assertOk()
         ->assertStructuredContent(
-            fn (AssertableJson $json) => $json->where('published_version', 2)->where('published_content', 'v2')->etc(),
+            fn (AssertableJson $json) => $json->where('data.published_version', 2)->where('data.published_content', 'v2')->etc(),
         );
 });
 
@@ -73,7 +73,7 @@ it('errors not found for an unknown version', function () {
 it('sets and clears the toolset override', function () {
     mcpTool(UpdateConcreteAgentToolsTool::class, ['agent' => 'echo-agent', 'tools' => []])
         ->assertOk()
-        ->assertStructuredContent(fn (AssertableJson $json) => $json->where('tools', [])->etc());
+        ->assertStructuredContent(fn (AssertableJson $json) => $json->where('data.tools', [])->etc());
 
     mcpTool(UpdateConcreteAgentToolsTool::class, ['agent' => 'echo-agent', 'tools' => null])->assertOk();
 
@@ -105,7 +105,7 @@ it('runs a concrete agent', function () {
 
     mcpTool(RunConcreteAgentTool::class, ['agent' => 'echo-agent', 'input' => 'Hi'])
         ->assertOk()
-        ->assertStructuredContent(fn (AssertableJson $json) => $json->where('text', 'Hi back.')->etc());
+        ->assertStructuredContent(fn (AssertableJson $json) => $json->where('data.text', 'Hi back.')->etc());
 
     EchoAgent::assertPrompted(fn ($prompt): bool => $prompt->prompt === 'Hi');
 });

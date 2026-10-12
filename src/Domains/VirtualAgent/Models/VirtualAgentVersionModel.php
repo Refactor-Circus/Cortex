@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use LogicException;
 use RefactorCircus\Cortex\Database\Factories\VirtualAgentVersionFactory;
+use RefactorCircus\Cortex\Support\Tables;
 use RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents;
 
 /**
@@ -32,12 +33,15 @@ final class VirtualAgentVersionModel extends Model
 
     use HasUlids;
 
-    protected $table = 'cortex_virtual_agent_versions';
-
     protected $fillable = [
         'version',
         'content',
     ];
+
+    public function getTable(): string
+    {
+        return Tables::name('virtual_agent_versions');
+    }
 
     protected static function booted(): void
     {

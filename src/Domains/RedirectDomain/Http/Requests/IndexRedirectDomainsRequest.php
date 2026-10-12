@@ -18,7 +18,7 @@ final class IndexRedirectDomainsRequest extends RedirectDomainRequest
 
     public function rules(): array
     {
-        return ListRedirectDomainsAction::rules();
+        return $this->ownerRules();
     }
 
     public function persist(): JsonResponse

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Actions;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\ListVirtualAgentsData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentsListedActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentsListingActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
@@ -12,23 +14,13 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 final class ListVirtualAgentsAction
 {
     /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [
-            'page' => ['sometimes', 'integer', 'min:1'],
-        ];
-    }
-
-    /**
      * @return LengthAwarePaginator<int, VirtualAgentModel>
      */
-    public function execute(?int $page = null): LengthAwarePaginator
+    public function execute(ListVirtualAgentsData $filters = new ListVirtualAgentsData): LengthAwarePaginator
     {
-        VirtualAgentsListingActionEvent::dispatch($page);
+        VirtualAgentsListingActionEvent::dispatch($filters);
 
-        $result = $this->perform($page);
+        $result = $this->perform($filters);
 
         VirtualAgentsListedActionEvent::dispatch($result);
 
@@ -38,11 +30,13 @@ final class ListVirtualAgentsAction
     /**
      * @return LengthAwarePaginator<int, VirtualAgentModel>
      */
-    private function perform(?int $page = null): LengthAwarePaginator
+    private function perform(ListVirtualAgentsData $filters): LengthAwarePaginator
     {
         return VirtualAgentModel::query()
-            ->with(['publishedVersion', 'subAgents'])
+            ->with($filters->summary
+                ? ['publishedVersion' => fn (BelongsTo $query): BelongsTo => $query->select(['id', 'version'])]
+                : ['publishedVersion', 'subAgents'])
             ->orderBy('name')
-            ->paginate(page: $page);
+            ->paginate($filters->perPage, ['*'], 'page', $filters->page);
     }
 }

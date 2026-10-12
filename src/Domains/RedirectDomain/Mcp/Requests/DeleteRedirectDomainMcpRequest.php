@@ -16,10 +16,7 @@ final class DeleteRedirectDomainMcpRequest extends RedirectDomainMcpRequest
 
     protected function rules(): array
     {
-        return [
-            'id' => ['required', 'string'],
-            ...DeleteRedirectDomainAction::rules(),
-        ];
+        return $this->domainRules();
     }
 
     protected function handle(array $validated): Response

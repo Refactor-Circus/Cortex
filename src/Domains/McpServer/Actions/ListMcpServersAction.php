@@ -11,14 +11,6 @@ use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
 
 final class ListMcpServersAction
 {
-    /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
-
     public function __construct(private readonly McpServerRegistry $registry) {}
 
     /**

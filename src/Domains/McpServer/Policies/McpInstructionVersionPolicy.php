@@ -18,21 +18,21 @@ class McpInstructionVersionPolicy extends Policy
 {
     public function viewAny(?Authenticatable $user, McpInstructionModel $instruction): bool
     {
-        return $this->allowsOnParent($user, 'view', $instruction);
+        return $this->allowsOn($user, 'view', $instruction);
     }
 
     public function view(?Authenticatable $user, McpInstructionVersionModel $version): bool
     {
-        return $this->allowsOnParent($user, 'view', $version->mcpInstruction);
+        return $this->allowsOn($user, 'view', $version->mcpInstruction);
     }
 
     public function create(?Authenticatable $user, McpInstructionModel $instruction): bool
     {
-        return $this->allowsOnParent($user, 'update', $instruction);
+        return $this->allowsOn($user, 'update', $instruction);
     }
 
     public function publish(?Authenticatable $user, McpInstructionVersionModel $version): bool
     {
-        return $this->allowsOnParent($user, 'update', $version->mcpInstruction);
+        return $this->allowsOn($user, 'update', $version->mcpInstruction);
     }
 }

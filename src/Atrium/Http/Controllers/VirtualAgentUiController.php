@@ -10,12 +10,15 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use RefactorCircus\Cortex\Domains\Tool\Actions\ListToolsAction;
+use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\DeleteVirtualAgentAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ListProvidersAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentsAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\CreateVirtualAgentData;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\ListVirtualAgentsData;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\UpdateVirtualAgentData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 final class VirtualAgentUiController
@@ -29,8 +32,15 @@ final class VirtualAgentUiController
         /** @var view-string $view */
         $view = 'cortex::ui.virtual-agents.index';
 
+        $filters = ListVirtualAgentsData::from($request->query());
+
         return view($view, [
-            'agents' => app(ListVirtualAgentsAction::class)->execute($request->integer('page') ?: null),
+            // The list shows each agent's version number only.
+            'agents' => app(ListVirtualAgentsAction::class)->execute(new ListVirtualAgentsData(
+                perPage: $filters->perPage,
+                page: $filters->page,
+                summary: true,
+            )),
         ]);
     }
 
@@ -48,9 +58,7 @@ final class VirtualAgentUiController
     {
         $this->authorizeScreen('create', VirtualAgentModel::class);
 
-        $data = $this->validated($request, CreateVirtualAgentAction::rules());
-
-        app(CreateVirtualAgentAction::class)->execute($data);
+        app(CreateVirtualAgentAction::class)->execute(CreateVirtualAgentData::from($this->input($request)));
 
         return redirect()
             ->route('atrium.cortex.virtual-agents.index')
@@ -75,9 +83,7 @@ final class VirtualAgentUiController
     {
         $this->authorizeScreen('update', $agent);
 
-        $data = $this->validated($request, UpdateVirtualAgentAction::rules());
-
-        app(UpdateVirtualAgentAction::class)->execute($agent, $data);
+        app(UpdateVirtualAgentAction::class)->execute($agent, UpdateVirtualAgentData::from($this->input($request)));
 
         return redirect()
             ->route('atrium.cortex.virtual-agents.edit', $agent->slug)
@@ -116,26 +122,26 @@ final class VirtualAgentUiController
         return [
             'providers' => $providers,
             'providerNames' => $names,
-            'tools' => app(ListToolsAction::class)->execute(),
+            'tools' => app(ToolRegistry::class)->summaries(),
             'concreteAgents' => app(AgentRegistry::class)->names(),
             'agents' => VirtualAgentModel::query()
                 ->when($agent !== null, fn (Builder $query): Builder => $query->whereKeyNot($agent?->getKey()))
                 ->orderBy('name')
-                ->get(),
+                ->get(['id', 'name', 'slug']),
+            'selectedSubAgents' => $agent?->subAgents->pluck('slug')->all() ?? [],
         ];
     }
 
     /**
-     * Validate after dropping blank settings.
+     * The form input, with blank settings dropped, ready to validate.
      *
      * An HTML form submits every number input, so an untouched field arrives
      * as an empty string. Those are absent values, not invalid ones, and must
      * be removed before the rules run rather than after.
      *
-     * @param  array<string, mixed>  $rules
      * @return array<string, mixed>
      */
-    private function validated(Request $request, array $rules): array
+    private function input(Request $request): array
     {
         $settings = array_filter(
             (array) $request->input('settings', []),
@@ -156,6 +162,6 @@ final class VirtualAgentUiController
         // Unchecked checkbox groups submit nothing; an empty group means none.
         $request->mergeIfMissing(['tools' => [], 'sub_agents' => [], 'concrete_sub_agents' => []]);
 
-        return $request->validate($rules);
+        return $request->all();
     }
 }

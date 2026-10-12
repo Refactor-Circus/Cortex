@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use RefactorCircus\Cortex\Database\Factories\RedirectDomainFactory;
+use RefactorCircus\Cortex\Support\Tables;
 use RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents;
 
 /**
@@ -36,11 +37,14 @@ final class RedirectDomainModel extends Model
 
     use HasUlids;
 
-    protected $table = 'cortex_redirect_domains';
-
     protected $fillable = [
         'domain',
     ];
+
+    public function getTable(): string
+    {
+        return Tables::name('redirect_domains');
+    }
 
     /**
      * @return MorphTo<Model, $this>

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use RefactorCircus\Cortex\Database\Factories\McpInstructionFactory;
+use RefactorCircus\Cortex\Support\Tables;
 use RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents;
 
 /**
@@ -33,11 +34,14 @@ final class McpInstructionModel extends Model
 
     use HasUlids;
 
-    protected $table = 'cortex_mcp_instructions';
-
     protected $fillable = [
         'server',
     ];
+
+    public function getTable(): string
+    {
+        return Tables::name('mcp_instructions');
+    }
 
     /**
      * @return HasMany<McpInstructionVersionModel, $this>

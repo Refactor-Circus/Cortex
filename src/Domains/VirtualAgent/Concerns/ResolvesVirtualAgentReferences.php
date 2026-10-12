@@ -7,6 +7,7 @@ namespace RefactorCircus\Cortex\Domains\VirtualAgent\Concerns;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Cortex\Support\Tables;
 
 trait ResolvesVirtualAgentReferences
 {
@@ -28,32 +29,38 @@ trait ResolvesVirtualAgentReferences
 
     /**
      * Reject sub-agent selections that would create a cycle back to the agent.
+     * The graph is walked breadth-first, one pivot query per level.
      *
      * @param  list<string>  $subAgentIds
      */
     private function assertNoCycles(VirtualAgentModel $agent, array $subAgentIds): void
     {
-        $queue = $subAgentIds;
+        $target = (string) $agent->getKey();
         $seen = [];
+        $level = array_values(array_unique($subAgentIds));
 
-        while ($queue !== []) {
-            $id = array_shift($queue);
-
-            if (in_array($id, $seen, true)) {
-                continue;
-            }
-
-            $seen[] = $id;
-
-            if ($id === (string) $agent->getKey()) {
+        while ($level !== []) {
+            if (in_array($target, $level, true)) {
                 throw ValidationException::withMessages([
                     'sub_agents' => 'The selected sub-agents would create a circular reference.',
                 ]);
             }
 
-            foreach (DB::table('cortex_virtual_agent_sub_agents')->where('virtual_agent_id', $id)->pluck('sub_agent_id') as $subId) {
-                $queue[] = (string) $subId;
+            foreach ($level as $id) {
+                $seen[$id] = true;
             }
+
+            $next = [];
+
+            foreach (DB::table(Tables::name('virtual_agent_sub_agents'))->whereIn('virtual_agent_id', $level)->pluck('sub_agent_id') as $subId) {
+                $subId = (string) $subId;
+
+                if (! isset($seen[$subId])) {
+                    $next[$subId] = $subId;
+                }
+            }
+
+            $level = array_values($next);
         }
     }
 }

@@ -13,14 +13,6 @@ use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 final class ListToolDescriptionVersionsAction
 {
     /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
-
-    /**
      * @return Collection<int, ToolDescriptionVersionModel>
      */
     public function execute(ToolDescriptionModel $description): Collection

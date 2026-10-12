@@ -105,7 +105,7 @@
                                     :value="$option->slug"
                                     :label="$option->name"
                                     :id="'sub-'.$option->slug"
-                                    :checked="in_array($option->slug, $agent?->subAgents?->pluck('slug')->all() ?? [], true)" />
+                                    :checked="in_array($option->slug, $selectedSubAgents, true)" />
                             @endforeach
                         </div>
                     </x-atrium::section>

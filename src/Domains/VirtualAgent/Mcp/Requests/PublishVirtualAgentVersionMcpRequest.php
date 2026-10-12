@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests;
 
-use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\PublishVirtualAgentVersionAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
@@ -18,10 +17,7 @@ final class PublishVirtualAgentVersionMcpRequest extends VirtualAgentMcpRequest
 
     protected function rules(): array
     {
-        return [
-            'slug' => ['required', 'string'],
-            'version' => ['required', 'integer', 'min:1'],
-        ];
+        return $this->versionRules();
     }
 
     protected function handle(array $validated): ResponseFactory
@@ -31,6 +27,6 @@ final class PublishVirtualAgentVersionMcpRequest extends VirtualAgentMcpRequest
             (int) $validated['version'],
         );
 
-        return Response::structured((new VirtualAgentResource($agent))->resolve());
+        return (new VirtualAgentResource($agent))->toStructuredResponse();
     }
 }

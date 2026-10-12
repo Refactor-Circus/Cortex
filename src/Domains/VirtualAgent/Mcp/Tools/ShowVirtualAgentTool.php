@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\ShowVirtualAgentMcpRequest;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Show a Cortex virtual agent by slug, including its published prompt, tools, and sub-agents.')]
@@ -24,5 +25,10 @@ final class ShowVirtualAgentTool extends Tool
         return [
             'slug' => $schema->string()->description('The virtual agent slug.')->required(),
         ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return VirtualAgentResource::structuredSchema($schema);
     }
 }

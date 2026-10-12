@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionData;
 use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
 
 /**
@@ -16,11 +17,8 @@ final class ConcreteAgentVersionCreatingActionEvent implements ActionStartingEve
     use Dispatchable;
     use SerializesModels;
 
-    /**
-     * @param  array<string, mixed>  $data
-     */
     public function __construct(
         public string $agent,
-        public array $data,
+        public CreateConcreteAgentVersionData $data,
     ) {}
 }

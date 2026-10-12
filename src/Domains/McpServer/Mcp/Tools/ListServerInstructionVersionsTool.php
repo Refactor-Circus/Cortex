@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\McpServer\Mcp\Requests\ListServerInstructionVersionsMcpRequest;
+use RefactorCircus\Cortex\Domains\McpServer\Resources\McpInstructionVersionResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('List the instruction versions of a registered MCP server, newest first.')]
@@ -23,6 +24,13 @@ final class ListServerInstructionVersionsTool extends Tool
     {
         return [
             'server' => $schema->string()->description('The registered MCP server name.')->required(),
+        ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return [
+            'data' => $schema->array()->items($schema->object(McpInstructionVersionResource::schema($schema)))->required(),
         ];
     }
 }

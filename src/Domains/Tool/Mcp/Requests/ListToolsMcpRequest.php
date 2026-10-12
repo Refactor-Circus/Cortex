@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\Tool\Mcp\Requests;
 
 use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\Tool\Actions\ListToolsAction;
+use RefactorCircus\Cortex\Domains\Tool\Data\ListToolsData;
 use RefactorCircus\Cortex\Domains\Tool\Http\Resources\ToolResource;
 use RefactorCircus\Cortex\Mcp\Request;
 
@@ -13,16 +14,13 @@ final class ListToolsMcpRequest extends Request
 {
     protected function rules(): array
     {
-        return ListToolsAction::rules();
+        return ListToolsData::rules();
     }
 
     protected function handle(array $validated): ResponseFactory
     {
-        /** @var string|null $tag */
-        $tag = $validated['tag'] ?? null;
+        $tools = app(ListToolsAction::class)->execute(ListToolsData::fromValidated($validated));
 
-        $tools = app(ListToolsAction::class)->execute($tag);
-
-        return $this->structuredCollection(ToolResource::collection($tools)->resolve());
+        return ToolResource::collection($tools)->toStructuredResponse();
     }
 }

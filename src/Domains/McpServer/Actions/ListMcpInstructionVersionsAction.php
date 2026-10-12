@@ -13,14 +13,6 @@ use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
 final class ListMcpInstructionVersionsAction
 {
     /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
-
-    /**
      * @return Collection<int, McpInstructionVersionModel>
      */
     public function execute(McpInstructionModel $instruction): Collection

@@ -85,8 +85,13 @@ return [
     'policies' => [
         // VirtualAgentModel::class => VirtualAgentPolicy::class, ... one entry per Cortex model
     ],
+    'tables' => [
+        // 'virtual_agents' => 'cortex_virtual_agents', ... one entry per Cortex table, pivots included
+    ],
 ];
 ```
+
+`tables` names the table each Cortex record lives in. Rename them before running the migrations: the migrations, models, validation rules and queries all read them through `RefactorCircus\Cortex\Support\Tables`. A published config that lists only some tables keeps the defaults for the rest.
 
 > [!WARNING]
 > The API routes, dashboard, and MCP server manage **and execute** agents. The MCP transports are disabled by default and the API carries only the `api` middleware group. Before exposing them in production, add authentication — e.g. `'middleware' => ['api', 'auth:sanctum']` for the routes and `'middleware' => ['auth:sanctum']` for the MCP web transport. The dashboard is guarded by Atrium's `viewAtrium` gate; define it as shown under [Dashboard](#dashboard).
@@ -293,6 +298,8 @@ The dashboard's virtual agent form and `GET /cortex/providers` offer the same pr
 
 Published virtual agent prompts, tool description overrides, MCP server instruction overrides, concrete agent overrides and the stored OAuth redirect domains are cached so agent runs, tool listings, and MCP handshakes don't hit the database on every request; publishing invalidates explicitly. When Redis is available it is preferred and read via `Cache::flexible()` using the `cache.fresh`/`cache.stale` windows (stale-while-revalidate); any other store caches until invalidation. Pin a store with `cache.store`, or set `cache.enabled` to `false` to read from the database on every pull.
 
+On Redis, a publish clears the cached key, but a read or a `flexible()` background refresh already under way can write the previous content back; the stale value then lives until its `cache.fresh` window ends, so a publish can take up to `cache.fresh` seconds (300 by default) to reach every worker. Lower `cache.fresh`, or pin a non-Redis store with `cache.store`, where publishes must show immediately.
+
 ## MCP Server
 
 The `CortexServer` exposes the virtual agent, concrete agent, tool, and server-instruction operations as MCP tools (29 tools: virtual agent CRUD + run + prompt versions + publish, concrete agent list/show/run + prompt versions + publish + tools + remove overrides, list tools, server instructions + versions + publish, OAuth redirect domains list/add/remove, and `list-cortex-history-tool` for the audit history). The provider and tool-description endpoints are HTTP-only. Enable a transport in the config:
@@ -333,7 +340,7 @@ laravel/mcp's dynamic client registration (`Mcp::oauthRoutes()`) only accepts re
 
 - **Dashboard:** Cortex → Redirect domains is the global list: one table of every allowed origin, compiled from config, global domains and those organizations and users own, with each row's source and chips to filter by it. Global domains (no owner) are added and removed here; configured ones change only in config.
 - **API and MCP:** `/cortex/redirect-domains` and the `list-redirect-domains-tool`, `create-redirect-domain-tool` and `delete-redirect-domain-tool` tools.
-- **Code:** `app(CreateRedirectDomainAction::class)->execute(['domain' => 'claude.ai'], $owner)`.
+- **Code:** `app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData('claude.ai'), $owner)`.
 
 A domain may belong to any model, such as an organization or a user (Roster manages them on its organization and user pages), or to no one. Hosts, origins and full redirect URLs are all stored as their origin: `claude.ai`, `https://claude.ai/` and `https://claude.ai/api/mcp/auth_callback` are all `https://claude.ai`. Only config can allow `*`.
 

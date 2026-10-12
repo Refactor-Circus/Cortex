@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\RedirectDomain\Actions;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Data\ListRedirectDomainsData;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainsListedActionEvent;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainsListingActionEvent;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
@@ -13,43 +16,42 @@ use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
 final class ListRedirectDomainsAction
 {
     /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [
-            'owner_type' => ['nullable', 'string', 'max:255'],
-            'owner_id' => ['nullable', 'required_with:owner_type', 'string', 'max:255'],
-        ];
-    }
-
-    /**
-     * Every stored domain, or one owner's.
+     * Every stored domain, or one owner's; with `paged` set, one page of
+     * them with their owners loaded.
      *
-     * @return Collection<int, RedirectDomainModel>
+     * @return Collection<int, RedirectDomainModel>|LengthAwarePaginator<int, RedirectDomainModel>
      */
-    public function execute(?Model $owner = null): Collection
+    public function execute(?Model $owner = null, ListRedirectDomainsData $filters = new ListRedirectDomainsData): Collection|LengthAwarePaginator
     {
-        RedirectDomainsListingActionEvent::dispatch($owner);
+        RedirectDomainsListingActionEvent::dispatch($owner, $filters);
 
-        $result = $this->perform($owner);
+        $result = $this->perform($owner, $filters);
 
-        RedirectDomainsListedActionEvent::dispatch($result);
+        RedirectDomainsListedActionEvent::dispatch($result instanceof Collection ? $result : new Collection($result->items()));
 
         return $result;
     }
 
     /**
-     * @return Collection<int, RedirectDomainModel>
+     * @return Collection<int, RedirectDomainModel>|LengthAwarePaginator<int, RedirectDomainModel>
      */
-    private function perform(?Model $owner): Collection
+    private function perform(?Model $owner, ListRedirectDomainsData $filters): Collection|LengthAwarePaginator
     {
-        $query = RedirectDomainModel::query()->orderBy('domain');
+        $query = RedirectDomainModel::query()
+            ->when($filters->source === 'global', fn (Builder $query): Builder => $query->whereNull('owner_type'))
+            ->when($filters->source === 'owned', fn (Builder $query): Builder => $query->whereNotNull('owner_type'))
+            ->orderBy('domain');
 
         if ($owner !== null) {
             $query->ownedBy($owner);
         }
 
-        return $query->get();
+        if (! $filters->paged) {
+            return $query->get();
+        }
+
+        return $query->orderBy('id')
+            ->with('owner')
+            ->paginate($filters->perPage, ['*'], 'page', $filters->page);
     }
 }

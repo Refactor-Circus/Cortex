@@ -15,6 +15,8 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentsAction
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\PublishConcreteAgentVersionAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ShowConcreteAgentAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionData;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\UpdateConcreteAgentToolsData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
@@ -60,9 +62,7 @@ final class ConcreteAgentUiController
 
         $this->authorizeScreen('create', ConcreteAgentOverrideVersionModel::class, [ScreenAccess::concreteAgent($agent, $this->override($agent))]);
 
-        $data = $request->validate(CreateConcreteAgentVersionAction::rules());
-
-        app(CreateConcreteAgentVersionAction::class)->execute($agent, $data);
+        app(CreateConcreteAgentVersionAction::class)->execute($agent, CreateConcreteAgentVersionData::from($request->all()));
 
         return redirect()
             ->route('atrium.cortex.concrete-agents.show', $agent)
@@ -96,14 +96,11 @@ final class ConcreteAgentUiController
 
         $this->authorizeScreen('update', ScreenAccess::concreteAgent($agent, $this->override($agent)));
 
-        $request->merge([
+        $data = UpdateConcreteAgentToolsData::from([
             'tools' => $request->boolean('use_code_tools') ? null : array_values((array) $request->input('tools', [])),
-        ]);
+        ], $agent);
 
-        /** @var array{tools: list<string>|null} $data */
-        $data = $request->validate(UpdateConcreteAgentToolsAction::rules($agent));
-
-        app(UpdateConcreteAgentToolsAction::class)->execute($agent, $data['tools']);
+        app(UpdateConcreteAgentToolsAction::class)->execute($agent, $data);
 
         return redirect()
             ->route('atrium.cortex.concrete-agents.show', $agent)

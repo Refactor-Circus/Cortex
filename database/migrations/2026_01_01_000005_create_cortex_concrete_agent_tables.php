@@ -5,12 +5,13 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use RefactorCircus\Cortex\Support\Tables;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('cortex_concrete_agent_overrides', function (Blueprint $table): void {
+        Schema::create(Tables::name('concrete_agent_overrides'), function (Blueprint $table): void {
             $table->ulid('id')->primary();
             $table->string('agent')->unique();
             // No FK: circular reference with cortex_concrete_agent_override_versions;
@@ -21,10 +22,10 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('cortex_concrete_agent_override_versions', function (Blueprint $table): void {
+        Schema::create(Tables::name('concrete_agent_override_versions'), function (Blueprint $table): void {
             $table->ulid('id')->primary();
             $table->foreignUlid('concrete_agent_override_id')
-                ->constrained('cortex_concrete_agent_overrides', indexName: 'cortex_concrete_agent_override_versions_override_foreign')
+                ->constrained(Tables::name('concrete_agent_overrides'), indexName: 'cortex_concrete_agent_override_versions_override_foreign')
                 ->cascadeOnDelete();
             $table->unsignedInteger('version');
             $table->longText('content');
@@ -36,7 +37,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('cortex_concrete_agent_override_versions');
-        Schema::dropIfExists('cortex_concrete_agent_overrides');
+        Schema::dropIfExists(Tables::name('concrete_agent_override_versions'));
+        Schema::dropIfExists(Tables::name('concrete_agent_overrides'));
     }
 };

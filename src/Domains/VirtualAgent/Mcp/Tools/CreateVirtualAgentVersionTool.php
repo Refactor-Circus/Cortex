@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests\CreateVirtualAgentVersionMcpRequest;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentVersionResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Create a new immutable prompt version for a Cortex virtual agent. Not published unless requested.')]
@@ -26,5 +27,10 @@ final class CreateVirtualAgentVersionTool extends Tool
             'content' => $schema->string()->description('The new version\'s content.')->required(),
             'publish' => $schema->boolean()->description('Publish this version immediately. Defaults to false.'),
         ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return VirtualAgentVersionResource::structuredSchema($schema);
     }
 }

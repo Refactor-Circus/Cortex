@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\CreateVirtualAgentVersionData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentVersionResource;
 
@@ -18,12 +19,12 @@ final class StoreVirtualAgentVersionRequest extends VirtualAgentRequest
 
     public function rules(): array
     {
-        return CreateVirtualAgentVersionAction::rules();
+        return CreateVirtualAgentVersionData::rules();
     }
 
     public function persist(): JsonResponse
     {
-        $version = app(CreateVirtualAgentVersionAction::class)->execute($this->agent(), $this->validated());
+        $version = app(CreateVirtualAgentVersionAction::class)->execute($this->agent(), CreateVirtualAgentVersionData::fromValidated($this->validated()));
 
         return (new VirtualAgentVersionResource($version))->response()->setStatusCode(201);
     }

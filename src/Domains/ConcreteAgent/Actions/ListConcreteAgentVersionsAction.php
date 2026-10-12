@@ -13,14 +13,6 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVers
 final class ListConcreteAgentVersionsAction
 {
     /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
-
-    /**
      * @return Collection<int, ConcreteAgentOverrideVersionModel>
      */
     public function execute(ConcreteAgentOverrideModel $override): Collection

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\UpdateConcreteAgentToolsTool;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
@@ -35,7 +36,7 @@ it('keeps the code toolset even when an override row holds tools', function (): 
 });
 
 it('still applies a published prompt override', function (): void {
-    app(CreateConcreteAgentVersionAction::class)->execute('locked-echo', ['content' => 'Overridden.', 'publish' => true]);
+    app(CreateConcreteAgentVersionAction::class)->execute('locked-echo', new CreateConcreteAgentVersionData(content: 'Overridden.', publish: true));
     app()->forgetScopedInstances();
 
     expect((string) app(LockedEchoAgent::class)->instructions())->toBe('Overridden.');

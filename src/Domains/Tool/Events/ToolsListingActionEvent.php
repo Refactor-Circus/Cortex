@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\Tool\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use RefactorCircus\Cortex\Domains\Tool\Data\ListToolsData;
 use RefactorCircus\Keystone\Contracts\ActionStartingEvent;
 
 /**
@@ -18,6 +19,6 @@ final class ToolsListingActionEvent implements ActionStartingEvent
     use SerializesModels;
 
     public function __construct(
-        public ?string $tag = null,
+        public ListToolsData $filters,
     ) {}
 }

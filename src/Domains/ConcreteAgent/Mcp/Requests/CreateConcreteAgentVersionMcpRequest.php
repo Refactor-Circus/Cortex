@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests;
 
-use Illuminate\Support\Arr;
-use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Resources\ConcreteAgentOverrideVersionResource;
 
@@ -20,19 +19,16 @@ final class CreateConcreteAgentVersionMcpRequest extends ConcreteAgentMcpRequest
 
     protected function rules(): array
     {
-        return [
-            'agent' => ['required', 'string'],
-            ...CreateConcreteAgentVersionAction::rules(),
-        ];
+        return $this->agentRules() + CreateConcreteAgentVersionData::rules();
     }
 
     protected function handle(array $validated): ResponseFactory
     {
         $version = app(CreateConcreteAgentVersionAction::class)->execute(
             $this->agentName(),
-            Arr::except($validated, ['agent']),
+            CreateConcreteAgentVersionData::fromValidated($validated),
         );
 
-        return Response::structured((new ConcreteAgentOverrideVersionResource($version))->resolve());
+        return (new ConcreteAgentOverrideVersionResource($version))->toStructuredResponse();
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\RedirectDomain\Actions;
 
+use Illuminate\Support\Facades\DB;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainDeletedActionEvent;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainDeletingActionEvent;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
@@ -12,14 +13,6 @@ use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
 final class DeleteRedirectDomainAction
 {
     public function __construct(private readonly RedirectDomains $domains) {}
-
-    /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
 
     public function execute(RedirectDomainModel $domain): void
     {
@@ -32,8 +25,10 @@ final class DeleteRedirectDomainAction
 
     private function perform(RedirectDomainModel $domain): void
     {
-        $domain->delete();
+        DB::transaction(function () use ($domain): void {
+            $domain->delete();
 
-        $this->domains->forget();
+            DB::afterCommit(fn () => $this->domains->forget());
+        });
     }
 }

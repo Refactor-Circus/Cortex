@@ -5,22 +5,27 @@ declare(strict_types=1);
 use Illuminate\Cache\RedisStore;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\PublishConcreteAgentVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
 use RefactorCircus\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\McpServer\Data\CreateMcpInstructionVersionData;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\McpServer\Services\McpInstructionOverrides;
 use RefactorCircus\Cortex\Domains\Tool\Actions\CreateToolDescriptionVersionAction;
 use RefactorCircus\Cortex\Domains\Tool\Actions\DeleteToolDescriptionAction;
 use RefactorCircus\Cortex\Domains\Tool\Actions\PublishToolDescriptionVersionAction;
+use RefactorCircus\Cortex\Domains\Tool\Data\CreateToolDescriptionVersionData;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentVersionAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\PublishVirtualAgentVersionAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\CreateVirtualAgentVersionData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Services\AgentFactory;
 use RefactorCircus\Cortex\Support\PublicationCache;
@@ -34,7 +39,7 @@ function freshAgentInstructions(VirtualAgentModel $agent): string
 
 it('caches the published prompt until a new version is published', function () {
     $agent = VirtualAgentModel::factory()->create();
-    app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'v1 instructions', 'publish' => true]);
+    app(CreateVirtualAgentVersionAction::class)->execute($agent, new CreateVirtualAgentVersionData(content: 'v1 instructions', publish: true));
 
     expect(freshAgentInstructions($agent))->toBe('v1 instructions');
 
@@ -51,6 +56,39 @@ it('caches the published prompt until a new version is published', function () {
     expect(freshAgentInstructions($agent))->toBe('rogue instructions');
 });
 
+it('keeps the cached prompt until the publish commits, and after a rollback', function () {
+    $agent = VirtualAgentModel::factory()->create();
+    app(CreateVirtualAgentVersionAction::class)->execute($agent, new CreateVirtualAgentVersionData(content: 'v1 instructions', publish: true));
+    app(CreateVirtualAgentVersionAction::class)->execute($agent, new CreateVirtualAgentVersionData(content: 'v2 instructions'));
+
+    expect(freshAgentInstructions($agent))->toBe('v1 instructions');
+
+    $key = app(PublicationCache::class)->virtualAgentKey((string) $agent->getKey());
+
+    try {
+        DB::transaction(function () use ($agent, $key): void {
+            app(PublishVirtualAgentVersionAction::class)->execute($agent->fresh(), 2);
+
+            expect(Cache::store('array')->has($key))->toBeTrue();
+
+            throw new RuntimeException('rolled back');
+        });
+    } catch (RuntimeException) {
+        //
+    }
+
+    expect(Cache::store('array')->has($key))->toBeTrue()
+        ->and(freshAgentInstructions($agent))->toBe('v1 instructions');
+
+    DB::transaction(function () use ($agent, $key): void {
+        app(PublishVirtualAgentVersionAction::class)->execute($agent->fresh(), 2);
+
+        expect(Cache::store('array')->has($key))->toBeTrue();
+    });
+
+    expect(freshAgentInstructions($agent))->toBe('v2 instructions');
+});
+
 it('caches concrete agent overrides until one is published', function () {
     app(AgentRegistry::class)->register('echo-agent', EchoAgent::class);
 
@@ -60,7 +98,7 @@ it('caches concrete agent overrides until one is published', function () {
         return (string) app(EchoAgent::class)->instructions();
     };
 
-    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', ['content' => 'first', 'publish' => true]);
+    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', new CreateConcreteAgentVersionData(content: 'first', publish: true));
 
     expect($freshInstructions())->toBe('first');
 
@@ -81,7 +119,7 @@ it('caches the tool description override map until a version is published', func
     $registry = app(ToolRegistry::class);
     $registry->register('echo', EchoTool::class);
 
-    app(CreateToolDescriptionVersionAction::class)->execute('echo', ['content' => 'first', 'publish' => true]);
+    app(CreateToolDescriptionVersionAction::class)->execute('echo', new CreateToolDescriptionVersionData(content: 'first', publish: true));
 
     $freshDescription = function () use ($registry): string {
         app()->forgetScopedInstances();
@@ -108,7 +146,7 @@ it('reads straight from the database when caching is disabled', function () {
     config()->set('cortex.cache.enabled', false);
 
     $agent = VirtualAgentModel::factory()->create();
-    app(CreateVirtualAgentVersionAction::class)->execute($agent, ['content' => 'v1 instructions', 'publish' => true]);
+    app(CreateVirtualAgentVersionAction::class)->execute($agent, new CreateVirtualAgentVersionData(content: 'v1 instructions', publish: true));
 
     expect(freshAgentInstructions($agent))->toBe('v1 instructions');
 
@@ -124,7 +162,7 @@ it('invalidates the override map when an override is deleted', function () {
     $registry = app(ToolRegistry::class);
     $registry->register('echo', EchoTool::class);
 
-    app(CreateToolDescriptionVersionAction::class)->execute('echo', ['content' => 'override', 'publish' => true]);
+    app(CreateToolDescriptionVersionAction::class)->execute('echo', new CreateToolDescriptionVersionData(content: 'override', publish: true));
 
     app()->forgetScopedInstances();
     expect((string) $registry->get('echo')->description())->toBe('override');
@@ -136,7 +174,7 @@ it('invalidates the override map when an override is deleted', function () {
 });
 
 it('caches the mcp instruction override map until a version is published', function () {
-    app(CreateMcpInstructionVersionAction::class)->execute('cortex', ['content' => 'first', 'publish' => true]);
+    app(CreateMcpInstructionVersionAction::class)->execute('cortex', new CreateMcpInstructionVersionData(content: 'first', publish: true));
 
     $freshInstructions = function (): ?string {
         app()->forgetScopedInstances();
@@ -196,7 +234,7 @@ it('falls back to the callback when the cache backend fails', function () {
 });
 
 it('invalidates the mcp instruction map when an override is deleted', function () {
-    app(CreateMcpInstructionVersionAction::class)->execute('cortex', ['content' => 'override', 'publish' => true]);
+    app(CreateMcpInstructionVersionAction::class)->execute('cortex', new CreateMcpInstructionVersionData(content: 'override', publish: true));
 
     app()->forgetScopedInstances();
     expect(app(McpInstructionOverrides::class)->for('cortex'))->toBe('override');

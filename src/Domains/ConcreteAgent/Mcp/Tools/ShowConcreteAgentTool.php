@@ -8,6 +8,7 @@ use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Resources\ConcreteAgentResource;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests\ShowConcreteAgentMcpRequest;
 use RefactorCircus\Keystone\Mcp\Tool;
 
@@ -24,5 +25,10 @@ final class ShowConcreteAgentTool extends Tool
         return [
             'agent' => $schema->string()->description('The registered concrete agent name.')->required(),
         ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return ConcreteAgentResource::structuredSchema($schema);
     }
 }

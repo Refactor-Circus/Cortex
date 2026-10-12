@@ -10,14 +10,6 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 
 final class ShowVirtualAgentAction
 {
-    /**
-     * @return array<string, mixed>
-     */
-    public static function rules(): array
-    {
-        return [];
-    }
-
     public function execute(VirtualAgentModel $agent): VirtualAgentModel
     {
         VirtualAgentShowingActionEvent::dispatch($agent);

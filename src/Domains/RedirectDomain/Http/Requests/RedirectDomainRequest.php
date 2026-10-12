@@ -16,6 +16,19 @@ abstract class RedirectDomainRequest extends Request
     private bool $ownerResolved = false;
 
     /**
+     * The input naming the owner, when there is one.
+     *
+     * @return array<string, array<int, string>>
+     */
+    protected function ownerRules(): array
+    {
+        return [
+            'owner_type' => ['nullable', 'string', 'max:255'],
+            'owner_id' => ['nullable', 'required_with:owner_type', 'string', 'max:255'],
+        ];
+    }
+
+    /**
      * The owner named by `owner_type` and `owner_id`, or null for none.
      */
     protected function owner(): ?Model

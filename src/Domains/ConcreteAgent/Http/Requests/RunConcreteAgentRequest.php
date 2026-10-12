@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\RunConcreteAgentAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\RunConcreteAgentData;
 use RefactorCircus\Cortex\Http\Resources\AgentRunResource;
 
 final class RunConcreteAgentRequest extends ConcreteAgentRequest
@@ -17,14 +18,14 @@ final class RunConcreteAgentRequest extends ConcreteAgentRequest
 
     public function rules(): array
     {
-        return RunConcreteAgentAction::rules();
+        return RunConcreteAgentData::rules();
     }
 
     public function persist(): JsonResponse
     {
         $response = app(RunConcreteAgentAction::class)->execute(
             $this->agentName(),
-            $this->string('input')->value(),
+            RunConcreteAgentData::fromValidated($this->validated()),
         );
 
         return (new AgentRunResource($response))->response();

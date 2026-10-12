@@ -9,6 +9,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Requests\RunConcreteAgentMcpRequest;
+use RefactorCircus\Cortex\Http\Resources\AgentRunResource;
 use RefactorCircus\Keystone\Mcp\Tool;
 
 #[Description('Run a registered concrete agent with the given input and return its response text and token usage.')]
@@ -25,5 +26,10 @@ final class RunConcreteAgentTool extends Tool
             'agent' => $schema->string()->description('The registered concrete agent name.')->required(),
             'input' => $schema->string()->description('The user input to send to the agent.')->required(),
         ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return AgentRunResource::structuredSchema($schema);
     }
 }

@@ -166,7 +166,7 @@ class CortexPlugin extends Plugin
                 'providers' => (array) config('cortex.providers', []),
                 'toolCount' => count(app(ToolRegistry::class)->names()),
                 'agentCount' => count(app(AgentRegistry::class)->names()),
-                'serverCount' => count(app(McpServerRegistry::class)->all()),
+                'serverCount' => count(app(McpServerRegistry::class)->names()),
                 'cacheEnabled' => (bool) config('cortex.cache.enabled', true),
             ]);
     }
@@ -196,10 +196,18 @@ class CortexPlugin extends Plugin
                     ->values()
                     ->all();
 
-                $concrete = ! ScreenAccess::allowsFor($user, 'viewAny', ConcreteAgentOverrideModel::class) ? [] : collect(app(AgentRegistry::class)->names())
+                $names = ! ScreenAccess::allowsFor($user, 'viewAny', ConcreteAgentOverrideModel::class) ? [] : collect(app(AgentRegistry::class)->names())
                     ->filter(fn (string $name): bool => str_contains(strtolower($name), strtolower($query)))
                     ->take(5)
-                    ->filter(fn (string $name): bool => ScreenAccess::allowsFor($user, 'view', ConcreteAgentOverrideModel::query()->firstOrNew(['agent' => $name])))
+                    ->values()
+                    ->all();
+
+                // Each result is checked against its saved override, all
+                // fetched in one query; agents without one get a new model.
+                $overrides = $names === [] ? collect() : ConcreteAgentOverrideModel::query()->whereIn('agent', $names)->get()->keyBy('agent');
+
+                $concrete = collect($names)
+                    ->filter(fn (string $name): bool => ScreenAccess::allowsFor($user, 'view', $overrides->get($name) ?? new ConcreteAgentOverrideModel(['agent' => $name])))
                     ->map(fn (string $name): SearchResult => SearchResult::make(
                         $name,
                         route('atrium.cortex.concrete-agents.show', $name),

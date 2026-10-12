@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Requests;
 
 use Laravel\Mcp\ResponseFactory;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentsAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\ListVirtualAgentsData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
 use RefactorCircus\Cortex\Mcp\Request;
@@ -19,15 +20,13 @@ final class ListVirtualAgentsMcpRequest extends Request
 
     protected function rules(): array
     {
-        return ListVirtualAgentsAction::rules();
+        return ListVirtualAgentsData::rules();
     }
 
     protected function handle(array $validated): ResponseFactory
     {
-        $agents = app(ListVirtualAgentsAction::class)->execute(
-            isset($validated['page']) ? (int) $validated['page'] : null,
-        );
+        $agents = app(ListVirtualAgentsAction::class)->execute(ListVirtualAgentsData::fromValidated($validated));
 
-        return $this->structuredCollection(VirtualAgentResource::collection($agents)->resolve());
+        return VirtualAgentResource::collection($agents)->toStructuredResponse();
     }
 }

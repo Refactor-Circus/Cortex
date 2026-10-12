@@ -4,15 +4,35 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Http\Resources;
 
+use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\JsonSchema\Types\Type;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
+use RefactorCircus\Keystone\Http\Resources\JsonResource;
 
 /**
  * @property array{name: string, class: string, overridable: bool, tools_overridable: bool, instructions: string, tools: list<string>, default_instructions?: string, default_tools: list<string>, override: ConcreteAgentOverrideModel|null} $resource
  */
 final class ConcreteAgentResource extends JsonResource
 {
+    /**
+     * @return array<string, Type>
+     */
+    public static function schema(JsonSchema $schema): array
+    {
+        return [
+            'name' => $schema->string()->required(),
+            'overridable' => $schema->boolean()->required(),
+            'tools_overridable' => $schema->boolean()->required(),
+            'instructions' => $schema->string()->required(),
+            'tools' => $schema->array()->items($schema->string())->required(),
+            'default_instructions' => $schema->string()->nullable()->description('The instructions declared in code, on a single agent.'),
+            'default_tools' => $schema->array()->items($schema->string())->required(),
+            'published_version' => $schema->integer()->nullable()->required(),
+            'tools_overridden' => $schema->boolean()->required(),
+        ];
+    }
+
     /**
      * @return array<string, mixed>
      */

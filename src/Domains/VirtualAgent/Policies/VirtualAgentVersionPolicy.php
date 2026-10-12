@@ -19,21 +19,21 @@ class VirtualAgentVersionPolicy extends Policy
 {
     public function viewAny(?Authenticatable $user, VirtualAgentModel $agent): bool
     {
-        return $this->allowsOnParent($user, 'view', $agent);
+        return $this->allowsOn($user, 'view', $agent);
     }
 
     public function view(?Authenticatable $user, VirtualAgentVersionModel $version): bool
     {
-        return $this->allowsOnParent($user, 'view', $version->virtualAgent);
+        return $this->allowsOn($user, 'view', $version->virtualAgent);
     }
 
     public function create(?Authenticatable $user, VirtualAgentModel $agent): bool
     {
-        return $this->allowsOnParent($user, 'update', $agent);
+        return $this->allowsOn($user, 'update', $agent);
     }
 
     public function publish(?Authenticatable $user, VirtualAgentVersionModel $version): bool
     {
-        return $this->allowsOnParent($user, 'update', $version->virtualAgent);
+        return $this->allowsOn($user, 'update', $version->virtualAgent);
     }
 }

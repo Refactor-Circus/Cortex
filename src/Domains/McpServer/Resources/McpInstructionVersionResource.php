@@ -4,15 +4,29 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\McpServer\Resources;
 
+use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\JsonSchema\Types\Type;
 use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Keystone\Http\Resources\JsonResource;
 
 /**
  * @mixin McpInstructionVersionModel
  */
 final class McpInstructionVersionResource extends JsonResource
 {
+    /**
+     * @return array<string, Type>
+     */
+    public static function schema(JsonSchema $schema): array
+    {
+        return [
+            'version' => $schema->integer()->required(),
+            'content' => $schema->string()->required(),
+            'created_at' => $schema->string()->nullable()->required(),
+        ];
+    }
+
     /**
      * @return array<string, mixed>
      */

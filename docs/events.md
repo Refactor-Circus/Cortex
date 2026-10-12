@@ -89,10 +89,10 @@ Event::listen(ActionFinishedEvent::class, fn (ActionFinishedEvent $event) => Aud
 | `CreateVirtualAgentAction` | `VirtualAgentCreatingActionEvent` | `$data` | `VirtualAgentCreatedActionEvent` | `$agent` |
 | `CreateVirtualAgentVersionAction` | `VirtualAgentVersionCreatingActionEvent` | `$agent`, `$data` | `VirtualAgentVersionCreatedActionEvent` | `$agent`, `$version` |
 | `DeleteVirtualAgentAction` | `VirtualAgentDeletingActionEvent` | `$agent` | `VirtualAgentDeletedActionEvent` | `$agent` |
-| `ListVirtualAgentsAction` | `VirtualAgentsListingActionEvent` | `$page` | `VirtualAgentsListedActionEvent` | `$agents` |
-| `ListVirtualAgentVersionsAction` | `VirtualAgentVersionsListingActionEvent` | `$agent`, `$page` | `VirtualAgentVersionsListedActionEvent` | `$agent`, `$versions` |
+| `ListVirtualAgentsAction` | `VirtualAgentsListingActionEvent` | `$filters` | `VirtualAgentsListedActionEvent` | `$agents` |
+| `ListVirtualAgentVersionsAction` | `VirtualAgentVersionsListingActionEvent` | `$agent`, `$filters` | `VirtualAgentVersionsListedActionEvent` | `$agent`, `$versions` |
 | `PublishVirtualAgentVersionAction` | `VirtualAgentVersionPublishingActionEvent` | `$agent`, `$version` | `VirtualAgentVersionPublishedActionEvent` | `$agent` |
-| `RunVirtualAgentAction` | `VirtualAgentRunningActionEvent` | `$agent`, `$input` | `VirtualAgentRanActionEvent` | `$agent`, `$input`, `$response` |
+| `RunVirtualAgentAction` | `VirtualAgentRunningActionEvent` | `$agent`, `$data` | `VirtualAgentRanActionEvent` | `$agent`, `$data`, `$response` |
 | `ShowVirtualAgentAction` | `VirtualAgentShowingActionEvent` | `$agent` | `VirtualAgentShownActionEvent` | `$agent` |
 | `ShowVirtualAgentVersionAction` | `VirtualAgentVersionShowingActionEvent` | `$agent`, `$version` | `VirtualAgentVersionShownActionEvent` | `$agent`, `$version` |
 | `UpdateVirtualAgentAction` | `VirtualAgentUpdatingActionEvent` | `$agent`, `$data` | `VirtualAgentUpdatedActionEvent` | `$agent` |
@@ -101,9 +101,9 @@ Event::listen(ActionFinishedEvent::class, fn (ActionFinishedEvent $event) => Aud
 | `ListConcreteAgentsAction` | `ConcreteAgentsListingActionEvent` | — | `ConcreteAgentsListedActionEvent` | `$agents` |
 | `ListConcreteAgentVersionsAction` | `ConcreteAgentVersionsListingActionEvent` | `$override` | `ConcreteAgentVersionsListedActionEvent` | `$override`, `$versions` |
 | `PublishConcreteAgentVersionAction` | `ConcreteAgentVersionPublishingActionEvent` | `$override`, `$version` | `ConcreteAgentVersionPublishedActionEvent` | `$override` |
-| `RunConcreteAgentAction` | `ConcreteAgentRunningActionEvent` | `$agent`, `$input` | `ConcreteAgentRanActionEvent` | `$agent`, `$input`, `$response` |
+| `RunConcreteAgentAction` | `ConcreteAgentRunningActionEvent` | `$agent`, `$data` | `ConcreteAgentRanActionEvent` | `$agent`, `$data`, `$response` |
 | `ShowConcreteAgentAction` | `ConcreteAgentShowingActionEvent` | `$agent` | `ConcreteAgentShownActionEvent` | `$agent` |
-| `UpdateConcreteAgentToolsAction` | `ConcreteAgentToolsUpdatingActionEvent` | `$agent`, `$tools` | `ConcreteAgentToolsUpdatedActionEvent` | `$override` |
+| `UpdateConcreteAgentToolsAction` | `ConcreteAgentToolsUpdatingActionEvent` | `$agent`, `$data` | `ConcreteAgentToolsUpdatedActionEvent` | `$override` |
 | `CreateMcpInstructionVersionAction` | `McpInstructionVersionCreatingActionEvent` | `$server`, `$data` | `McpInstructionVersionCreatedActionEvent` | `$server`, `$version` |
 | `DeleteMcpInstructionAction` | `McpInstructionDeletingActionEvent` | `$instruction` | `McpInstructionDeletedActionEvent` | `$instruction` |
 | `ListMcpInstructionVersionsAction` | `McpInstructionVersionsListingActionEvent` | `$instruction` | `McpInstructionVersionsListedActionEvent` | `$instruction`, `$versions` |
@@ -115,10 +115,10 @@ Event::listen(ActionFinishedEvent::class, fn (ActionFinishedEvent $event) => Aud
 | `ListToolDescriptionVersionsAction` | `ToolDescriptionVersionsListingActionEvent` | `$description` | `ToolDescriptionVersionsListedActionEvent` | `$description`, `$versions` |
 | `PublishToolDescriptionVersionAction` | `ToolDescriptionVersionPublishingActionEvent` | `$description`, `$version` | `ToolDescriptionVersionPublishedActionEvent` | `$description` |
 | `ShowToolDescriptionAction` | `ToolDescriptionShowingActionEvent` | `$tool` | `ToolDescriptionShownActionEvent` | `$description` |
-| `ListToolsAction` | `ToolsListingActionEvent` | — | `ToolsListedActionEvent` | `$tools` |
+| `ListToolsAction` | `ToolsListingActionEvent` | `$filters` | `ToolsListedActionEvent` | `$tools` |
 | `ListProvidersAction` | `ProvidersListingActionEvent` | — | `ProvidersListedActionEvent` | `$providers` |
 
-`$data` is the validated input array. `$page` is the requested page number, or `null`. On the concrete agent actions `$agent` is the registered agent name, except on `ConcreteAgentShownActionEvent`, where it is the shown row. `$tools` is the new toolset, or `null` to clear the override. On the list actions for concrete agents, tools, servers and providers, the finish event carries the listed rows as arrays. `UpdateVirtualAgentAction` with changed instructions also runs `CreateVirtualAgentVersionAction`, so its events fire inside the update's.
+`$data` and `$filters` are the Action's input, as its `{Action}Data` object (`CreateVirtualAgentData`, `ListVirtualAgentsData` with the page, `RunVirtualAgentData` with the input, `UpdateConcreteAgentToolsData` with the new toolset or `null` to clear the override, `ListToolsData` with the tag, ...). On the concrete agent actions `$agent` is the registered agent name, except on `ConcreteAgentShownActionEvent`, where it is the shown row. On the list actions for concrete agents, tools, servers and providers, the finish event carries the listed rows as arrays. `UpdateVirtualAgentAction` with changed instructions also runs `CreateVirtualAgentVersionAction`, so its events fire inside the update's.
 
 ## Testing
 

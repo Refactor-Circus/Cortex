@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use RefactorCircus\Cortex\Database\Factories\ToolDescriptionFactory;
+use RefactorCircus\Cortex\Support\Tables;
 use RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents;
 
 /**
@@ -33,11 +34,14 @@ final class ToolDescriptionModel extends Model
 
     use HasUlids;
 
-    protected $table = 'cortex_tool_descriptions';
-
     protected $fillable = [
         'tool',
     ];
+
+    public function getTable(): string
+    {
+        return Tables::name('tool_descriptions');
+    }
 
     /**
      * @return HasMany<ToolDescriptionVersionModel, $this>

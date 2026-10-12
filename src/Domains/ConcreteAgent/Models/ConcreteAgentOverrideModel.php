@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use RefactorCircus\Cortex\Database\Factories\ConcreteAgentOverrideFactory;
+use RefactorCircus\Cortex\Support\Tables;
 use RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents;
 
 /**
@@ -35,12 +36,15 @@ final class ConcreteAgentOverrideModel extends Model
 
     use HasUlids;
 
-    protected $table = 'cortex_concrete_agent_overrides';
-
     protected $fillable = [
         'agent',
         'tools',
     ];
+
+    public function getTable(): string
+    {
+        return Tables::name('concrete_agent_overrides');
+    }
 
     /**
      * @return array<string, string>

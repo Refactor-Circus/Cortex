@@ -15,6 +15,30 @@ abstract class ServerMcpRequest extends Request
     private ?McpInstructionModel $instruction = null;
 
     /**
+     * The input naming the MCP server.
+     *
+     * @return array<string, array<int, string>>
+     */
+    protected function serverRules(): array
+    {
+        return [
+            'server' => ['required', 'string'],
+        ];
+    }
+
+    /**
+     * The input naming the MCP server and one of its instruction versions.
+     *
+     * @return array<string, array<int, string>>
+     */
+    protected function versionRules(): array
+    {
+        return $this->serverRules() + [
+            'version' => ['required', 'integer', 'min:1'],
+        ];
+    }
+
+    /**
      * The registered server name from the tool input, verified against the
      * registry. Unknown names surface as the base request's not-found error.
      */

@@ -121,6 +121,7 @@ Register under `cortex.agents` config (string keys name them; unkeyed entries us
 
 - `POST /cortex/virtual-agents` — `{name, slug, instructions, provider?, model?, settings?, tools?, sub_agents?, concrete_sub_agents?}`. `instructions` becomes prompt version 1, published. `tools` are registered tool names; `sub_agents` are virtual agent slugs; `concrete_sub_agents` are registered concrete agent names. The lists use sync semantics (send the full desired list). Circular sub-agent references are rejected.
 - `PATCH /cortex/virtual-agents/{slug}` — same fields; changed `instructions` are saved as a new published version.
+- `GET /cortex/virtual-agents` `?page=&per_page=` — paginated (`per_page` 1-100, default 15), as are the version lists.
 - `GET|POST /cortex/virtual-agents/{slug}/versions`, `GET .../versions/{version}`, `POST .../versions/{version}/publish` — prompt versions (rollback = publish an older version).
 - `POST /cortex/virtual-agents/{slug}/run` `{input}` — execute; returns `{text, usage}`.
 - `GET /cortex/concrete-agents`, `GET /cortex/concrete-agents/{agent}` — registered concrete agents with live and code-declared prompt and tools.
@@ -134,7 +135,9 @@ Register under `cortex.agents` config (string keys name them; unkeyed entries us
 - `GET|DELETE /cortex/servers/{server}/instructions`, `GET|POST .../instructions/versions`, `POST .../versions/{version}/publish` — versioned server instruction overrides (rollback = publish an older version).
 - `GET /cortex/history` — Cortex's audit history, newest first (route `cortex.history.index`, from refactor-circus/keystone); answers 404 until an audit log such as refactor-circus/keen is installed.
 
-The MCP server (`RefactorCircus\Cortex\Mcp\CortexServer`) exposes the virtual agent, concrete agent, tool-list, and server-instruction operations as 26 MCP tools, including `list-cortex-history-tool`; the provider and tool-description endpoints are HTTP-only. Cortex stands on `refactor-circus/keystone`: its event contracts live in `RefactorCircus\Keystone\Contracts`.
+The MCP server (`RefactorCircus\Cortex\Mcp\CortexServer`) exposes the virtual agent, concrete agent, tool-list, server-instruction and redirect-domain operations as 28 MCP tools, including `list-cortex-history-tool` (offered only while an audit log is installed and `cortex.audit.enabled` is on); the provider and tool-description endpoints are HTTP-only. Structured answers match the JSON API: the record under `data` (lists add `meta` when paginated), and every such tool declares an `outputSchema()`. A guest the policies refuse gets 401 over HTTP, a signed-in user 403; missing records answer `{"message": "Not found."}`.
+
+From code, call the Actions with their typed input (`RefactorCircus\Keystone\Data\Data` classes in each domain's `Data` namespace), never arrays: `app(CreateVirtualAgentAction::class)->execute(new CreateVirtualAgentData(name: 'Support', slug: 'support-agent', instructions: '...'))`, or `CreateVirtualAgentData::from($input)` to validate untrusted input first. `UpdateVirtualAgentData` changes only the fields given. Cortex stands on `refactor-circus/keystone`: its event contracts live in `RefactorCircus\Keystone\Contracts`.
 
 Published agent prompts, concrete agent overrides, description overrides, and server instruction overrides are cached (`cortex.cache` config: Redis preferred with stale-while-revalidate, other stores cache until publish invalidates; disable with `'cache' => ['enabled' => false]`).
 
@@ -155,7 +158,7 @@ Provider/model/settings fall back to the app's `config/ai.php` defaults when uns
 ### 8. React to changes
 
 - Model events: one class per Eloquent hook per model, e.g. `RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionCreatedEvent` (`$event->version`).
-- Action events: a start and a finish event per action, e.g. `VirtualAgentVersionPublishingActionEvent` then `VirtualAgentVersionPublishedActionEvent` (`$event->agent`), or `VirtualAgentRunningActionEvent` then `VirtualAgentRanActionEvent` (`$event->agent`, `$event->input`, `$event->response`). Finish events fire after commit and only on success.
+- Action events: a start and a finish event per action, e.g. `VirtualAgentVersionPublishingActionEvent` then `VirtualAgentVersionPublishedActionEvent` (`$event->agent`), or `VirtualAgentRunningActionEvent` then `VirtualAgentRanActionEvent` (`$event->agent`, `$event->data->input`, `$event->response`). Each action writes inside one database transaction; finish events fire after commit and only on success.
 - Listen to `RefactorCircus\Keystone\Contracts\ActionFinishedEvent` or `ModelLifecycleEvent` to see a whole family. In tests, fake only the events you assert on: `Event::fake([VirtualAgentVersionPublishedActionEvent::class])`.
 
 ### 9. Test the integration
@@ -175,7 +178,7 @@ Always fake — unfaked runs require a configured AI provider.
 
 Read before executing:
 
-- `config/cortex.php` — routes, dashboard switch, MCP transports, cache, providers, tools, concrete agents, policies
+- `config/cortex.php` — routes, dashboard switch, MCP transports, cache, providers, tools, concrete agents, policies, tables (`cortex.tables`: rename before migrating; read through `RefactorCircus\Cortex\Support\Tables::name()`, never literal `cortex_*` names)
 - `docs/policies.md` — which ability each endpoint and MCP tool checks
 - `docs/events.md` — every action with its start and finish events
 - `README.md` — full route table and payload examples

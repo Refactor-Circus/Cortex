@@ -4,15 +4,44 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\VirtualAgent\Resources;
 
+use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\JsonSchema\Types\Type;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Keystone\Http\Resources\JsonResource;
 
 /**
  * @mixin VirtualAgentModel
  */
 final class VirtualAgentResource extends JsonResource
 {
+    /**
+     * @return array<string, Type>
+     */
+    public static function schema(JsonSchema $schema): array
+    {
+        return [
+            'name' => $schema->string()->required(),
+            'slug' => $schema->string()->required(),
+            'description' => $schema->string()->nullable()->required(),
+            'instructions' => $schema->string()->nullable()->description('The published prompt, when loaded.'),
+            'published_version' => $schema->integer()->nullable()->description('The published version number, when loaded.'),
+            'provider' => $schema->string()->nullable()->required(),
+            'model' => $schema->string()->nullable()->required(),
+            'settings' => $schema->object([
+                'temperature' => $schema->number(),
+                'max_steps' => $schema->integer(),
+                'max_tokens' => $schema->integer(),
+                'top_p' => $schema->number(),
+            ])->nullable()->required(),
+            'tools' => $schema->array()->items($schema->string())->required(),
+            'sub_agents' => $schema->array()->items($schema->string())->description('Sub-agent slugs, when loaded.'),
+            'concrete_sub_agents' => $schema->array()->items($schema->string())->required(),
+            'created_at' => $schema->string()->nullable()->required(),
+            'updated_at' => $schema->string()->nullable()->required(),
+        ];
+    }
+
     /**
      * @return array<string, mixed>
      */

@@ -18,21 +18,21 @@ class ConcreteAgentOverrideVersionPolicy extends Policy
 {
     public function viewAny(?Authenticatable $user, ConcreteAgentOverrideModel $override): bool
     {
-        return $this->allowsOnParent($user, 'view', $override);
+        return $this->allowsOn($user, 'view', $override);
     }
 
     public function view(?Authenticatable $user, ConcreteAgentOverrideVersionModel $version): bool
     {
-        return $this->allowsOnParent($user, 'view', $version->concreteAgentOverride);
+        return $this->allowsOn($user, 'view', $version->concreteAgentOverride);
     }
 
     public function create(?Authenticatable $user, ConcreteAgentOverrideModel $override): bool
     {
-        return $this->allowsOnParent($user, 'update', $override);
+        return $this->allowsOn($user, 'update', $override);
     }
 
     public function publish(?Authenticatable $user, ConcreteAgentOverrideVersionModel $version): bool
     {
-        return $this->allowsOnParent($user, 'update', $version->concreteAgentOverride);
+        return $this->allowsOn($user, 'update', $version->concreteAgentOverride);
     }
 }

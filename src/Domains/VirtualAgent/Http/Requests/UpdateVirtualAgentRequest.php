@@ -6,6 +6,7 @@ namespace RefactorCircus\Cortex\Domains\VirtualAgent\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Data\UpdateVirtualAgentData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Resources\VirtualAgentResource;
 
 final class UpdateVirtualAgentRequest extends VirtualAgentRequest
@@ -17,12 +18,12 @@ final class UpdateVirtualAgentRequest extends VirtualAgentRequest
 
     public function rules(): array
     {
-        return UpdateVirtualAgentAction::rules();
+        return UpdateVirtualAgentData::rules();
     }
 
     public function persist(): JsonResponse
     {
-        $agent = app(UpdateVirtualAgentAction::class)->execute($this->agent(), $this->validated());
+        $agent = app(UpdateVirtualAgentAction::class)->execute($this->agent(), UpdateVirtualAgentData::fromValidated($this->validated()));
 
         return (new VirtualAgentResource($agent))->response();
     }

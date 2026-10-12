@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use LogicException;
 use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\ListRedirectDomainsAction;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Data\CreateRedirectDomainData;
+use RefactorCircus\Cortex\Domains\RedirectDomain\Data\ListRedirectDomainsData;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
 
@@ -31,8 +35,14 @@ final class RedirectDomainUiController
     private const array SOURCES = ['config', 'global', 'owned'];
 
     /**
-     * Every origin a client may register on, compiled from config and every
-     * stored domain, global or owned, optionally one source's only.
+     * How many stored domains a page shows.
+     */
+    private const int PER_PAGE = 25;
+
+    /**
+     * Every origin a client may register on: the configured ones in their
+     * own block, then the stored domains, global or owned, a page at a time,
+     * optionally one source's only.
      */
     public function index(Request $request): View
     {
@@ -41,14 +51,15 @@ final class RedirectDomainUiController
         $source = $request->query('source');
         $source = is_string($source) && in_array($source, self::SOURCES, true) ? $source : null;
 
+        $stored = $source === 'config' ? null : $this->stored($source, $request);
+
         /** @var view-string $view */
         $view = 'cortex::ui.redirect-domains.index';
 
         return view($view, [
-            'rows' => array_values(array_filter(
-                $this->rows(),
-                fn (array $row): bool => $source === null || $row['source'] === $source,
-            )),
+            'configured' => $source === null || $source === 'config' ? $this->configured() : [],
+            'stored' => $stored,
+            'rows' => $stored === null ? [] : $this->rows($stored),
             'source' => $source,
             'sources' => self::SOURCES,
             'enabled' => app(RedirectDomains::class)->enabled(),
@@ -59,7 +70,7 @@ final class RedirectDomainUiController
     {
         $this->authorizeScreen('create', RedirectDomainModel::class, [null]);
 
-        app(CreateRedirectDomainAction::class)->execute($request->validate(CreateRedirectDomainAction::rules()));
+        app(CreateRedirectDomainAction::class)->execute(CreateRedirectDomainData::from($request->all()));
 
         return redirect()
             ->route('atrium.cortex.redirect-domains.index')
@@ -80,31 +91,53 @@ final class RedirectDomainUiController
     }
 
     /**
-     * @return list<array{domain: string, source: string, owner: string|null, type: string|null, model: RedirectDomainModel|null}>
+     * The domains set in `mcp.redirect_domains`, sorted.
+     *
+     * @return list<string>
      */
-    private function rows(): array
+    private function configured(): array
     {
-        $configured = array_map(fn (string $domain): array => [
-            'domain' => $domain,
-            'source' => 'config',
-            'owner' => null,
-            'type' => null,
-            'model' => null,
-        ], array_values(array_filter((array) config('mcp.redirect_domains', []), is_string(...))));
+        $domains = array_values(array_filter((array) config('mcp.redirect_domains', []), is_string(...)));
 
-        $stored = app(ListRedirectDomainsAction::class)->execute()->load('owner')->map(fn (RedirectDomainModel $domain): array => [
+        sort($domains);
+
+        return $domains;
+    }
+
+    /**
+     * One page of stored domains, filtered by source in the query, with the
+     * owners of that page only.
+     *
+     * @return LengthAwarePaginator<int, RedirectDomainModel>
+     */
+    private function stored(?string $source, Request $request): LengthAwarePaginator
+    {
+        $page = $request->query('page');
+
+        $stored = app(ListRedirectDomainsAction::class)->execute(null, new ListRedirectDomainsData(
+            source: $source,
+            paged: true,
+            perPage: self::PER_PAGE,
+            page: is_numeric($page) ? max(1, (int) $page) : null,
+        ));
+
+        return $stored instanceof LengthAwarePaginator ? $stored->withQueryString() : throw new LogicException('A paged listing answers a page.');
+    }
+
+    /**
+     * The table rows for a page of stored domains.
+     *
+     * @param  LengthAwarePaginator<int, RedirectDomainModel>  $page
+     * @return list<array{domain: string, source: string, owner: string|null, type: string|null, model: RedirectDomainModel}>
+     */
+    private function rows(LengthAwarePaginator $page): array
+    {
+        return array_values(array_map(fn (RedirectDomainModel $domain): array => [
             'domain' => $domain->domain,
             'source' => $domain->owner_type === null ? 'global' : 'owned',
             'owner' => $domain->owner_type === null ? null : (string) ($domain->owner?->getAttribute('name') ?? $domain->owner_id),
             'type' => $domain->owner_type === null ? null : class_basename($domain->owner_type),
             'model' => $domain,
-        ])->all();
-
-        $rows = [...$configured, ...$stored];
-
-        usort($rows, fn (array $a, array $b): int => [$a['domain'], array_search($a['source'], self::SOURCES, true)]
-            <=> [$b['domain'], array_search($b['source'], self::SOURCES, true)]);
-
-        return $rows;
+        ], $page->items()));
     }
 }

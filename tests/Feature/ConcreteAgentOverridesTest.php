@@ -5,6 +5,8 @@ declare(strict_types=1);
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\DeleteConcreteAgentOverrideAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionData;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\UpdateConcreteAgentToolsData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
@@ -42,13 +44,13 @@ it('falls back to the code-declared prompt', function () {
 });
 
 it('serves the published prompt override', function () {
-    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', ['content' => 'Overridden.', 'publish' => true]);
+    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', new CreateConcreteAgentVersionData(content: 'Overridden.', publish: true));
 
     expect(echoAgentInstructions())->toBe('Overridden.');
 });
 
 it('ignores unpublished prompt versions', function () {
-    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', ['content' => 'Draft.']);
+    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', new CreateConcreteAgentVersionData(content: 'Draft.'));
 
     expect(echoAgentInstructions())->toBe('Echo everything back.');
 });
@@ -56,7 +58,7 @@ it('ignores unpublished prompt versions', function () {
 it('resolves an overridden toolset from code tools and registered tools', function () {
     app(ToolRegistry::class)->register('echo-cortex', EchoCortexTool::class);
 
-    app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', ['EchoTool', 'echo-cortex']);
+    app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', new UpdateConcreteAgentToolsData(['EchoTool', 'echo-cortex']));
 
     app()->forgetScopedInstances();
     $tools = [...app(EchoAgent::class)->tools()];
@@ -73,20 +75,20 @@ it('skips override names that match no tool', function () {
 });
 
 it('uses the code toolset when tools are not overridden', function () {
-    app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', null);
+    app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', new UpdateConcreteAgentToolsData(null));
 
     expect(echoAgentToolNames())->toBe(['EchoTool']);
 });
 
 it('runs with no tools when the override is empty', function () {
-    app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', []);
+    app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', new UpdateConcreteAgentToolsData([]));
 
     expect(echoAgentToolNames())->toBe([]);
 });
 
 it('restores the code prompt and tools when the override is deleted', function () {
-    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', ['content' => 'Overridden.', 'publish' => true]);
-    $override = app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', []);
+    app(CreateConcreteAgentVersionAction::class)->execute('echo-agent', new CreateConcreteAgentVersionData(content: 'Overridden.', publish: true));
+    $override = app(UpdateConcreteAgentToolsAction::class)->execute('echo-agent', new UpdateConcreteAgentToolsData([]));
 
     expect(echoAgentInstructions())->toBe('Overridden.')
         ->and(echoAgentToolNames())->toBe([]);
@@ -109,8 +111,8 @@ it('uses code for an agent class that is not registered', function () {
 
 it('leaves agents without the trait untouched', function () {
     app(AgentRegistry::class)->register('plain', PlainAgent::class);
-    app(CreateConcreteAgentVersionAction::class)->execute('plain', ['content' => 'Ignored.', 'publish' => true]);
-    app(UpdateConcreteAgentToolsAction::class)->execute('plain', []);
+    app(CreateConcreteAgentVersionAction::class)->execute('plain', new CreateConcreteAgentVersionData(content: 'Ignored.', publish: true));
+    app(UpdateConcreteAgentToolsAction::class)->execute('plain', new UpdateConcreteAgentToolsData([]));
 
     app()->forgetScopedInstances();
     $agent = app(PlainAgent::class);

@@ -15,6 +15,6 @@ final class ListServersMcpRequest extends Request
     {
         $servers = app(ListMcpServersAction::class)->execute();
 
-        return $this->structuredCollection(McpServerResource::collection($servers)->resolve());
+        return McpServerResource::collection($servers)->toStructuredResponse();
     }
 }

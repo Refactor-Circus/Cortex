@@ -12,6 +12,30 @@ abstract class VirtualAgentMcpRequest extends Request
 {
     private ?VirtualAgentModel $agent = null;
 
+    /**
+     * The input naming the virtual agent.
+     *
+     * @return array<string, array<int, string>>
+     */
+    protected function agentRules(): array
+    {
+        return [
+            'slug' => ['required', 'string'],
+        ];
+    }
+
+    /**
+     * The input naming the virtual agent and one of its prompt versions.
+     *
+     * @return array<string, array<int, string>>
+     */
+    protected function versionRules(): array
+    {
+        return $this->agentRules() + [
+            'version' => ['required', 'integer', 'min:1'],
+        ];
+    }
+
     protected function agent(): VirtualAgentModel
     {
         return $this->agent ??= VirtualAgentModel::query()
