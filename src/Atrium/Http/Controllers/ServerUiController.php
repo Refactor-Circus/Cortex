@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
-use RefactorCircus\Cortex\Domains\McpServer\Actions\ListMcpServersAction;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\ListMcpServersAction;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
 
 final class ServerUiController
 {

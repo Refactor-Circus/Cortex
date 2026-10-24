@@ -6,7 +6,7 @@ namespace RefactorCircus\Cortex\Tests\Fixtures;
 
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
-use RefactorCircus\Cortex\Domains\McpServer\Support\Server;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Support\Server;
 
 #[Name('Echo Server')]
 #[Instructions('Code-declared echo server instructions.')]

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Tests\Fixtures\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Policies\McpInstructionPolicy;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Policies\McpInstructionPolicy;
 
 /**
  * Each ability only for users granted "server-instructions.{ability}".

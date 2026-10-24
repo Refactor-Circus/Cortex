@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Illuminate\Testing\Fluent\AssertableJson;
-use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\CreateServerInstructionVersionTool;
-use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\DeleteServerInstructionsTool;
-use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\ListServerInstructionVersionsTool;
-use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\ListServersTool;
-use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\PublishServerInstructionVersionTool;
-use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\ShowServerInstructionsTool;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\CreateServerInstructionVersionTool;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\DeleteServerInstructionsTool;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\ListServerInstructionVersionsTool;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\ListServersTool;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\PublishServerInstructionVersionTool;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\ShowServerInstructionsTool;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpServerRegistry;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoServer;
 
 beforeEach(function () {

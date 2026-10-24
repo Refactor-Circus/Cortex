@@ -9,13 +9,13 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
 use RefactorCircus\Cortex\Atrium\ScreenAccess;
-use RefactorCircus\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
-use RefactorCircus\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
-use RefactorCircus\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
-use RefactorCircus\Cortex\Domains\McpServer\Data\CreateMcpInstructionVersionData;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\CreateMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\DeleteMcpInstructionAction;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\PublishMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Data\CreateMcpInstructionVersionData;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpServerRegistry;
 
 final class McpInstructionUiController
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Tests\Fixtures\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
 
 /**
  * Server instructions are for signed-in users only: the user parameter is not

@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools;
+
+use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Laravel\Mcp\Response;
+use Laravel\Mcp\ResponseFactory;
+use Laravel\Mcp\Server\Attributes\Description;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Requests\CreateServerInstructionVersionMcpRequest;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Resources\McpInstructionVersionResource;
+use RefactorCircus\Keystone\Mcp\Tool;
+
+#[Description('Create a new immutable instruction version for a registered MCP server. Not published unless requested.')]
+final class CreateServerInstructionVersionTool extends Tool
+{
+    public function handle(CreateServerInstructionVersionMcpRequest $request): Response|ResponseFactory
+    {
+        return $request->persist();
+    }
+
+    public function schema(JsonSchema $schema): array
+    {
+        return [
+            'server' => $schema->string()->description('The registered MCP server name.')->required(),
+            'content' => $schema->string()->description('The new version\'s instructions.')->required(),
+            'publish' => $schema->boolean()->description('Publish this version immediately. Defaults to false.'),
+        ];
+    }
+
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return McpInstructionVersionResource::structuredSchema($schema);
+    }
+}

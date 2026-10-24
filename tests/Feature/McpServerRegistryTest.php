@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 use RefactorCircus\Cortex\Cortex;
-use RefactorCircus\Cortex\Domains\McpServer\Actions\ListMcpServersAction;
-use RefactorCircus\Cortex\Domains\McpServer\Exceptions\McpServerNotFoundException;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\ListMcpServersAction;
+use RefactorCircus\Cortex\Domains\ConcreteServer\ConcreteServerServiceProvider;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Exceptions\McpServerNotFoundException;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Domains\DomainServiceProvider;
 use RefactorCircus\Cortex\Mcp\CortexServer;
 use RefactorCircus\Cortex\Support\PublicationCache;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoServer;
@@ -85,6 +87,16 @@ it('lists servers with effective instructions', function () {
         ->and($servers[0]['instructions'])->toContain('Manage Cortex virtual agents')
         ->and($servers[1]['name'])->toBe('echo')
         ->and($servers[1]['instructions'])->toBe('Published echo instructions.');
+});
+
+it('registers the ConcreteServer domain from the domain provider', function () {
+    $domains = (new ReflectionProperty(DomainServiceProvider::class, 'providers'))
+        ->getValue(app()->getProvider(DomainServiceProvider::class));
+
+    expect($domains)->toContain(ConcreteServerServiceProvider::class)
+        ->and(app()->getProvider(ConcreteServerServiceProvider::class))->toBeInstanceOf(ConcreteServerServiceProvider::class)
+        ->and(is_dir(dirname(__DIR__, 2).'/src/Domains/ConcreteServer'))->toBeTrue()
+        ->and(is_dir(dirname(__DIR__, 2).'/src/Domains/McpServer'))->toBeFalse();
 });
 
 it('exposes the registry through the manager and facade', function () {

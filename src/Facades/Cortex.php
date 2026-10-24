@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static \RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry tools()
- * @method static \RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry servers()
+ * @method static \RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpServerRegistry servers()
  * @method static \RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry agents()
  * @method static \RefactorCircus\Cortex\Domains\VirtualAgent\Support\DbAgent virtualAgent(string $slug)
  * @method static \Laravel\Ai\Contracts\Agent concreteAgent(string $name)

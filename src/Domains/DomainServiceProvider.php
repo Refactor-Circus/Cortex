@@ -6,7 +6,7 @@ namespace RefactorCircus\Cortex\Domains;
 
 use Illuminate\Support\ServiceProvider;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\ConcreteAgentServiceProvider;
-use RefactorCircus\Cortex\Domains\McpServer\McpServerServiceProvider;
+use RefactorCircus\Cortex\Domains\ConcreteServer\ConcreteServerServiceProvider;
 use RefactorCircus\Cortex\Domains\RedirectDomain\RedirectDomainServiceProvider;
 use RefactorCircus\Cortex\Domains\Tool\ToolServiceProvider;
 use RefactorCircus\Cortex\Domains\VirtualAgent\VirtualAgentServiceProvider;
@@ -20,7 +20,7 @@ class DomainServiceProvider extends ServiceProvider
      */
     private array $providers = [
         ConcreteAgentServiceProvider::class,
-        McpServerServiceProvider::class,
+        ConcreteServerServiceProvider::class,
         RedirectDomainServiceProvider::class,
         ToolServiceProvider::class,
         VirtualAgentServiceProvider::class,

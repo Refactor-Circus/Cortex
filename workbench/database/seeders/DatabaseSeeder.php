@@ -7,8 +7,8 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersi
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\UpdateConcreteAgentToolsAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\UpdateConcreteAgentToolsData;
-use RefactorCircus\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
-use RefactorCircus\Cortex\Domains\McpServer\Data\CreateMcpInstructionVersionData;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\CreateMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Data\CreateMcpInstructionVersionData;
 use RefactorCircus\Cortex\Domains\Tool\Actions\CreateToolDescriptionVersionAction;
 use RefactorCircus\Cortex\Domains\Tool\Data\CreateToolDescriptionVersionData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;

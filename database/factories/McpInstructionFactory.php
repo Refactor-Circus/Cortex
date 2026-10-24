@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
 
 /**
  * @extends Factory<McpInstructionModel>

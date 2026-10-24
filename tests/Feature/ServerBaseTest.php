@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Laravel\Mcp\Server\Transport\FakeTransporter;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpServerRegistry;
 use RefactorCircus\Cortex\Mcp\CortexServer;
 use RefactorCircus\Cortex\Support\PublicationCache;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoServer;
