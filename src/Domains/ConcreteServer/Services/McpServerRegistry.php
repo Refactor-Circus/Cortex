@@ -128,17 +128,28 @@ final class McpServerRegistry
      */
     public function defaultTools(string $name): array
     {
-        $default = (new ReflectionClass($this->get($name)))->getProperty('tools')->getDefaultValue();
-
         $names = [];
 
-        foreach (is_array($default) ? $default : [] as $entry) {
+        foreach ($this->declaredTools($name) as $entry) {
             foreach (is_array($entry) ? $entry : [$entry] as $tool) {
                 $names[] = $this->toolName($tool);
             }
         }
 
         return $names;
+    }
+
+    /**
+     * The server class's `$tools` default as declared (classes, instances
+     * and ToolSearch groups), read without building the server.
+     *
+     * @return array<int|string, mixed>
+     */
+    public function declaredTools(string $name): array
+    {
+        $default = (new ReflectionClass($this->get($name)))->getProperty('tools')->getDefaultValue();
+
+        return is_array($default) ? $default : [];
     }
 
     /**

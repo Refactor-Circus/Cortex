@@ -34,7 +34,47 @@ final class ServerToolResolver
         private readonly ToolRegistry $registry,
         private readonly ToolDescriptionOverrides $descriptions,
         private readonly WarningLimiter $warnings,
+        private readonly McpServerRegistry $servers,
     ) {}
+
+    /**
+     * What a server's tool override amounts to, for its resources (AC 15),
+     * without logging: the tools it serves, by entry and in stored order (its
+     * code tools by name without an override), whether an override applies,
+     * the stored entries that resolve to no tool or whose tool throws while
+     * built, and the entries that name a code tool and a registered tool.
+     *
+     * The code tools are the server class's declared ones, as validation
+     * reads them; tools a server adds at runtime are not seen here. A stored
+     * value that is not a list, and any value on a server whose tools cannot
+     * be overridden (the `cortex` server), is no override.
+     *
+     * @return array{tools: list<string>, tools_overridden: bool, missing_tools: list<string>, ambiguous_tools: list<string>}
+     */
+    public function report(string $server, mixed $stored): array
+    {
+        if (! $this->servers->has($server)) {
+            return ['tools' => [], 'tools_overridden' => false, 'missing_tools' => [], 'ambiguous_tools' => []];
+        }
+
+        if (! is_array($stored) || ! $this->servers->supportsToolOverrides($server)) {
+            return [
+                'tools' => $this->servers->defaultTools($server),
+                'tools_overridden' => false,
+                'missing_tools' => [],
+                'ambiguous_tools' => [],
+            ];
+        }
+
+        $resolved = $this->resolve($this->servers->declaredTools($server), array_values(array_filter($stored, is_string(...))));
+
+        return [
+            'tools' => $resolved['entries'],
+            'tools_overridden' => true,
+            'missing_tools' => $resolved['missing'],
+            'ambiguous_tools' => $resolved['ambiguous'],
+        ];
+    }
 
     /**
      * The tools to serve, in stored order. Entries that resolve to no tool,
@@ -96,14 +136,14 @@ final class ServerToolResolver
 
     /**
      * What the stored entries resolve to, without logging: the tools to
-     * serve in stored order, the entries that resolve to nothing or whose
-     * tool threw (`missing`, in stored order), the message of each throw
-     * (`failed`) and the entries that name a code tool and a registered tool
-     * (`ambiguous`).
+     * serve in stored order and the entries they were served for
+     * (`entries`), the entries that resolve to nothing or whose tool threw
+     * (`missing`, in stored order), the message of each throw (`failed`) and
+     * the entries that name a code tool and a registered tool (`ambiguous`).
      *
      * @param  array<int|string, mixed>  $codeTools  the context's tools as declared
      * @param  list<string>  $entries
-     * @return array{tools: list<Tool>, missing: list<string>, failed: array<string, string>, ambiguous: list<string>}
+     * @return array{tools: list<Tool>, entries: list<string>, missing: list<string>, failed: array<string, string>, ambiguous: list<string>}
      */
     public function resolve(array $codeTools, array $entries): array
     {
@@ -111,6 +151,7 @@ final class ServerToolResolver
         $registered = $this->registeredClasses();
 
         $tools = [];
+        $servedEntries = [];
         $served = [];
         $missing = [];
         $failed = [];
@@ -146,9 +187,10 @@ final class ServerToolResolver
 
             $served[$tool->name()] = true;
             $tools[] = $tool;
+            $servedEntries[] = $entry;
         }
 
-        return ['tools' => $tools, 'missing' => $missing, 'failed' => $failed, 'ambiguous' => $ambiguous];
+        return ['tools' => $tools, 'entries' => $servedEntries, 'missing' => $missing, 'failed' => $failed, 'ambiguous' => $ambiguous];
     }
 
     /**

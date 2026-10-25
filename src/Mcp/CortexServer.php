@@ -17,12 +17,14 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\PublishConcreteAgentVe
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\RunConcreteAgentTool;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\ShowConcreteAgentTool;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\UpdateConcreteAgentToolsTool;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\ClearServerToolsTool;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\CreateServerInstructionVersionTool;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\DeleteServerInstructionsTool;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\ListServerInstructionVersionsTool;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\ListServersTool;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\PublishServerInstructionVersionTool;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\ShowServerInstructionsTool;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\UpdateServerToolsTool;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Tools\CreateRedirectDomainTool;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Tools\DeleteRedirectDomainTool;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Mcp\Tools\ListRedirectDomainsTool;
@@ -42,7 +44,7 @@ use RefactorCircus\Keystone\Mcp\Server;
 
 #[Name('Cortex')]
 #[Version('1.0.0')]
-#[Instructions('Manage Cortex virtual agents, concrete agents, tools, and MCP server instructions. Virtual agents live in the database: each holds its own versioned prompt (content is immutable per version; the published version runs), registered tools, and optional virtual or concrete sub-agents, and runs with run-virtual-agent. Concrete agents are classes registered in code; their prompt and toolset can be overridden (prompt overrides are versioned and published), and they run with run-concrete-agent. Registered MCP servers hold versioned instruction overrides that replace their code-declared instructions when published. Redirect domains are the origins MCP clients may register OAuth redirect URIs on, beside the configured ones.')]
+#[Instructions('Manage Cortex virtual agents, concrete agents, tools, and MCP server instructions. Virtual agents live in the database: each holds its own versioned prompt (content is immutable per version; the published version runs), registered tools, and optional virtual or concrete sub-agents, and runs with run-virtual-agent. Concrete agents are classes registered in code; their prompt and toolset can be overridden (prompt overrides are versioned and published), and they run with run-concrete-agent. Registered MCP servers hold versioned instruction overrides that replace their code-declared instructions when published, and a tool list override (update-server-tools-tool, cleared with clear-server-tools-tool) that replaces their code-declared tools. Redirect domains are the origins MCP clients may register OAuth redirect URIs on, beside the configured ones.')]
 final class CortexServer extends Server
 {
     /**
@@ -85,6 +87,8 @@ final class CortexServer extends Server
         CreateServerInstructionVersionTool::class,
         PublishServerInstructionVersionTool::class,
         DeleteServerInstructionsTool::class,
+        UpdateServerToolsTool::class,
+        ClearServerToolsTool::class,
 
         // OAuth redirect domains
         ListRedirectDomainsTool::class,
