@@ -93,6 +93,10 @@ class CortexServiceProvider extends PackageServiceProvider
      */
     public function boot(): void
     {
+        // Policy keys still naming the models by their names from before the
+        // ConcreteServer rename were already moved to the new classes by
+        // ConcreteServerServiceProvider::register(), which runs before any
+        // provider boots.
         $this->registerPolicies();
 
         // Missing records on Cortex's routes answer a plain "Not found.", as its MCP tools do.
