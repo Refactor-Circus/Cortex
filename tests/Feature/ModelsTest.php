@@ -153,6 +153,7 @@ it('stores models under their own class names', function (string $model): void {
     ConcreteAgentOverrideVersionModel::class,
     ToolDescriptionModel::class,
     ToolDescriptionVersionModel::class,
-    McpInstructionModel::class,
-    McpInstructionVersionModel::class,
+    // McpInstructionModel and McpInstructionVersionModel moved from the
+    // McpServer domain and keep their old class names as morph aliases:
+    // tests/Feature/Compat/MorphAliasesTest.php covers what they store.
 ]);
