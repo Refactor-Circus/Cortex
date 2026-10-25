@@ -309,11 +309,38 @@ describe('resource payload (AC 15)', function (): void {
     });
 });
 
+describe('DELETE cortex.servers.instructions.destroy (D-057)', function (): void {
+    it('answers 204 when the row goes with its instructions', function (): void {
+        $this->postJson(route('cortex.servers.instructions.versions.store', 'grouped'), ['content' => 'Published.', 'publish' => true])->assertCreated();
+
+        $this->deleteJson(route('cortex.servers.instructions.destroy', 'grouped'))->assertNoContent();
+
+        expect(McpInstructionModel::query()->count())->toBe(0);
+    });
+
+    it('answers 200 with the surviving row when it keeps a tool override (AC 11)', function (): void {
+        $this->postJson(route('cortex.servers.instructions.versions.store', 'grouped'), ['content' => 'Published.', 'publish' => true])->assertCreated();
+        $this->putJson(route('cortex.servers.tools.update', 'grouped'), ['tools' => ['echo-mcp-tool']])->assertOk();
+
+        $this->deleteJson(route('cortex.servers.instructions.destroy', 'grouped'))
+            ->assertOk()
+            ->assertJsonPath('data.server', 'grouped')
+            ->assertJsonPath('data.published_version', null)
+            ->assertJsonPath('data.published_content', null)
+            ->assertJsonPath('data.tools', ['echo-mcp-tool'])
+            ->assertJsonPath('data.tools_overridden', true)
+            ->assertJsonPath('data.missing_tools', [])
+            ->assertJsonPath('data.ambiguous_tools', []);
+    });
+});
+
 it('keeps the tool override when the instructions are deleted, and the payload says so (AC 11)', function (): void {
     $this->postJson(route('cortex.servers.instructions.versions.store', 'grouped'), ['content' => 'Published.', 'publish' => true])->assertCreated();
     $this->putJson(route('cortex.servers.tools.update', 'grouped'), ['tools' => ['echo-mcp-tool']])->assertOk();
 
-    $this->deleteJson(route('cortex.servers.instructions.destroy', 'grouped'))->assertSuccessful();
+    $this->deleteJson(route('cortex.servers.instructions.destroy', 'grouped'))
+        ->assertOk()
+        ->assertJsonPath('data.tools_overridden', true);
 
     expect(storedHttpServerTools('grouped'))->toBe(['echo-mcp-tool'])
         ->and(shownHttpServer('grouped'))->toMatchArray([

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\ClearServerToolsTool;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\DeleteServerInstructionsTool;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\ListServersTool;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\ShowServerInstructionsTool;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\UpdateServerToolsTool;
@@ -161,6 +162,55 @@ describe('clear-server-tools-tool', function (): void {
             ->assertHasErrors(['The tools of the [cortex] server cannot be overridden.']);
 
         mcpTool(ClearServerToolsTool::class, ['server' => 'missing'])->assertHasErrors(['Not found.']);
+    });
+});
+
+describe('delete-server-instructions-tool (D-057)', function (): void {
+    it('answers text when the row goes with its instructions', function (): void {
+        $this->postJson(route('cortex.servers.instructions.versions.store', 'grouped'), ['content' => 'Published.', 'publish' => true])->assertCreated();
+
+        $response = mcpTool(DeleteServerInstructionsTool::class, ['server' => 'grouped'])
+            ->assertOk()
+            ->assertSee('Server instructions override deleted.');
+
+        /** @var array{result?: array<string, mixed>} $payload */
+        $payload = (fn (): array => $this->response->toArray())->call($response);
+
+        expect($payload['result'] ?? [])->not->toHaveKey('structuredContent')
+            ->and(McpInstructionModel::query()->count())->toBe(0);
+    });
+
+    it('answers the surviving row as structured content, with parity to the HTTP route', function (): void {
+        $this->freezeTime();
+
+        $prepare = function (): void {
+            McpInstructionModel::query()->delete();
+
+            $this->postJson(route('cortex.servers.instructions.versions.store', 'grouped'), ['content' => 'Published.', 'publish' => true])->assertCreated();
+            $this->putJson(route('cortex.servers.tools.update', 'grouped'), ['tools' => ['echo-mcp-tool', 'renamed-echo']])->assertOk();
+            app()->forgetScopedInstances();
+        };
+
+        $prepare();
+        $http = $this->deleteJson(route('cortex.servers.instructions.destroy', 'grouped'))->assertOk()->json('data');
+        $httpRow = mcpParityServerRow();
+
+        expect($http)->toMatchArray([
+            'server' => 'grouped',
+            'published_version' => null,
+            'tools' => ['echo-mcp-tool', 'renamed-echo'],
+            'tools_overridden' => true,
+        ]);
+
+        $prepare();
+
+        // mcpTool() checks the structured answer against the tool's outputSchema().
+        mcpTool(DeleteServerInstructionsTool::class, ['server' => 'grouped'])
+            ->assertOk()
+            ->assertStructuredContent(['data' => $http]);
+
+        expect(mcpParityServerRow())->toBe($httpRow)
+            ->and($httpRow)->toBe(['tools' => ['echo-mcp-tool', 'renamed-echo'], 'published_version' => null, 'versions' => []]);
     });
 });
 

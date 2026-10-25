@@ -19,7 +19,7 @@ final class McpInstructionController
         return $request->persist();
     }
 
-    public function destroy(DeleteMcpInstructionRequest $request, string $server): Response
+    public function destroy(DeleteMcpInstructionRequest $request, string $server): Response|JsonResponse
     {
         return $request->persist();
     }

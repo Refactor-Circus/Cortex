@@ -42,11 +42,26 @@ function deletableInstruction(?array $tools): McpInstructionModel
     return McpInstructionModel::query()->where('server', 'grouped')->firstOrFail();
 }
 
-function deleteInstructions(McpInstructionModel $instruction): void
+function deleteInstructions(McpInstructionModel $instruction): ?McpInstructionModel
 {
-    app(DeleteMcpInstructionAction::class)->execute($instruction);
+    $surviving = app(DeleteMcpInstructionAction::class)->execute($instruction);
     app()->forgetScopedInstances();
+
+    return $surviving;
 }
+
+it('reports the surviving row, or null when the row went (D-057)', function (): void {
+    $kept = deleteInstructions(deletableInstruction(['echo-mcp-tool']));
+
+    expect($kept)->toBeInstanceOf(McpInstructionModel::class)
+        ->and($kept?->server)->toBe('grouped')
+        ->and($kept?->tools)->toBe(['echo-mcp-tool'])
+        ->and($kept?->published_version_id)->toBeNull();
+
+    McpInstructionModel::query()->delete();
+
+    expect(deleteInstructions(deletableInstruction(null)))->toBeNull();
+});
 
 it('keeps a row holding a tool override, without its instructions', function (): void {
     $instruction = deletableInstruction(['renamed-echo', 'echo-mcp-tool']);
@@ -151,11 +166,12 @@ it('keeps the row and its tools when a tools write lands after the action starte
 
     expect($instruction->tools)->toBeNull();
 
-    deleteInstructions($instruction);
+    $surviving = deleteInstructions($instruction);
 
     $row = McpInstructionModel::query()->where('server', 'grouped')->first();
 
     expect($written)->toBeTrue()
+        ->and($surviving?->tools)->toBe(['echo-request-tool'])
         ->and($row)->not->toBeNull()
         ->and($row?->tools)->toBe(['echo-request-tool'])
         ->and($row?->published_version_id)->toBeNull()

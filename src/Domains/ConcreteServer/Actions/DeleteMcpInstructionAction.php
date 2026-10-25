@@ -18,23 +18,28 @@ use Throwable;
  * time (each fires its model events), and the published pointer. The
  * override row itself goes only when it holds no tool override, so a saved
  * tool list keeps applying.
+ *
+ * Returns the row when it survives (it still holds a tool override), or null
+ * when it was removed, so callers can answer with what is left.
  */
 final class DeleteMcpInstructionAction
 {
     public function __construct(private readonly PublicationCache $cache) {}
 
-    public function execute(McpInstructionModel $instruction): void
+    public function execute(McpInstructionModel $instruction): ?McpInstructionModel
     {
         McpInstructionDeletingActionEvent::dispatch($instruction);
 
-        $this->perform($instruction);
+        $surviving = $this->perform($instruction);
 
         McpInstructionDeletedActionEvent::dispatch($instruction);
+
+        return $surviving;
     }
 
-    private function perform(McpInstructionModel $instruction): void
+    private function perform(McpInstructionModel $instruction): ?McpInstructionModel
     {
-        DB::transaction(function () use ($instruction): void {
+        return DB::transaction(function () use ($instruction): ?McpInstructionModel {
             // Decided from the locked row, never from the copy passed in, so a
             // tool list saved after the action started is not lost.
             /** @var McpInstructionModel|null $locked */
@@ -48,6 +53,7 @@ final class DeleteMcpInstructionAction
 
                 if ($locked->tools === null) {
                     $locked->delete();
+                    $locked = null;
                 } elseif ($locked->published_version_id !== null) {
                     $locked->published_version_id = null;
                     $locked->save();
@@ -55,6 +61,8 @@ final class DeleteMcpInstructionAction
             }
 
             DB::afterCommit(fn () => $this->forget($this->cache->mcpInstructionsKey(), $this->cache->mcpToolsKey()));
+
+            return $locked;
         });
     }
 

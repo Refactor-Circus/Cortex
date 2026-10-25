@@ -32,7 +32,9 @@ dataset('tool-only rows', [
     'left by deleting the instructions' => [function (): void {
         test()->postJson(route('cortex.servers.instructions.versions.store', 'grouped'), ['content' => 'Gone soon.', 'publish' => true])->assertCreated();
         app(UpdateConcreteServerToolsAction::class)->execute('grouped', new UpdateConcreteServerToolsData(['echo-mcp-tool']));
-        test()->deleteJson(route('cortex.servers.instructions.destroy', 'grouped'))->assertSuccessful();
+        test()->deleteJson(route('cortex.servers.instructions.destroy', 'grouped'))
+            ->assertOk()
+            ->assertJsonPath('data.tools_overridden', true);
     }],
 ]);
 
