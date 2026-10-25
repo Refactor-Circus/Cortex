@@ -117,6 +117,19 @@ return [
     'back_to_tools' => 'Back to tools',
     'back_to_servers' => 'Back to servers',
 
+    // Server tool override
+    'server_tools_override_hint' => 'The server serves the checked tools instead of those it declares in code. Tools already saved keep their order; newly checked ones are added in the order listed.',
+    'server_tools_no_override_hint' => 'No override exists, so the server serves the tools it declares in code. Saving the checked tools creates one.',
+    'server_tools_read_only_hint' => 'The tools this server serves.',
+    'server_serves_no_tools' => 'This server serves no tools.',
+    'unresolved' => 'unresolved',
+    'confirm_empty_tools' => 'Serve no tools',
+    'confirm_empty_tools_hint' => 'Required to save with no tool checked: the server then serves no tools at all.',
+    'empty_tools_unconfirmed' => 'No tool is checked. Tick "Serve no tools" to save an empty list, or restore the code tools instead.',
+    'restore_code_tools' => 'Restore code tools',
+    'confirm_restore_code_tools' => 'Serve the tools declared in code again? The saved tool list is removed.',
+    'code_tools_restored' => 'Code tools restored.',
+
     // Redirect domains
     'redirect_domains' => 'Redirect domains',
     'redirect_domains_description' => 'Every origin MCP clients may register OAuth redirect URIs on: those in config, global ones added here, and those organizations and users add. Any client may register on any of them; each user still approves the client.',

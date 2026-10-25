@@ -149,6 +149,8 @@ class CortexPlugin extends Plugin
             Route::post('cortex/servers/{server}/instructions/versions/{version}/publish', [McpInstructionUiController::class, 'publish'])
                 ->whereNumber('version')->name('servers.instructions.publish');
             Route::delete('cortex/servers/{server}/instructions', [McpInstructionUiController::class, 'destroy'])->name('servers.instructions.destroy');
+            Route::put('cortex/servers/{server}/tools', [McpInstructionUiController::class, 'updateTools'])->name('servers.tools.update');
+            Route::delete('cortex/servers/{server}/tools', [McpInstructionUiController::class, 'clearTools'])->name('servers.tools.destroy');
 
             Route::get('cortex/redirect-domains', [RedirectDomainUiController::class, 'index'])->name('redirect-domains.index');
             Route::post('cortex/redirect-domains', [RedirectDomainUiController::class, 'store'])->name('redirect-domains.store');
