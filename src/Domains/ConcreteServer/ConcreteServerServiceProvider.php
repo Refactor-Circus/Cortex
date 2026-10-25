@@ -14,6 +14,7 @@ use RefactorCircus\Cortex\Domains\ConcreteServer\Services\GuestToolsWarning;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpInstructionOverrides;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpServerRegistry;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpToolOverrides;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Services\ServerContextMemo;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Services\ToolsColumn;
 use RefactorCircus\Keystone\Support\ServiceProvider;
 use Throwable;
@@ -58,6 +59,9 @@ class ConcreteServerServiceProvider extends ServiceProvider
         $this->app->scoped(McpInstructionOverrides::class);
 
         $this->app->scoped(McpToolOverrides::class);
+
+        // A server's context is built once per request, never longer.
+        $this->app->scoped(ServerContextMemo::class);
 
         // Checked once per process; a worker sees a newly run migration after
         // it restarts.
