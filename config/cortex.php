@@ -176,6 +176,26 @@ return [
         'servers' => [
             // 'support' => \App\Mcp\SupportServer::class,
         ],
+
+        /*
+        |----------------------------------------------------------------------
+        | MCP Warning Rate Limit
+        |----------------------------------------------------------------------
+        |
+        | warning_ttl: How long, in seconds, Cortex stays quiet about a stored
+        |              server override it cannot serve as saved once it has
+        |              logged it: a stale, failing or ambiguous tool entry,
+        |              a tools value that is not a list, the missing `tools`
+        |              column, or a failed server context rebuild. Each logs
+        |              once per server and entry per window, across requests,
+        |              through the publication cache store, so use a store
+        |              every node shares. Default 3600 (one hour); values
+        |              below 1 count as 1. Lower it while fixing overrides,
+        |              raise it to quiet a busy log.
+        |
+        */
+
+        'warning_ttl' => 3600,
     ],
 
     /*

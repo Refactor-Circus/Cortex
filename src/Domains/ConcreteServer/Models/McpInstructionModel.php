@@ -15,13 +15,15 @@ use RefactorCircus\Cortex\Support\Tables;
 use RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents;
 
 /**
- * A versioned instructions override for a registered MCP server, keyed by
- * the server's registered name. The published version's content replaces
- * the instructions the server class declares in code.
+ * The overrides for a registered MCP server, keyed by the server's
+ * registered name. The published version's content replaces the
+ * instructions the server class declares in code, and a non-null `tools`
+ * list replaces its code-declared tools (an empty list serves none).
  *
  * @property string $id
  * @property string $server
  * @property string|null $published_version_id
+ * @property list<string>|null $tools
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
@@ -36,11 +38,22 @@ final class McpInstructionModel extends Model
 
     protected $fillable = [
         'server',
+        'tools',
     ];
 
     public function getTable(): string
     {
         return Tables::name('mcp_instructions');
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'tools' => 'array',
+        ];
     }
 
     /**

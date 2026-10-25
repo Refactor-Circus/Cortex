@@ -10,17 +10,24 @@ use InvalidArgumentException;
 use Laravel\Mcp\Server as McpServer;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
+use Laravel\Mcp\Server\Tool as McpTool;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Exceptions\McpServerNotFoundException;
 use RefactorCircus\Cortex\Mcp\CortexServer;
 use ReflectionClass;
 
 /**
- * Registry of MCP servers whose instructions Cortex can override. Server
- * classes are never instantiated here (their constructor requires a
- * transport) — names and default instructions are read via reflection.
+ * Registry of MCP servers whose instructions and tools Cortex can override.
+ * Server classes are never instantiated here (their constructor requires a
+ * transport) — names, default instructions and default tools are read via
+ * reflection.
  */
 final class McpServerRegistry
 {
+    /**
+     * The name Cortex's own server is always registered under.
+     */
+    private const string CORTEX = 'cortex';
+
     /**
      * @var array<string, class-string<McpServer>>
      */
@@ -109,6 +116,44 @@ final class McpServerRegistry
     }
 
     /**
+     * The names of the tools the server class declares in code, in
+     * declaration order, before any tool override is applied. Read from the
+     * class's `$tools` default without building the server: ToolSearch
+     * groups are flattened and each tool is named by its `name()`.
+     *
+     * Tools a server adds at runtime (in its constructor or `boot()`) are
+     * not seen here; serving builds the code tools from the server itself.
+     *
+     * @return list<string>
+     */
+    public function defaultTools(string $name): array
+    {
+        $default = (new ReflectionClass($this->get($name)))->getProperty('tools')->getDefaultValue();
+
+        $names = [];
+
+        foreach (is_array($default) ? $default : [] as $entry) {
+            foreach (is_array($entry) ? $entry : [$entry] as $tool) {
+                $names[] = $this->toolName($tool);
+            }
+        }
+
+        return $names;
+    }
+
+    /**
+     * Whether Cortex may override the server's tool list. Every registered
+     * server may except Cortex's own, by its registered name: the same class
+     * registered under another name is overridable.
+     */
+    public function supportsToolOverrides(string $name): bool
+    {
+        $this->get($name);
+
+        return $name !== self::CORTEX;
+    }
+
+    /**
      * @return list<array{name: string, class: class-string<McpServer>, instructions: string}>
      */
     public function all(): array
@@ -130,7 +175,7 @@ final class McpServerRegistry
 
         $this->configLoaded = true;
 
-        $this->servers['cortex'] = CortexServer::class;
+        $this->servers[self::CORTEX] = CortexServer::class;
 
         /** @var array<string|int, string> $configured */
         $configured = $this->container->make('config')->get('cortex.mcp.servers', []);
@@ -138,6 +183,15 @@ final class McpServerRegistry
         foreach ($configured as $name => $class) {
             $this->register(is_string($name) ? $name : $this->deriveName($class), $class);
         }
+    }
+
+    private function toolName(mixed $tool): string
+    {
+        if (is_string($tool) && is_a($tool, McpTool::class, true)) {
+            $tool = $this->container->make($tool);
+        }
+
+        return $tool instanceof McpTool ? $tool->name() : (is_string($tool) ? $tool : get_debug_type($tool));
     }
 
     /**
