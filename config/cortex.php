@@ -62,7 +62,8 @@ return [
     |              registered Cortex tool in front of every client of that
     |              server, so outside `local` Cortex logs a warning at boot
     |              while guests are allowed. A policy of your own without an
-    |              updateTools method denies it. To allow trusted users only:
+    |              updateTools method denies it. To allow trusted users only
+    |              (README: "Who may change a server's tools"):
     |
     |              public function updateTools(?Authenticatable $user, McpInstructionModel $instruction): bool
     |              {
@@ -173,7 +174,9 @@ return [
     |
     | The `servers` list holds MCP server classes whose instructions Cortex
     | manages (versioned overrides replacing the code-declared value when
-    | published). Cortex's own server is always registered as 'cortex'.
+    | published) and whose tool list it can override (see the updateTools
+    | ability under Policies). Cortex's own server is always registered as
+    | 'cortex', and its tools cannot be overridden.
     | String keys set the server's registered name; unkeyed entries
     | derive it from the class. Servers may also be registered at
     | runtime via Cortex::servers()->register($name, $class).

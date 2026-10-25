@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
@@ -13,8 +14,12 @@ use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Support\Tables;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoAgent;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoCortexTool;
+use RefactorCircus\Cortex\Tests\Fixtures\EchoMcpTool;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoServer;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
+use RefactorCircus\Cortex\Tests\Fixtures\GroupedToolsServer;
+use RefactorCircus\Cortex\Tests\Support\ServerContextTools;
 
 it('migrates every table under its configured name', function (): void {
     foreach (array_keys(Tables::DEFAULTS) as $key) {
@@ -76,6 +81,63 @@ it('versions tool descriptions, server instructions and concrete agent overrides
     expect(ToolDescriptionModel::query()->count())->toBe(0)
         ->and(McpInstructionModel::query()->count())->toBe(0)
         ->and(ConcreteAgentOverrideModel::query()->count())->toBe(0);
+});
+
+it('saves, serves and restores a concrete server tool override on renamed tables', function (): void {
+    app(McpServerRegistry::class)->register('grouped', GroupedToolsServer::class);
+    app(ToolRegistry::class)->register('echo-cortex-tool', EchoCortexTool::class);
+
+    expect(Schema::hasColumn('crm_mcp_instructions', 'tools'))->toBeTrue();
+
+    // Save: the override row lands in the renamed table, in stored order.
+    $this->putJson(route('cortex.servers.tools.update', ['server' => 'grouped']), ['tools' => ['echo-cortex-tool', 'renamed-echo']])
+        ->assertOk()
+        ->assertJsonPath('data.tools', ['echo-cortex-tool', 'renamed-echo'])
+        ->assertJsonPath('data.tools_overridden', true);
+
+    $instruction = McpInstructionModel::query()->sole();
+
+    expect($instruction->getTable())->toBe('crm_mcp_instructions')
+        ->and($instruction->tools)->toBe(['echo-cortex-tool', 'renamed-echo'])
+        ->and(DB::table('crm_mcp_instructions')->where('server', 'grouped')->count())->toBe(1);
+
+    // Serve: a client of the server lists and calls exactly the stored tools.
+    app()->forgetScopedInstances();
+
+    expect(ServerContextTools::listed(GroupedToolsServer::tools()))->toBe(['echo-cortex-tool', 'renamed-echo']);
+
+    GroupedToolsServer::tool(EchoCortexTool::class, ['message' => 'renamed tables'])->assertOk()->assertSee('renamed tables');
+    GroupedToolsServer::tool(EchoMcpTool::class, ['message' => 'gone'])->assertHasErrors(['Tool [echo-mcp-tool] not found.']);
+
+    // Restore: clearing a tool-only row removes it and serves the code tools again.
+    $this->deleteJson(route('cortex.servers.tools.destroy', ['server' => 'grouped']))->assertNoContent();
+
+    app()->forgetScopedInstances();
+
+    expect(McpInstructionModel::query()->count())->toBe(0)
+        ->and(DB::table('crm_mcp_instructions')->count())->toBe(0)
+        ->and(ServerContextTools::listed(GroupedToolsServer::tools()))->toBe(['echo-mcp-tool', 'search_tools', 'execute_tools']);
+
+    GroupedToolsServer::tool(EchoMcpTool::class, ['message' => 'code tool'])->assertOk()->assertSee('code tool');
+});
+
+it('keeps a tool override when the instructions are deleted on renamed tables', function (): void {
+    app(McpServerRegistry::class)->register('grouped', GroupedToolsServer::class);
+
+    $this->postJson(route('cortex.servers.instructions.versions.store', ['server' => 'grouped']), ['content' => 'Instructed.', 'publish' => true])->assertCreated();
+    $this->putJson(route('cortex.servers.tools.update', ['server' => 'grouped']), ['tools' => ['renamed-echo']])->assertOk();
+
+    $this->deleteJson(route('cortex.servers.instructions.destroy', ['server' => 'grouped']))
+        ->assertOk()
+        ->assertJsonPath('data.tools_overridden', true);
+
+    expect(DB::table('crm_mcp_instruction_versions')->count())->toBe(0)
+        ->and(McpInstructionModel::query()->sole()->published_version_id)->toBeNull()
+        ->and(McpInstructionModel::query()->sole()->tools)->toBe(['renamed-echo']);
+
+    app()->forgetScopedInstances();
+
+    expect(ServerContextTools::listed(GroupedToolsServer::tools()))->toBe(['renamed-echo']);
 });
 
 it('manages redirect domains on a renamed table', function (): void {
