@@ -41,4 +41,33 @@ class McpInstructionPolicy extends Policy
     {
         return true;
     }
+
+    /**
+     * Overriding or clearing the server's tool list (PUT and DELETE
+     * `cortex/servers/{server}/tools`, the `update-server-tools` and
+     * `clear-server-tools` MCP tools, the Atrium tool editor). Checked on the
+     * server's override, or an unsaved one naming the server when it has
+     * none.
+     *
+     * The bundled default allows it for guests too. This is the trust
+     * boundary for tools: no per-tool ability is checked, so whoever passes
+     * it can put any registered Cortex tool (`Laravel\Ai` tools included) on
+     * the server, in front of every MCP client of that server. Outside the
+     * `local` environment Cortex logs a warning at boot while guests are
+     * allowed. A host policy without this method denies it (the Gate's
+     * default). To allow signed-in users you trust only:
+     *
+     *     public function updateTools(?Authenticatable $user, McpInstructionModel $instruction): bool
+     *     {
+     *         if ($user === null) {
+     *             return false;
+     *         }
+     *
+     *         return $user->can('manage-mcp-tools');
+     *     }
+     */
+    public function updateTools(?Authenticatable $user, McpInstructionModel $instruction): bool
+    {
+        return true;
+    }
 }

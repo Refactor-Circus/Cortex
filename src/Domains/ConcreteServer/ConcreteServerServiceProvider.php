@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Log;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Services\GuestToolsWarning;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpInstructionOverrides;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpServerRegistry;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpToolOverrides;
@@ -72,6 +73,10 @@ class ConcreteServerServiceProvider extends ServiceProvider
 
         // A host or package may replace the map after Cortex booted.
         $this->app->booted(fn () => $this->checkMorphAliases());
+
+        // Once every policy is registered: warn while guests may change a
+        // server's tool list.
+        $this->app->booted(fn () => $this->app->make(GuestToolsWarning::class)->check());
 
         $this->loadApiRoutesFrom(__DIR__.'/routes.php');
     }

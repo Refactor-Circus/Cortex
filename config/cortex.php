@@ -56,6 +56,23 @@ return [
     | reading one needs `view` on it, adding or publishing one needs `update`.
     | Point a model at your own class to replace its policy.
     |
+    | updateTools: The McpInstructionModel ability that overrides or clears a
+    |              concrete MCP server's tool list. The bundled default
+    |              allows guests too, and whoever passes it can put any
+    |              registered Cortex tool in front of every client of that
+    |              server, so outside `local` Cortex logs a warning at boot
+    |              while guests are allowed. A policy of your own without an
+    |              updateTools method denies it. To allow trusted users only:
+    |
+    |              public function updateTools(?Authenticatable $user, McpInstructionModel $instruction): bool
+    |              {
+    |                  if ($user === null) {
+    |                      return false;
+    |                  }
+    |
+    |                  return $user->can('manage-mcp-tools');
+    |              }
+    |
     */
 
     'policies' => [
