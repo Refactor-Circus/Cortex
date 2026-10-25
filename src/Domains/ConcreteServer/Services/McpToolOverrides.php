@@ -7,6 +7,7 @@ namespace RefactorCircus\Cortex\Domains\ConcreteServer\Services;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Support\PublicationCache;
 use RefactorCircus\Cortex\Support\WarningLimiter;
+use Throwable;
 
 /**
  * Lookup of concrete MCP server tool overrides: server name to the stored
@@ -18,9 +19,10 @@ use RefactorCircus\Cortex\Support\WarningLimiter;
  * memoized per request: bound as a scoped singleton so nothing leaks across
  * Octane requests.
  *
- * A stored value that is not a list, and a table without the `tools` column
- * (the migration was not run), read as no override, with a rate-limited
- * warning.
+ * A stored value that is not a list, a table without the `tools` column
+ * (the migration was not run) and a column check that throws (for example
+ * with the connection down) read as no override, with a rate-limited
+ * warning. The instructions override is read on its own and still applies.
  */
 final class McpToolOverrides
 {
@@ -45,19 +47,7 @@ final class McpToolOverrides
      */
     public function for(string $server): ?array
     {
-        if (! $this->column->exists()) {
-            $this->warnings->warn(
-                $server,
-                'column:tools',
-                sprintf(
-                    'Cortex serves the code tools of MCP server [%s]: the [%s] table has no tools column. Publish the cortex-migrations tag and run the %s migration.',
-                    $server,
-                    (new McpInstructionModel)->getTable(),
-                    self::MIGRATION,
-                ),
-                ['server' => $server],
-            );
-
+        if (! $this->hasToolsColumn($server)) {
             return null;
         }
 
@@ -85,6 +75,51 @@ final class McpToolOverrides
         }
 
         return array_values(array_filter($tools, is_string(...)));
+    }
+
+    /**
+     * Whether tool overrides can be read for this call. A missing column and
+     * a check that throws both read as no override, each with a rate-limited
+     * warning; a throwing check is not remembered, so the next call checks
+     * again.
+     */
+    private function hasToolsColumn(string $server): bool
+    {
+        try {
+            $exists = $this->column->exists();
+        } catch (Throwable $exception) {
+            $this->warnings->warn(
+                $server,
+                'column-check:'.$exception::class,
+                sprintf(
+                    'Cortex serves the code tools of MCP server [%s]: checking the [%s] table for its tools column failed with %s. The check runs again on the next request.',
+                    $server,
+                    (new McpInstructionModel)->getTable(),
+                    $exception::class,
+                ),
+                ['server' => $server, 'message' => $exception->getMessage()],
+            );
+
+            return false;
+        }
+
+        if (! $exists) {
+            $this->warnings->warn(
+                $server,
+                'column:tools',
+                sprintf(
+                    'Cortex serves the code tools of MCP server [%s]: the [%s] table has no tools column. Publish the cortex-migrations tag and run the %s migration.',
+                    $server,
+                    (new McpInstructionModel)->getTable(),
+                    self::MIGRATION,
+                ),
+                ['server' => $server],
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     /**

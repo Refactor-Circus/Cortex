@@ -285,6 +285,78 @@ describe('without the tools column', function (): void {
     });
 });
 
+describe('when the column check throws', function (): void {
+    it('reads no tool override, warns once within the window and checks again on the next call', function (): void {
+        McpInstructionModel::query()->create(['server' => 'echo', 'tools' => ['echo-mcp-tool']]);
+        app()->forgetInstance(ToolsColumn::class);
+
+        $down = true;
+        $checks = 0;
+
+        // The schema query fails as it would with the connection down.
+        DB::connection()->beforeExecuting(function () use (&$down, &$checks): void {
+            if (! $down) {
+                return;
+            }
+
+            $checks++;
+
+            throw new RuntimeException('Connection is down.');
+        });
+
+        Log::spy();
+
+        $column = app(ToolsColumn::class);
+
+        expect(freshToolOverrides()->for('echo'))->toBeNull()
+            ->and(freshToolOverrides()->for('echo'))->toBeNull()
+            // Nothing was memoized: each call asked the schema again.
+            ->and($checks)->toBe(2)
+            ->and(app(ToolsColumn::class))->toBe($column);
+
+        Log::shouldHaveReceived('warning')->once()->withArgs(
+            fn (string $message, array $context): bool => str_contains($message, 'echo')
+                && $context === ['server' => 'echo', 'message' => 'Connection is down.'],
+        );
+
+        $cache = app(PublicationCache::class);
+
+        expect(Cache::store('array')->has($cache->warningKey('echo', 'column-check:'.RuntimeException::class)))->toBeTrue();
+
+        // Once the check succeeds the same process sees the column and the stored list.
+        $down = false;
+
+        expect(freshToolOverrides()->for('echo'))->toBe(['echo-mcp-tool'])
+            ->and($column->exists())->toBeTrue();
+
+        Log::shouldHaveReceived('warning')->once();
+    });
+
+    it('keeps the instructions override while the column check throws', function (): void {
+        publishedInstruction('echo', ['echo-mcp-tool']);
+        app()->forgetInstance(ToolsColumn::class);
+
+        // Warm the instructions map, then take the schema query down.
+        expect(app(McpInstructionOverrides::class)->for('echo'))->toBe('Published echo instructions.');
+
+        $down = true;
+
+        DB::connection()->beforeExecuting(function () use (&$down): void {
+            if ($down) {
+                throw new RuntimeException('Connection is down.');
+            }
+        });
+
+        try {
+            expect(freshToolOverrides()->for('echo'))->toBeNull()
+                ->and(app(McpInstructionOverrides::class)->for('echo'))->toBe('Published echo instructions.');
+        } finally {
+            // The test's own rollback must reach the database.
+            $down = false;
+        }
+    });
+});
+
 it('checks the column once per process', function (): void {
     $column = app(ToolsColumn::class);
 

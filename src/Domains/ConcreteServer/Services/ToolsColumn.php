@@ -16,7 +16,9 @@ use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
  * connection may differ from the default one) and is remembered for the
  * process: the class is a singleton, so an Octane or queue worker checks
  * once and keeps the answer until it restarts. Only a completed check is
- * remembered.
+ * remembered: a check that throws (the schema query fails, for example with
+ * the connection down) propagates and leaves nothing behind, so the next
+ * call checks again. {@see McpToolOverrides} reads that call as no override.
  */
 final class ToolsColumn
 {
