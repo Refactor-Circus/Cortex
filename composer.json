@@ -25,6 +25,7 @@
         "laravel/mcp": "^1.0.1"
     },
     "require-dev": {
+        "refactor-circus/keen": "dev-main",
         "refactor-circus/pennantplus": "dev-main",
         "larastan/larastan": "^3.13",
         "laravel/pao": "^1.1.5",
@@ -41,7 +42,10 @@
     "autoload": {
         "psr-4": {
             "RefactorCircus\\Cortex\\": "src/"
-        }
+        },
+        "files": [
+            "src/Domains/ConcreteServer/shims.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -85,6 +89,7 @@
             "vendor/bin/pest --parallel"
         ],
         "test": [
+            "@composer dump-autoload",
             "@analyse",
             "@lint:check",
             "@test:types",
@@ -140,6 +145,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/Refactor-Circus/PennantPlus.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Refactor-Circus/Keen.git"
         }
     ],
     "conflict": {
