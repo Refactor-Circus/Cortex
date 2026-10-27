@@ -12,14 +12,15 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Data\UpdateVirtualAgentData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentUpdatedActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentUpdatingActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class UpdateVirtualAgentAction
+final class UpdateVirtualAgentAction extends Action
 {
     use ResolvesVirtualAgentReferences;
 
     public function __construct(private readonly CreateVirtualAgentVersionAction $createVersion) {}
 
-    public function execute(VirtualAgentModel $agent, UpdateVirtualAgentData $data): VirtualAgentModel
+    protected function handle(VirtualAgentModel $agent, UpdateVirtualAgentData $data): VirtualAgentModel
     {
         VirtualAgentUpdatingActionEvent::dispatch($agent, $data);
 

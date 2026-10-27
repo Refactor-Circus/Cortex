@@ -6,6 +6,7 @@ use Laravel\Mcp\Server\Transport\FakeTransporter;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionVersionModel;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpServerRegistry;
+use RefactorCircus\Cortex\Exceptions\ImmutableVersionException;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoServer;
 
 beforeEach(function () {
@@ -81,7 +82,7 @@ it('keeps versions immutable', function () {
     $version = McpInstructionVersionModel::factory()->create();
 
     $version->update(['content' => 'rewritten']);
-})->throws(LogicException::class, 'immutable');
+})->throws(ImmutableVersionException::class, 'immutable');
 
 it('serves the published override through the servers endpoint and context', function () {
     $this->postJson(route('cortex.servers.instructions.versions.store', ['server' => 'echo']), [

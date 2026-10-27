@@ -9,13 +9,14 @@ use RefactorCircus\Cortex\Domains\ConcreteServer\Events\McpInstructionVersionsLi
 use RefactorCircus\Cortex\Domains\ConcreteServer\Events\McpInstructionVersionsListingActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class ListMcpInstructionVersionsAction
+final class ListMcpInstructionVersionsAction extends Action
 {
     /**
      * @return Collection<int, McpInstructionVersionModel>
      */
-    public function execute(McpInstructionModel $instruction): Collection
+    protected function handle(McpInstructionModel $instruction): Collection
     {
         McpInstructionVersionsListingActionEvent::dispatch($instruction);
 

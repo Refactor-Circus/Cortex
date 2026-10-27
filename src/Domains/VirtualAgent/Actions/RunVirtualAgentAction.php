@@ -10,12 +10,13 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentRanActionEvent
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentRunningActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Services\AgentFactory;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class RunVirtualAgentAction
+final class RunVirtualAgentAction extends Action
 {
     public function __construct(private readonly AgentFactory $factory) {}
 
-    public function execute(VirtualAgentModel $agent, RunVirtualAgentData $data): AgentResponse
+    protected function handle(VirtualAgentModel $agent, RunVirtualAgentData $data): AgentResponse
     {
         VirtualAgentRunningActionEvent::dispatch($agent, $data);
 

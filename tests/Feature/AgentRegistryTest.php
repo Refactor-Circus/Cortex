@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Exceptions\AgentNotFoundException;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Exceptions\InvalidAgentClassException;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoAgent;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
@@ -34,7 +35,7 @@ it('registers agents at runtime', function () {
 
 it('rejects classes that are not agents', function () {
     app(AgentRegistry::class)->register('echo', EchoTool::class);
-})->throws(InvalidArgumentException::class);
+})->throws(InvalidAgentClassException::class);
 
 it('throws for unregistered names', function () {
     app(AgentRegistry::class)->get('missing');

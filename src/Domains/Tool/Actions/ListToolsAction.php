@@ -10,15 +10,16 @@ use RefactorCircus\Cortex\Domains\Tool\Data\ListToolsData;
 use RefactorCircus\Cortex\Domains\Tool\Events\ToolsListedActionEvent;
 use RefactorCircus\Cortex\Domains\Tool\Events\ToolsListingActionEvent;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class ListToolsAction
+final class ListToolsAction extends Action
 {
     public function __construct(private readonly ToolRegistry $registry) {}
 
     /**
      * @return list<array{name: string, class: class-string<Tool>|class-string<McpTool>, description: string, schema: array<string, mixed>, tags: list<string>}>
      */
-    public function execute(ListToolsData $filters = new ListToolsData): array
+    protected function handle(ListToolsData $filters = new ListToolsData): array
     {
         ToolsListingActionEvent::dispatch($filters);
 

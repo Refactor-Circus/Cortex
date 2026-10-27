@@ -13,6 +13,7 @@ use RefactorCircus\Cortex\Domains\ConcreteServer\Events\ConcreteServerToolsClear
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpServerRegistry;
 use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Keystone\Actions\Action;
 use Throwable;
 
 /**
@@ -21,14 +22,14 @@ use Throwable;
  * the override row goes only when it holds nothing else. Clearing a server
  * without a tool override does nothing.
  */
-final class ClearConcreteServerToolsAction
+final class ClearConcreteServerToolsAction extends Action
 {
     public function __construct(
         private readonly PublicationCache $cache,
         private readonly McpServerRegistry $servers,
     ) {}
 
-    public function execute(string $server, ClearConcreteServerToolsData $data): void
+    protected function handle(string $server, ClearConcreteServerToolsData $data): void
     {
         ConcreteServerToolsClearingActionEvent::dispatch($server, $data);
 

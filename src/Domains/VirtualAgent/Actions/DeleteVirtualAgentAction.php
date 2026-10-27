@@ -9,12 +9,13 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentDeletedActionE
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentDeletingActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class DeleteVirtualAgentAction
+final class DeleteVirtualAgentAction extends Action
 {
     public function __construct(private readonly PublicationCache $cache) {}
 
-    public function execute(VirtualAgentModel $agent): void
+    protected function handle(VirtualAgentModel $agent): void
     {
         VirtualAgentDeletingActionEvent::dispatch($agent);
 

@@ -9,12 +9,13 @@ use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionDeletedActionEvent;
 use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionDeletingActionEvent;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class DeleteToolDescriptionAction
+final class DeleteToolDescriptionAction extends Action
 {
     public function __construct(private readonly PublicationCache $cache) {}
 
-    public function execute(ToolDescriptionModel $description): void
+    protected function handle(ToolDescriptionModel $description): void
     {
         ToolDescriptionDeletingActionEvent::dispatch($description);
 

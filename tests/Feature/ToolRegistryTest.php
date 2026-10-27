@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Laravel\Ai\Tools\McpServerTool;
 use RefactorCircus\Cortex\Cortex;
 use RefactorCircus\Cortex\Domains\Tool\Actions\ListToolsAction;
+use RefactorCircus\Cortex\Domains\Tool\Exceptions\InvalidToolClassException;
 use RefactorCircus\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoMcpTool;
@@ -28,7 +29,7 @@ it('loads tools from the package config', function () {
 
 it('rejects classes that are not tools', function () {
     app(ToolRegistry::class)->register('bad', stdClass::class);
-})->throws(InvalidArgumentException::class, 'must implement');
+})->throws(InvalidToolClassException::class, 'must implement');
 
 it('throws for unknown tool names', function () {
     app(ToolRegistry::class)->get('missing');

@@ -9,13 +9,14 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionsList
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionsListingActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class ListConcreteAgentVersionsAction
+final class ListConcreteAgentVersionsAction extends Action
 {
     /**
      * @return Collection<int, ConcreteAgentOverrideVersionModel>
      */
-    public function execute(ConcreteAgentOverrideModel $override): Collection
+    protected function handle(ConcreteAgentOverrideModel $override): Collection
     {
         ConcreteAgentVersionsListingActionEvent::dispatch($override);
 

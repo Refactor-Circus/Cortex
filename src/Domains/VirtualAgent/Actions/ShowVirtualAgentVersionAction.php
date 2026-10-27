@@ -8,10 +8,11 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionShowing
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionShownActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class ShowVirtualAgentVersionAction
+final class ShowVirtualAgentVersionAction extends Action
 {
-    public function execute(VirtualAgentModel $agent, int $version): VirtualAgentVersionModel
+    protected function handle(VirtualAgentModel $agent, int $version): VirtualAgentVersionModel
     {
         VirtualAgentVersionShowingActionEvent::dispatch($agent, $version);
 

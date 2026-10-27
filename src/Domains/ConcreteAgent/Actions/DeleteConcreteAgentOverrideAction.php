@@ -9,12 +9,13 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentOverrideDele
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentOverrideDeletingActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class DeleteConcreteAgentOverrideAction
+final class DeleteConcreteAgentOverrideAction extends Action
 {
     public function __construct(private readonly PublicationCache $cache) {}
 
-    public function execute(ConcreteAgentOverrideModel $override): void
+    protected function handle(ConcreteAgentOverrideModel $override): void
     {
         ConcreteAgentOverrideDeletingActionEvent::dispatch($override);
 

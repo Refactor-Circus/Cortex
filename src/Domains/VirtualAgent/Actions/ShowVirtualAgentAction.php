@@ -7,10 +7,11 @@ namespace RefactorCircus\Cortex\Domains\VirtualAgent\Actions;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentShowingActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentShownActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class ShowVirtualAgentAction
+final class ShowVirtualAgentAction extends Action
 {
-    public function execute(VirtualAgentModel $agent): VirtualAgentModel
+    protected function handle(VirtualAgentModel $agent): VirtualAgentModel
     {
         VirtualAgentShowingActionEvent::dispatch($agent);
 

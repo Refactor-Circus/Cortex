@@ -5,6 +5,7 @@ declare(strict_types=1);
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
+use RefactorCircus\Cortex\Exceptions\ImmutableVersionException;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
 
 beforeEach(function () {
@@ -80,7 +81,7 @@ it('keeps versions immutable', function () {
     $version = ToolDescriptionVersionModel::factory()->create();
 
     $version->update(['content' => 'rewritten']);
-})->throws(LogicException::class, 'immutable');
+})->throws(ImmutableVersionException::class, 'immutable');
 
 it('serves the published override through the tools endpoint and registry', function () {
     $this->postJson(route('cortex.tools.description.versions.store', ['tool' => 'echo']), [

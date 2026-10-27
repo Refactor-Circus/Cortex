@@ -7,10 +7,11 @@ namespace RefactorCircus\Cortex\Domains\ConcreteServer\Actions;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Events\McpInstructionShowingActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Events\McpInstructionShownActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class ShowMcpInstructionAction
+final class ShowMcpInstructionAction extends Action
 {
-    public function execute(string $server): McpInstructionModel
+    protected function handle(string $server): McpInstructionModel
     {
         McpInstructionShowingActionEvent::dispatch($server);
 

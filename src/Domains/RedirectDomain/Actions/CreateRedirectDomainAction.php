@@ -12,8 +12,9 @@ use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainCreatedAct
 use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainCreatingActionEvent;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class CreateRedirectDomainAction
+final class CreateRedirectDomainAction extends Action
 {
     public function __construct(private readonly RedirectDomains $domains) {}
 
@@ -21,7 +22,7 @@ final class CreateRedirectDomainAction
      * Add a domain for an owner, or for every client when there is none.
      * Adding one the owner already has returns it.
      */
-    public function execute(CreateRedirectDomainData $data, ?Model $owner = null): RedirectDomainModel
+    protected function handle(CreateRedirectDomainData $data, ?Model $owner = null): RedirectDomainModel
     {
         RedirectDomainCreatingActionEvent::dispatch($data, $owner);
 

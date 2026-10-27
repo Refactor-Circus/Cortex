@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
-use LogicException;
 use RefactorCircus\Cortex\Database\Factories\McpInstructionVersionFactory;
+use RefactorCircus\Cortex\Exceptions\ImmutableVersionException;
 use RefactorCircus\Cortex\Support\Tables;
 use RefactorCircus\Keystone\Models\Concerns\DispatchesModelEvents;
 
@@ -44,7 +44,7 @@ final class McpInstructionVersionModel extends Model
     protected static function booted(): void
     {
         self::updating(function (): never {
-            throw new LogicException('MCP server instruction versions are immutable. Create a new version instead.');
+            throw ImmutableVersionException::for('MCP server instruction');
         });
     }
 
