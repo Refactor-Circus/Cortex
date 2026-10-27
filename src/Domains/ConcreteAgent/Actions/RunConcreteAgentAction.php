@@ -9,12 +9,13 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\RunConcreteAgentData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentRanActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentRunningActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class RunConcreteAgentAction
+final class RunConcreteAgentAction extends Action
 {
     public function __construct(private readonly AgentRegistry $registry) {}
 
-    public function execute(string $agent, RunConcreteAgentData $data): AgentResponse
+    protected function handle(string $agent, RunConcreteAgentData $data): AgentResponse
     {
         ConcreteAgentRunningActionEvent::dispatch($agent, $data);
 

@@ -9,12 +9,13 @@ use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainDeletedAct
 use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainDeletingActionEvent;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class DeleteRedirectDomainAction
+final class DeleteRedirectDomainAction extends Action
 {
     public function __construct(private readonly RedirectDomains $domains) {}
 
-    public function execute(RedirectDomainModel $domain): void
+    protected function handle(RedirectDomainModel $domain): void
     {
         RedirectDomainDeletingActionEvent::dispatch($domain);
 

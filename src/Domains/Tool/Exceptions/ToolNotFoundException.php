@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Domains\Tool\Exceptions;
 
-use InvalidArgumentException;
+use RefactorCircus\Cortex\Exceptions\CortexException;
 
-final class ToolNotFoundException extends InvalidArgumentException
+final class ToolNotFoundException extends CortexException
 {
+    protected int $status = 404;
+
     public static function forName(string $name): self
     {
         return new self("Tool [{$name}] is not registered.");

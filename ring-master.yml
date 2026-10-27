@@ -1,0 +1,20 @@
+# Ring Master configuration. Every key is optional; only detected settings are written here.
+# Full schema and defaults: vendor/refactor-circus/ringside/README.md
+
+commands:
+  test: 'composer test:unit'
+  verify: 'composer test'
+  format: 'composer lint'
+  format_check: 'composer lint:check'
+roles:
+  # Groups here are large; 40 turns ran out before any code was written.
+  implementer: { effort: high, max_turns: 150 }
+  reworker: { effort: high, max_turns: 150 }
+build:
+  # Install every refactor-circus package from its sibling checkout (symlinks), not VCS.
+  worktree: { mode: per-job, path: '../{package}--{spec}', setup: composer local:install, cleanup: on_close }
+standards:
+  global:
+    -
+      package: refactor-circus/standards
+      strict: true

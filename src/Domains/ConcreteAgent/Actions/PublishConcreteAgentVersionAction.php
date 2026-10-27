@@ -10,12 +10,13 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentVersionPubli
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class PublishConcreteAgentVersionAction
+final class PublishConcreteAgentVersionAction extends Action
 {
     public function __construct(private readonly PublicationCache $cache) {}
 
-    public function execute(ConcreteAgentOverrideModel $override, int $version): ConcreteAgentOverrideModel
+    protected function handle(ConcreteAgentOverrideModel $override, int $version): ConcreteAgentOverrideModel
     {
         ConcreteAgentVersionPublishingActionEvent::dispatch($override, $version);
 

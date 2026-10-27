@@ -5,6 +5,7 @@ declare(strict_types=1);
 use RefactorCircus\Cortex\Cortex;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\ListMcpServersAction;
 use RefactorCircus\Cortex\Domains\ConcreteServer\ConcreteServerServiceProvider;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Exceptions\InvalidMcpServerClassException;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Exceptions\McpServerNotFoundException;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpServerRegistry;
@@ -39,7 +40,7 @@ it('loads servers from the package config', function () {
 
 it('rejects classes that are not MCP servers', function () {
     app(McpServerRegistry::class)->register('bad', stdClass::class);
-})->throws(InvalidArgumentException::class, 'must extend');
+})->throws(InvalidMcpServerClassException::class, 'must extend');
 
 it('throws for unknown server names', function () {
     app(McpServerRegistry::class)->get('missing');

@@ -9,15 +9,16 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentShowingActio
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentShownActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class ShowConcreteAgentAction
+final class ShowConcreteAgentAction extends Action
 {
     public function __construct(private readonly AgentRegistry $registry) {}
 
     /**
      * @return array{name: string, class: class-string<Agent>, overridable: bool, tools_overridable: bool, instructions: string, tools: list<string>, default_instructions: string, default_tools: list<string>, override: ConcreteAgentOverrideModel|null}
      */
-    public function execute(string $agent): array
+    protected function handle(string $agent): array
     {
         ConcreteAgentShowingActionEvent::dispatch($agent);
 

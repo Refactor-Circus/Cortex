@@ -1,0 +1,23 @@
+id: 2026-10-23-1917-virtual-and-concrete-mcp-servers
+title: Virtual and concrete MCP servers
+status: merged
+created: 2026-10-23
+pr: { number: 10, url: https://github.com/Refactor-Circus/Cortex/pull/10 }
+ticket: { provider: github, key: "#9", url: https://github.com/Refactor-Circus/Cortex/issues/9 }
+standards:
+  refactor-circus/standards:
+    version: dev-main
+    reference: 2e6440f82ca5
+runs:
+  - { workflow: ring-master-factory, run_id: wf_3428c8d4-618, result: escalated, stage: prepare, round: 0, date: 2026-10-23 }
+  - { workflow: ring-master-factory, run_id: wf_bf02bc0d-b54, result: needs-decision, stage: build, round: 0, date: 2026-10-24 }
+  - { workflow: ring-master-factory, run_id: wf_11bb10a1-f18, result: needs-decision, stage: build, round: 0, date: 2026-10-24 }
+  - { workflow: ring-master-factory, run_id: wf_4b69ba3b-4de, result: escalated, stage: prepare, round: 0, date: 2026-10-24 }
+  - { workflow: ring-master-factory, run_id: wf_5d6a44f3-58b, result: escalated, stage: build, round: 0, date: 2026-10-24 }
+  - { workflow: ring-master-factory, run_id: wf_d8bb445e-54a, result: escalated, stage: build, round: 0, date: 2026-10-24 }
+  - { workflow: ring-master-factory, run_id: wf_50e2ea44-ed9, result: needs-decision, stage: build, round: 0, date: 2026-10-24 }
+  - { workflow: ring-master-factory, run_id: wf_af36c9a0-ebe, result: needs-decision, stage: build, round: 0, date: 2026-10-25 }
+  - { workflow: ring-master-factory, run_id: wf_66f82525-788, result: needs-decision, stage: build, round: 0, date: 2026-10-25 }
+  - { workflow: ring-master-factory, run_id: wf_d9dd94c5-44e, result: needs-decision, stage: rework, round: 2, date: 2026-10-25 }
+  - { workflow: ring-master-factory, run_id: wf_08343566-dde, result: escalated, stage: prepare, round: 0, date: 2026-10-26 }
+  - { workflow: ring-master-factory, run_id: wf_fda29442-820, result: approved, stage: decide, round: 2, date: 2026-10-26 }

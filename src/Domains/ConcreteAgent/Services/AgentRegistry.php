@@ -6,11 +6,11 @@ namespace RefactorCircus\Cortex\Domains\ConcreteAgent\Services;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 use Laravel\Ai\Contracts\Agent as AgentContract;
 use Laravel\Ai\Contracts\HasTools;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Concerns\HasCortexOverrides;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Exceptions\AgentNotFoundException;
+use RefactorCircus\Cortex\Domains\ConcreteAgent\Exceptions\InvalidAgentClassException;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Support\Agent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Support\LockedTools;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
@@ -55,9 +55,7 @@ final class AgentRegistry
     public function register(string $name, string $class): void
     {
         if (! is_a($class, AgentContract::class, true)) {
-            throw new InvalidArgumentException(
-                sprintf('Agent [%s] must implement %s.', $class, AgentContract::class),
-            );
+            throw InvalidAgentClassException::forClass($class, AgentContract::class);
         }
 
         $this->loadConfigAgents();

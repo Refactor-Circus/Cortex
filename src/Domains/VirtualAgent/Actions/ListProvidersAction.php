@@ -7,9 +7,10 @@ namespace RefactorCircus\Cortex\Domains\VirtualAgent\Actions;
 use Laravel\Ai\AiManager;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\ProvidersListedActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\ProvidersListingActionEvent;
+use RefactorCircus\Keystone\Actions\Action;
 use Throwable;
 
-final class ListProvidersAction
+final class ListProvidersAction extends Action
 {
     public function __construct(private readonly AiManager $manager) {}
 
@@ -22,7 +23,7 @@ final class ListProvidersAction
      *
      * @return list<array{name: string, models: list<string>, default_model: string|null}>
      */
-    public function execute(): array
+    protected function handle(): array
     {
         ProvidersListingActionEvent::dispatch();
 

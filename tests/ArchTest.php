@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use RefactorCircus\Cortex\Exceptions\CortexException;
 use RefactorCircus\Cortex\Support\Tables;
+use RefactorCircus\Keystone\Actions\Action;
 use RefactorCircus\Keystone\Testing\Arch;
 
 const CORTEX_DOMAINS = __DIR__.'/../src/Domains';
@@ -24,14 +26,25 @@ arch('actions are final classes')
     ->classes()
     ->toBeFinal();
 
+arch('actions extend the Keystone Action base: callers use execute(), the action implements a protected handle()')
+    ->expect(Arch::domainNamespaces('RefactorCircus\Cortex', CORTEX_DOMAINS, 'Actions'))
+    ->classes()
+    ->toExtend(Action::class);
+
+arch('every exception descends from CortexException')
+    ->expect(['RefactorCircus\Cortex\Exceptions', ...Arch::domainNamespaces('RefactorCircus\Cortex', CORTEX_DOMAINS, 'Exceptions')])
+    ->classes()
+    ->toExtend(CortexException::class)
+    ->ignoring('RefactorCircus\Cortex\Exceptions\CortexException');
+
 arch('actions take their input as Data objects, not arrays')
     ->expect(fn (): array => array_values(array_filter(
         array_map(function (string $action): ?string {
-            foreach ((new ReflectionMethod($action, 'execute'))->getParameters() as $parameter) {
+            foreach ((new ReflectionMethod($action, 'handle'))->getParameters() as $parameter) {
                 $type = $parameter->getType();
 
                 if ($type instanceof ReflectionNamedType && $type->getName() === 'array' && in_array($parameter->getName(), ['data', 'filters', 'input', 'attributes', 'values', 'tools'], true)) {
-                    return $action.'::execute($'.$parameter->getName().')';
+                    return $action.'::handle($'.$parameter->getName().')';
                 }
             }
 

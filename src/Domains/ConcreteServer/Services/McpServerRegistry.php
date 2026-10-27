@@ -6,11 +6,11 @@ namespace RefactorCircus\Cortex\Domains\ConcreteServer\Services;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 use Laravel\Mcp\Server as McpServer;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool as McpTool;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Exceptions\InvalidMcpServerClassException;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Exceptions\McpServerNotFoundException;
 use RefactorCircus\Cortex\Mcp\CortexServer;
 use ReflectionClass;
@@ -40,9 +40,7 @@ final class McpServerRegistry
     public function register(string $name, string $class): void
     {
         if (! is_a($class, McpServer::class, true)) {
-            throw new InvalidArgumentException(
-                sprintf('MCP server [%s] must extend %s.', $class, McpServer::class),
-            );
+            throw InvalidMcpServerClassException::forClass($class, McpServer::class);
         }
 
         $this->loadConfigServers();

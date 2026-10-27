@@ -10,13 +10,14 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Data\ListVirtualAgentsData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentsListedActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentsListingActionEvent;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class ListVirtualAgentsAction
+final class ListVirtualAgentsAction extends Action
 {
     /**
      * @return LengthAwarePaginator<int, VirtualAgentModel>
      */
-    public function execute(ListVirtualAgentsData $filters = new ListVirtualAgentsData): LengthAwarePaginator
+    protected function handle(ListVirtualAgentsData $filters = new ListVirtualAgentsData): LengthAwarePaginator
     {
         VirtualAgentsListingActionEvent::dispatch($filters);
 

@@ -14,6 +14,7 @@ use RefactorCircus\Cortex\Domains\ConcreteServer\Events\ConcreteServerToolsUpdat
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Services\McpServerRegistry;
 use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Keystone\Actions\Action;
 use Throwable;
 
 /**
@@ -21,14 +22,14 @@ use Throwable;
  * tools, on the server's override row, creating the row when it is missing.
  * The `cortex` server's tools cannot be overridden.
  */
-final class UpdateConcreteServerToolsAction
+final class UpdateConcreteServerToolsAction extends Action
 {
     public function __construct(
         private readonly PublicationCache $cache,
         private readonly McpServerRegistry $servers,
     ) {}
 
-    public function execute(string $server, UpdateConcreteServerToolsData $data): McpInstructionModel
+    protected function handle(string $server, UpdateConcreteServerToolsData $data): McpInstructionModel
     {
         ConcreteServerToolsUpdatingActionEvent::dispatch($server, $data);
 

@@ -11,6 +11,7 @@ use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
+use RefactorCircus\Cortex\Exceptions\ImmutableVersionException;
 
 it('relates virtual agents to versions and a published version', function () {
     $agent = VirtualAgentModel::factory()->create();
@@ -28,7 +29,7 @@ it('enforces virtual agent version immutability', function () {
     $version = VirtualAgentVersionModel::factory()->create();
 
     $version->update(['content' => 'changed']);
-})->throws(LogicException::class, 'Virtual agent prompt versions are immutable.');
+})->throws(ImmutableVersionException::class, 'Virtual agent prompt versions are immutable.');
 
 it('enforces one version number per virtual agent', function () {
     $agent = VirtualAgentModel::factory()->create();
@@ -99,7 +100,7 @@ it('enforces mcp instruction version immutability', function () {
     $version = McpInstructionVersionModel::factory()->create();
 
     $version->update(['content' => 'changed']);
-})->throws(LogicException::class, 'MCP server instruction versions are immutable.');
+})->throws(ImmutableVersionException::class, 'MCP server instruction versions are immutable.');
 
 it('enforces one version number per mcp instruction', function () {
     $instruction = McpInstructionModel::factory()->create();
@@ -133,7 +134,7 @@ it('enforces concrete agent override version immutability', function () {
     $version = ConcreteAgentOverrideVersionModel::factory()->create();
 
     $version->update(['content' => 'changed']);
-})->throws(LogicException::class, 'Concrete agent prompt versions are immutable.');
+})->throws(ImmutableVersionException::class, 'Concrete agent prompt versions are immutable.');
 
 it('deletes versions when the concrete agent override is deleted', function () {
     $override = ConcreteAgentOverrideModel::factory()->create();
