@@ -7,11 +7,11 @@ namespace RefactorCircus\Cortex\Domains\Tool\Services;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\JsonSchema\JsonSchema;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\McpServerTool;
 use Laravel\Ai\Tools\ToolNameResolver;
 use Laravel\Mcp\Server\Tool as McpTool;
+use RefactorCircus\Cortex\Domains\Tool\Exceptions\InvalidToolClassException;
 use RefactorCircus\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
 use RefactorCircus\Cortex\Domains\Tool\Support\DescribedTool;
 
@@ -55,9 +55,7 @@ final class ToolRegistry
     public function register(string $name, string $class, array $tags = []): void
     {
         if (! is_a($class, Tool::class, true) && ! is_a($class, McpTool::class, true)) {
-            throw new InvalidArgumentException(
-                sprintf('Tool [%s] must implement %s or extend %s.', $class, Tool::class, McpTool::class),
-            );
+            throw InvalidToolClassException::forClass($class, Tool::class.' or extend '.McpTool::class);
         }
 
         $this->loadConfigTools();

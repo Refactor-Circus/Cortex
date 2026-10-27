@@ -10,12 +10,13 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentToolsUpdated
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Events\ConcreteAgentToolsUpdatingActionEvent;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class UpdateConcreteAgentToolsAction
+final class UpdateConcreteAgentToolsAction extends Action
 {
     public function __construct(private readonly PublicationCache $cache) {}
 
-    public function execute(string $agent, UpdateConcreteAgentToolsData $data): ConcreteAgentOverrideModel
+    protected function handle(string $agent, UpdateConcreteAgentToolsData $data): ConcreteAgentOverrideModel
     {
         ConcreteAgentToolsUpdatingActionEvent::dispatch($agent, $data);
 

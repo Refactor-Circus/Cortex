@@ -10,12 +10,13 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Events\VirtualAgentVersionPublish
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel;
 use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class PublishVirtualAgentVersionAction
+final class PublishVirtualAgentVersionAction extends Action
 {
     public function __construct(private readonly PublicationCache $cache) {}
 
-    public function execute(VirtualAgentModel $agent, int $version): VirtualAgentModel
+    protected function handle(VirtualAgentModel $agent, int $version): VirtualAgentModel
     {
         VirtualAgentVersionPublishingActionEvent::dispatch($agent, $version);
 

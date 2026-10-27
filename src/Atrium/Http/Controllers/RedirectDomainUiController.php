@@ -8,7 +8,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use LogicException;
 use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
@@ -17,6 +16,7 @@ use RefactorCircus\Cortex\Domains\RedirectDomain\Data\CreateRedirectDomainData;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Data\ListRedirectDomainsData;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
+use RefactorCircus\Cortex\Exceptions\UnexpectedResultException;
 
 /**
  * Every stored redirect domain, whoever owns it. Domains added here belong
@@ -121,7 +121,7 @@ final class RedirectDomainUiController
             page: is_numeric($page) ? max(1, (int) $page) : null,
         ));
 
-        return $stored instanceof LengthAwarePaginator ? $stored->withQueryString() : throw new LogicException('A paged listing answers a page.');
+        return $stored instanceof LengthAwarePaginator ? $stored->withQueryString() : throw UnexpectedResultException::pagedListing();
     }
 
     /**

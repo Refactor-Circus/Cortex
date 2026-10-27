@@ -11,6 +11,7 @@ use RefactorCircus\Cortex\Domains\ConcreteServer\Events\McpInstructionDeletingAc
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionVersionModel;
 use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Keystone\Actions\Action;
 use Throwable;
 
 /**
@@ -22,11 +23,11 @@ use Throwable;
  * Returns the row when it survives (it still holds a tool override), or null
  * when it was removed, so callers can answer with what is left.
  */
-final class DeleteMcpInstructionAction
+final class DeleteMcpInstructionAction extends Action
 {
     public function __construct(private readonly PublicationCache $cache) {}
 
-    public function execute(McpInstructionModel $instruction): ?McpInstructionModel
+    protected function handle(McpInstructionModel $instruction): ?McpInstructionModel
     {
         McpInstructionDeletingActionEvent::dispatch($instruction);
 

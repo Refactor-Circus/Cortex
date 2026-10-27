@@ -10,12 +10,13 @@ use RefactorCircus\Cortex\Domains\ConcreteServer\Events\McpInstructionVersionPub
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionVersionModel;
 use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class PublishMcpInstructionVersionAction
+final class PublishMcpInstructionVersionAction extends Action
 {
     public function __construct(private readonly PublicationCache $cache) {}
 
-    public function execute(McpInstructionModel $instruction, int $version): McpInstructionModel
+    protected function handle(McpInstructionModel $instruction, int $version): McpInstructionModel
     {
         McpInstructionVersionPublishingActionEvent::dispatch($instruction, $version);
 

@@ -9,13 +9,14 @@ use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionVersionsListedActio
 use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionVersionsListingActionEvent;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class ListToolDescriptionVersionsAction
+final class ListToolDescriptionVersionsAction extends Action
 {
     /**
      * @return Collection<int, ToolDescriptionVersionModel>
      */
-    public function execute(ToolDescriptionModel $description): Collection
+    protected function handle(ToolDescriptionModel $description): Collection
     {
         ToolDescriptionVersionsListingActionEvent::dispatch($description);
 

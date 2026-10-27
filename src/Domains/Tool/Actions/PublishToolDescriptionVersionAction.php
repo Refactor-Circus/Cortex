@@ -10,12 +10,13 @@ use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionVersionPublishingAc
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 use RefactorCircus\Cortex\Support\PublicationCache;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class PublishToolDescriptionVersionAction
+final class PublishToolDescriptionVersionAction extends Action
 {
     public function __construct(private readonly PublicationCache $cache) {}
 
-    public function execute(ToolDescriptionModel $description, int $version): ToolDescriptionModel
+    protected function handle(ToolDescriptionModel $description, int $version): ToolDescriptionModel
     {
         ToolDescriptionVersionPublishingActionEvent::dispatch($description, $version);
 

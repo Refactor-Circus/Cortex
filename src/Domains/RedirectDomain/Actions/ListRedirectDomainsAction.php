@@ -12,8 +12,9 @@ use RefactorCircus\Cortex\Domains\RedirectDomain\Data\ListRedirectDomainsData;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainsListedActionEvent;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainsListingActionEvent;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class ListRedirectDomainsAction
+final class ListRedirectDomainsAction extends Action
 {
     /**
      * Every stored domain, or one owner's; with `paged` set, one page of
@@ -21,7 +22,7 @@ final class ListRedirectDomainsAction
      *
      * @return Collection<int, RedirectDomainModel>|LengthAwarePaginator<int, RedirectDomainModel>
      */
-    public function execute(?Model $owner = null, ListRedirectDomainsData $filters = new ListRedirectDomainsData): Collection|LengthAwarePaginator
+    protected function handle(?Model $owner = null, ListRedirectDomainsData $filters = new ListRedirectDomainsData): Collection|LengthAwarePaginator
     {
         RedirectDomainsListingActionEvent::dispatch($owner, $filters);
 

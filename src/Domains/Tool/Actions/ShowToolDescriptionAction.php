@@ -7,10 +7,11 @@ namespace RefactorCircus\Cortex\Domains\Tool\Actions;
 use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionShowingActionEvent;
 use RefactorCircus\Cortex\Domains\Tool\Events\ToolDescriptionShownActionEvent;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
+use RefactorCircus\Keystone\Actions\Action;
 
-final class ShowToolDescriptionAction
+final class ShowToolDescriptionAction extends Action
 {
-    public function execute(string $tool): ToolDescriptionModel
+    protected function handle(string $tool): ToolDescriptionModel
     {
         ToolDescriptionShowingActionEvent::dispatch($tool);
 
