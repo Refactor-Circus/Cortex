@@ -50,6 +50,11 @@ jobs:
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress --no-scripts
           composer run prepare
 
+      # Regenerates the autoloader so vendor/composer/autoload_files.php lists the
+      # src/Domains/ConcreteServer/shims.php compatibility shim before any test runs.
+      - name: Dump autoloader
+        run: composer dump-autoload
+
       - name: PHPStan
         if: runner.os != 'Windows'
         run: composer analyse

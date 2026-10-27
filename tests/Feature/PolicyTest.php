@@ -9,11 +9,11 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideMode
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverridePolicy;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverrideVersionPolicy;
-use RefactorCircus\Cortex\Domains\McpServer\Mcp\Tools\CreateServerInstructionVersionTool;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Policies\McpInstructionPolicy;
-use RefactorCircus\Cortex\Domains\McpServer\Policies\McpInstructionVersionPolicy;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\CreateServerInstructionVersionTool;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Policies\McpInstructionPolicy;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Policies\McpInstructionVersionPolicy;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 use RefactorCircus\Cortex\Domains\Tool\Policies\ToolDescriptionPolicy;

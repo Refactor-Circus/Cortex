@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Tests\Fixtures;
 
-use RefactorCircus\Cortex\Domains\McpServer\Support\Server;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Support\Server;
 
 final class PlainServer extends Server
 {

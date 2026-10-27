@@ -5,8 +5,8 @@ description: >
   virtual agents with versioned prompts, registered concrete (class-based)
   agents with overridable prompts and toolsets, a tool registry with
   versioned description overrides, and an MCP server registry with versioned
-  instruction overrides, exposed through a REST API, a prebuilt dashboard,
-  and an MCP server.
+  instruction overrides and tool list overrides, exposed through a REST API,
+  a prebuilt dashboard, and an MCP server.
 license: MIT
 metadata:
   author: Jay Fletcher
@@ -92,7 +92,9 @@ Tag tools to group them in the dashboard and agent tool pickers: `Cortex::tools(
 
 To let a tool's description be overridden at runtime (versioned + published like agent prompts), extend `RefactorCircus\Cortex\Domains\Tool\Support\Tool` or use the `RefactorCircus\Cortex\Domains\Tool\Concerns\HasVersionedDescription` trait. Manage overrides from the dashboard or `/cortex/tools/{tool}/description` endpoints.
 
-MCP server *instructions* work the same way. Cortex's own server is always registered as `cortex`; register app servers under `cortex.mcp.servers` config (string keys name them; unkeyed entries derive the name from `#[Name]` or the class basename) or at runtime with `Cortex::servers()->register('support', \App\Mcp\SupportServer::class)`. For published overrides to be served to MCP clients, the server must extend `RefactorCircus\Cortex\Domains\McpServer\Support\Server` or use the `RefactorCircus\Cortex\Domains\McpServer\Concerns\HasVersionedInstructions` trait.
+MCP server *instructions* work the same way. Cortex's own server is always registered as `cortex`; register app servers under `cortex.mcp.servers` config (string keys name them; unkeyed entries derive the name from `#[Name]` or the class basename) or at runtime with `Cortex::servers()->register('support', \App\Mcp\SupportServer::class)`. For published overrides to be served to MCP clients, the server must extend `RefactorCircus\Cortex\Domains\ConcreteServer\Support\Server` or use the `RefactorCircus\Cortex\Domains\ConcreteServer\Concerns\HasCortexOverrides` trait. The old `Domains\McpServer\Support\Server` and `Concerns\HasVersionedInstructions` names still load as deprecated aliases (removed next major); write new code against `Domains\ConcreteServer`.
+
+A registered server's *tool list* can be overridden too: `PUT /cortex/servers/{server}/tools` `{tools: [...]}` or the `update-server-tools-tool` MCP tool stores a list of names (a code tool's `name()` first, otherwise a registered Cortex tool name; the code tool wins when both match), and clients get exactly that list in that order (`[]` serves no tools). `DELETE /cortex/servers/{server}/tools` or `clear-server-tools-tool` restores the code tools. The `cortex` server cannot be overridden. Stale entries are skipped and reported in `missing_tools`. Both check the `updateTools` ability, which the bundled policy allows for guests: before exposing the routes, give `McpInstructionModel` a policy whose `updateTools` returns false for guests (and anyone you do not trust to put any registered tool in front of that server's clients). The tool override needs the `tools` column migration (`vendor:publish --tag="cortex-migrations"`, `migrate`).
 
 ### 5. Register concrete agents
 
@@ -132,10 +134,11 @@ Register under `cortex.agents` config (string keys name them; unkeyed entries us
 - `GET /cortex/tools` — registered tools with JSON schemas.
 - `GET|DELETE /cortex/tools/{tool}/description`, `GET|POST .../description/versions`, `POST .../versions/{version}/publish` — versioned tool description overrides.
 - `GET /cortex/servers` — registered MCP servers with their effective instructions.
-- `GET|DELETE /cortex/servers/{server}/instructions`, `GET|POST .../instructions/versions`, `POST .../versions/{version}/publish` — versioned server instruction overrides (rollback = publish an older version).
+- `GET|DELETE /cortex/servers/{server}/instructions`, `GET|POST .../instructions/versions`, `POST .../versions/{version}/publish` — versioned server instruction overrides (rollback = publish an older version). The delete keeps a tool override (answering 200 with the instructions resource when one is kept, 204 otherwise).
+- `PUT|DELETE /cortex/servers/{server}/tools` — set (`{tools: [...]}`) or clear a server's tool override; needs `updateTools`.
 - `GET /cortex/history` — Cortex's audit history, newest first (route `cortex.history.index`, from refactor-circus/keystone); answers 404 until an audit log such as refactor-circus/keen is installed.
 
-The MCP server (`RefactorCircus\Cortex\Mcp\CortexServer`) exposes the virtual agent, concrete agent, tool-list, server-instruction and redirect-domain operations as 28 MCP tools, including `list-cortex-history-tool` (offered only while an audit log is installed and `cortex.audit.enabled` is on); the provider and tool-description endpoints are HTTP-only. Structured answers match the JSON API: the record under `data` (lists add `meta` when paginated), and every such tool declares an `outputSchema()`. A guest the policies refuse gets 401 over HTTP, a signed-in user 403; missing records answer `{"message": "Not found."}`.
+The MCP server (`RefactorCircus\Cortex\Mcp\CortexServer`) exposes the virtual agent, concrete agent, tool-list, server-instruction, server-tool and redirect-domain operations as 31 MCP tools, including `update-server-tools-tool`, `clear-server-tools-tool` and `list-cortex-history-tool` (offered only while an audit log is installed and `cortex.audit.enabled` is on); the provider and tool-description endpoints are HTTP-only. Structured answers match the JSON API: the record under `data` (lists add `meta` when paginated), and every such tool declares an `outputSchema()`. A guest the policies refuse gets 401 over HTTP, a signed-in user 403; missing records answer `{"message": "Not found."}`.
 
 From code, call the Actions with their typed input (`RefactorCircus\Keystone\Data\Data` classes in each domain's `Data` namespace), never arrays: `app(CreateVirtualAgentAction::class)->execute(new CreateVirtualAgentData(name: 'Support', slug: 'support-agent', instructions: '...'))`, or `CreateVirtualAgentData::from($input)` to validate untrusted input first. `UpdateVirtualAgentData` changes only the fields given. Cortex stands on `refactor-circus/keystone`: its event contracts live in `RefactorCircus\Keystone\Contracts`.
 
@@ -195,3 +198,4 @@ Read before executing:
 - do not edit prompt version content — versions are immutable; create a new version and publish it (concrete agent, tool description and server instruction override versions work the same way)
 - do not enable the MCP web transport or expose the routes without auth middleware, or ship the dashboard without a `viewAtrium` gate
 - do not attach tool class names to agents — attach the registered tool *names* from the registry
+- do not leave `updateTools` open to guests in production, and do not register Cortex's own management tools in the tool registry unless every client of the servers you override may manage Cortex

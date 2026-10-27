@@ -16,7 +16,7 @@ AI orchestration for Laravel. Cortex manages **virtual agents, concrete agents, 
 - **Virtual agents** are database records that combine their own versioned prompt, registered tools, provider/model settings, and other agents (virtual or concrete) as sub-agents. Prompt content is immutable per version and a published pointer decides what runs; roll back by publishing an older version.
 - **Concrete agents** are classes in your code. Register them with Cortex to list, run and attach them as sub-agents, and override their prompt (versioned, publishable) and toolset without a deploy.
 - **Tools** are PHP classes implementing `Laravel\Ai\Contracts\Tool` or extending `Laravel\Mcp\Server\Tool` (wrapped automatically), registered by name in the Cortex tool registry. Their descriptions can be overridden at runtime with versioned, publishable content.
-- **MCP servers** registered with Cortex get the same treatment for their instructions: versioned, publishable overrides that replace the code-declared instructions served to MCP clients, manageable over HTTP, MCP, and the dashboard.
+- **MCP servers** registered with Cortex (concrete servers: classes in your code) get the same treatment for their instructions: versioned, publishable overrides that replace the code-declared instructions served to MCP clients, manageable over HTTP, MCP, and the dashboard. Their tool list can be overridden too, picked from the server's own tools and the registered Cortex tools.
 
 Run either kind via the API, the dashboard, the MCP server, or the `Cortex` facade.
 
@@ -102,6 +102,8 @@ Every API endpoint and MCP tool that touches a model checks it through the Gate,
 
 Cortex records have no owner, so the bundled policies allow everything and your middleware stays the gate, as before. Version policies defer to their virtual agent or override through the Gate: reading a version needs `view` on it, adding or publishing one needs `update`. Point a model at your own policy class in `cortex.policies` to restrict it.
 
+Changing a concrete MCP server's tool list checks its own ability, `updateTools`, which the bundled policy allows for guests too. Read [who may change a server's tools](#who-may-change-a-servers-tools) before exposing the routes.
+
 **Full guide:** [Policies](docs/policies.md). It covers what each endpoint and MCP tool checks, and how to replace a policy.
 
 ## Dashboard
@@ -114,7 +116,7 @@ use Illuminate\Support\Facades\Gate;
 Gate::define('viewAtrium', fn ($user) => $user->is_admin);
 ```
 
-The dashboard covers virtual agents with their prompt versions, concrete agents with their prompt and toolset overrides, a run playground, the tool registry (filterable by tag) with a versioned description editor, and the MCP server registry with a versioned instructions editor.
+The dashboard covers virtual agents with their prompt versions, concrete agents with their prompt and toolset overrides, a run playground, the tool registry (filterable by tag) with a versioned description editor, and the MCP server registry with a versioned instructions editor and a tool list editor.
 
 Atrium owns the path, the middleware and the authorization gate, so there is nothing to configure here beyond the single switch:
 
@@ -244,7 +246,9 @@ Everything is available over the REST API (prefix `cortex` by default):
 | GET/POST | `/cortex/tools/{tool}/description/versions` | List / create immutable override versions |
 | POST | `/cortex/tools/{tool}/description/versions/{version}/publish` | Publish an override version |
 | GET | `/cortex/servers` | List registered MCP servers with their effective instructions |
-| GET/DELETE | `/cortex/servers/{server}/instructions` | Show / remove the instruction override |
+| GET/DELETE | `/cortex/servers/{server}/instructions` | Show / remove the instruction override (a tool override stays) |
+| PUT | `/cortex/servers/{server}/tools` | Set the tool override with `{"tools": [...]}` |
+| DELETE | `/cortex/servers/{server}/tools` | Clear the tool override and serve the code tools again |
 | GET/POST | `/cortex/servers/{server}/instructions/versions` | List / create immutable override versions |
 | POST | `/cortex/servers/{server}/instructions/versions/{version}/publish` | Publish an override version |
 | GET/POST | `/cortex/redirect-domains` | List (optionally one owner's, with `owner_type` and `owner_id`) / add OAuth redirect domains |
@@ -296,13 +300,13 @@ The dashboard's virtual agent form and `GET /cortex/providers` offer the same pr
 
 ## Publication Cache
 
-Published virtual agent prompts, tool description overrides, MCP server instruction overrides, concrete agent overrides and the stored OAuth redirect domains are cached so agent runs, tool listings, and MCP handshakes don't hit the database on every request; publishing invalidates explicitly. When Redis is available it is preferred and read via `Cache::flexible()` using the `cache.fresh`/`cache.stale` windows (stale-while-revalidate); any other store caches until invalidation. Pin a store with `cache.store`, or set `cache.enabled` to `false` to read from the database on every pull.
+Published virtual agent prompts, tool description overrides, MCP server instruction and tool overrides, concrete agent overrides and the stored OAuth redirect domains are cached so agent runs, tool listings, and MCP handshakes don't hit the database on every request; publishing invalidates explicitly. When Redis is available it is preferred and read via `Cache::flexible()` using the `cache.fresh`/`cache.stale` windows (stale-while-revalidate); any other store caches until invalidation. Pin a store with `cache.store`, or set `cache.enabled` to `false` to read from the database on every pull.
 
 On Redis, a publish clears the cached key, but a read or a `flexible()` background refresh already under way can write the previous content back; the stale value then lives until its `cache.fresh` window ends, so a publish can take up to `cache.fresh` seconds (300 by default) to reach every worker. Lower `cache.fresh`, or pin a non-Redis store with `cache.store`, where publishes must show immediately.
 
 ## MCP Server
 
-The `CortexServer` exposes the virtual agent, concrete agent, tool, and server-instruction operations as MCP tools (29 tools: virtual agent CRUD + run + prompt versions + publish, concrete agent list/show/run + prompt versions + publish + tools + remove overrides, list tools, server instructions + versions + publish, OAuth redirect domains list/add/remove, and `list-cortex-history-tool` for the audit history). The provider and tool-description endpoints are HTTP-only. Enable a transport in the config:
+The `CortexServer` exposes the virtual agent, concrete agent, tool, and server operations as MCP tools (31 tools: virtual agent CRUD + run + prompt versions + publish, concrete agent list/show/run + prompt versions + publish + tools + remove overrides, list tools, server instructions + versions + publish, server tool override set/clear, OAuth redirect domains list/add/remove, and `list-cortex-history-tool` for the audit history). The provider and tool-description endpoints are HTTP-only. Enable a transport in the config:
 
 ```php
 'mcp' => [
@@ -332,7 +336,94 @@ use RefactorCircus\Cortex\Facades\Cortex;
 Cortex::servers()->register('support', \App\Mcp\SupportServer::class);
 ```
 
-For the published override to actually be served to MCP clients, the server class must extend `RefactorCircus\Cortex\Domains\McpServer\Support\Server` (or use the `RefactorCircus\Cortex\Domains\McpServer\Concerns\HasVersionedInstructions` trait if it cannot change its base class). Unregistered servers, and servers with no published version, keep serving their code-declared instructions.
+For the published override to actually be served to MCP clients, the server class must extend `RefactorCircus\Cortex\Domains\ConcreteServer\Support\Server` (or use the `RefactorCircus\Cortex\Domains\ConcreteServer\Concerns\HasCortexOverrides` trait if it cannot change its base class; `HasVersionedInstructions` beside it is the same trait under its old name). Unregistered servers, and servers with no published version, keep serving their code-declared instructions.
+
+The domain was called `McpServer` before. `RefactorCircus\Cortex\Domains\McpServer\Support\Server`, `...\Concerns\HasVersionedInstructions`, the two models (`...\Models\McpInstructionModel`, `...\Models\McpInstructionVersionModel`) and their two policies (`...\Policies\McpInstructionPolicy`, `...\Policies\McpInstructionVersionPolicy`) still load under their old names, as deprecated aliases of the `ConcreteServer` classes that go away in the next major release. See [Upgrading from the McpServer domain](#upgrading-from-the-mcpserver-domain).
+
+### Overriding a Concrete Server's Tools
+
+A concrete server is an MCP server class registered with Cortex. Its tool list can be replaced without a deploy, the way its instructions can: the override is a list of tool names, picked from the server's own code-declared tools and the registered Cortex tools, and every client of the server is then served exactly that list. It needs the same base class or trait as the instruction override.
+
+- **API:** `PUT /cortex/servers/{server}/tools` (route `cortex.servers.tools.update`) with `{"tools": ["lookup", "search"]}` sets the override. `DELETE /cortex/servers/{server}/tools` (route `cortex.servers.tools.destroy`) clears it, and the server serves its code tools again.
+- **MCP:** the `update-server-tools-tool` and `clear-server-tools-tool` tools on `CortexServer`, with the same input.
+- **Dashboard:** the server's screen has a checklist of the server's code tools (in code order), then the registered tools (in registry order), with a "restore code tools" button. Saving with nothing ticked serves no tools, so the form asks you to confirm it.
+- **Code:** `app(UpdateConcreteServerToolsAction::class)->execute('support', UpdateConcreteServerToolsData::from(['tools' => ['lookup']], 'support'))`, and `ClearConcreteServerToolsAction` to clear.
+
+The server list and the instructions show report four fields: `tools` (the effective list), `tools_overridden`, `missing_tools` (stored entries that are not served) and `ambiguous_tools` (stored entries that match both a code tool and a registered tool).
+
+#### What gets served
+
+- **Names.** An entry names a code-declared tool by its `name()` first, otherwise a registered Cortex tool by its registered name. When both match, the code tool wins: the entry is listed in `ambiguous_tools` and a warning is logged. Two entries that resolve to the same served name are refused (422 on the later one).
+- **Order.** The stored order is a promise: clients get `tools/list` in the order you saved, and the `tools` field reports the same order. The dashboard checklist has no reorder control: it keeps the stored order for entries already in the list and adds new ones in checklist order. Send an explicit order through the API.
+- **Empty and null.** `[]` is a valid override that serves no tools at all; the API does not ask for confirmation. `null` (or no override) serves the code-declared tools.
+- **Flat list.** A server whose code tools sit behind `ToolSearch` is served a flat list once overridden; the grouping is dropped.
+- **Tools the server adds itself.** Tools a server adds in its constructor or `boot()` are served when an override names them. Validation, the `tools`/`missing_tools` fields and the dashboard checklist read the server's `$tools` default by reflection, though, so a server that builds its tools dynamically shows only that reflected list there: the update refuses a tool added at runtime, and a stored entry naming one is served but reported in `missing_tools`.
+- **Gating.** A selected tool keeps its own gating. A tool whose `shouldRegister()` is false stays hidden from `tools/list` and `tools/call`, and a `Laravel\Ai` tool keeps its own eligibility check, which sees the MCP request and its user.
+- **Removed tools.** A tool the override leaves out is not just hidden: `tools/call` for it fails as an unknown tool.
+- **Stale and failing entries.** An entry that no longer resolves (a code tool removed from the class, a tool no longer registered) or whose tool throws while it is built is skipped, the rest is served, a warning is logged and the entry is reported in `missing_tools`. A stored value that is not a list counts as no override. Each warning is logged once per server and entry per `cortex.mcp.warning_ttl` seconds (default 3600).
+- **The `cortex` server.** Cortex's own server is the only one that cannot be overridden: the update and clear answer 422, a stored row is ignored, and its dashboard screen has no tool editor.
+- **Cortex's management tools are not selectable.** `update-server-tools-tool` and the other `CortexServer` tools are not in the tool registry, so an override cannot put them on a server. Registering them with `Cortex::tools()->register()` makes them selectable, and puts Cortex's management in front of that server's clients: that is your call and your responsibility.
+- **No history of its own.** The tool list is not versioned: there are no versions and no publish step, and saving replaces the list.
+
+#### Who may change a server's tools
+
+Setting and clearing the override checks `updateTools` on the server's override, through the `McpInstructionModel` policy in `cortex.policies`. **The bundled policy allows it, for guests too**, like every other bundled ability. Whoever passes it can put any registered Cortex tool on the server, `Laravel\Ai` tools included, in front of every MCP client of that server, whatever that server's own transport auth. No per-tool ability is checked: `updateTools` is the trust boundary, so any role you grant it can expose any registered tool, including tools you restrict elsewhere. While guests are allowed, Cortex logs a warning when it boots outside the `local` environment (once per worker process, never in the console) naming the servers concerned.
+
+Deny it by default with your own policy:
+
+```php
+use Illuminate\Contracts\Auth\Authenticatable;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Policies\McpInstructionPolicy;
+
+class InstructionPolicy extends McpInstructionPolicy
+{
+    public function updateTools(?Authenticatable $user, McpInstructionModel $instruction): bool
+    {
+        if ($user === null) {
+            return false;
+        }
+
+        return $user->can('manage-mcp-tools');
+    }
+}
+
+// config/cortex.php
+'policies' => [
+    McpInstructionModel::class => InstructionPolicy::class,
+    // ...
+],
+```
+
+A policy of your own that has no `updateTools` method denies it (the Gate's default): the routes answer 403 to a signed-in user and 401 to a guest, the MCP tools refuse, and the dashboard shows the server's tools read-only. Add the method when you want the feature.
+
+#### Deleting instructions keeps the tool override
+
+`DELETE /cortex/servers/{server}/instructions` and `delete-server-instructions-tool` clear the instructions only. They delete the versions and the published pointer, and remove the override row only when it holds no tool override:
+
+- with no tool override the row goes, and the answer is unchanged: 204, and a text answer over MCP;
+- with a tool override the row stays, the tools are still served, and the answer is the server's instructions resource (200, structured content over MCP) showing `tools_overridden: true`. Clear the tools with `DELETE /cortex/servers/{server}/tools`.
+
+Before this release the delete always removed the whole override row.
+
+The versions are deleted one model at a time, so each fires its own `McpInstructionVersionDeletingEvent` / `McpInstructionVersionDeletedEvent`, and a long history means as many deletes inside one transaction. With refactor-circus/keen installed the delete writes one `mcp_instruction.deleted` audit entry for the whole delete; the per-version deletes show only as model events. Model events fire inside the transaction, so when it rolls back (a listener throws on a later version) the events of the versions already deleted have fired though the rows come back: treat those delete events as at-least-once.
+
+#### Caching and revocation
+
+The tool overrides are read through the [publication cache](#publication-cache) and forgotten after the write commits. Use a cache store that every node shares: a per-node store (`array`, `file`) never sees another node's invalidation and keeps serving the old list there.
+
+A cleared or changed list is served from the next request on a non-Redis store. On Redis a read or background refresh already under way can write the previous list back, so revoking a tool can take up to `cortex.cache.fresh` seconds (300 by default) to reach every worker; lower it, or pin a non-Redis store, where revocation must be immediate. If the cache store fails while forgetting, the change is still saved and the failure is logged, but the old list is served until the next successful invalidation (or, on Redis, until its stale window ends).
+
+The update, clear and delete re-read the override row with `lockForUpdate()` inside their transaction, so a tools save and an instructions delete never lose each other's write. The suite proves this on SQLite only, where the lock is a no-op; on MySQL and PostgreSQL the lock is expected to hold but is untested.
+
+#### Upgrading from the McpServer domain
+
+- **Run the new migration.** The override lives in a new nullable `tools` column on `cortex_mcp_instructions` (`2026_10_23_000002_add_tools_to_cortex_mcp_instructions.php`). If you never published Cortex's migrations, run `php artisan vendor:publish --tag="cortex-migrations"` and `php artisan migrate`. If you did, copy just that file from `vendor/refactor-circus/cortex/database/migrations` into `database/migrations` instead of publishing the tag again: publishing re-stamps every Cortex migration with a new timestamp, and `migrate` then fails on tables that already exist. The migration checks for the column first, so running it twice does nothing. Until it runs, servers serve their code tools (instructions overrides still apply) and Cortex logs a warning naming the migration. The column check is remembered per process, so restart Octane and queue workers after migrating.
+- **Rolling back drops the tool overrides.** `migrate:rollback` of that migration drops the `tools` column and every stored tool override with it.
+- **Renamed classes.** Classes moved from `RefactorCircus\Cortex\Domains\McpServer\...` to `RefactorCircus\Cortex\Domains\ConcreteServer\...`, names unchanged; `McpServerServiceProvider` is now `ConcreteServerServiceProvider`. Table names, route URIs and names, MCP tool names, config keys and server names are unchanged.
+- **Deprecated aliases.** The old base class, trait, models and policies (listed under [Server Instruction Overrides](#server-instruction-overrides)) still load under their old names through a Composer `autoload.files` entry, so run `composer dump-autoload -o` after updating, and regenerate a pre-built or classmap-authoritative `vendor/`, or the old names are not found. A `cortex.policies` key that names an old model class is moved to the new class with a deprecation warning; key it by the new class. Move your references to the new names before the next major release.
+- **Everything else moved without an alias.** Events, actions, Data objects, requests and exceptions of the old namespace have no alias. Asking for one logs a warning naming its new class, then fails as class not found. A listener registered by an old event class name (`Event::listen`, a subscriber, a `$listen` map) stops hearing the event silently, a `catch` of an old exception stops matching, and queued jobs or listeners serialized with an old class name fail to unserialize. Drain your queues before upgrading and re-register listeners by the new class names.
+- **Keep the morph map keys.** Polymorphic columns and audit entries of the two models store, and keep storing, their old class names `RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel` and `RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel`, which Cortex maps to the new classes in `Relation::morphMap()`. If you call `Relation::enforceMorphMap()` or `Relation::morphMap([...], false)`, keep those two keys, or stored rows stop resolving. Do not map the two model classes under another alias either: the new alias would win for writes and stored rows would mix two strings. Cortex logs a warning after boot when either happens.
 
 ### OAuth Redirect Domains
 

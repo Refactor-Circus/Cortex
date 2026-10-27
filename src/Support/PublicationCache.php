@@ -12,7 +12,7 @@ use Throwable;
 
 /**
  * Cache for published content (virtual agent prompts, tool description,
- * MCP instruction and concrete agent overrides, and the stored OAuth redirect
+ * MCP instruction and tool, and concrete agent overrides, and the stored OAuth redirect
  * domains) that only changes when a new version is published or a domain is
  * added or removed — those actions invalidate explicitly.
  *
@@ -95,6 +95,27 @@ final class PublicationCache
         return '{cortex.published}.mcp-instructions';
     }
 
+    /**
+     * The concrete MCP server tool overrides. Every action that changes a
+     * server's `tools` or deletes its override row forgets it.
+     */
+    public function mcpToolsKey(): string
+    {
+        return '{cortex.published}.mcp-tools';
+    }
+
+    /**
+     * The rate-limit claim of one warning (see {@see WarningLimiter}): a
+     * server name plus what the warning is about (a stored entry, a value
+     * type, a column, an exception class). Both parts are hashed so the key
+     * stays short whatever they hold, and the Cortex key family keeps a
+     * cache shared between apps from suppressing another app's warnings.
+     */
+    public function warningKey(string $server, string $subject): string
+    {
+        return '{cortex.published}.warning.'.hash('xxh128', $server).'.'.hash('xxh128', $subject);
+    }
+
     public function redirectDomainsKey(): string
     {
         return '{cortex.published}.redirect-domains';
@@ -108,6 +129,18 @@ final class PublicationCache
     public function virtualAgentKey(string $agentId): string
     {
         return '{cortex.published}.virtual-agent.'.$agentId;
+    }
+
+    /**
+     * The store the publication cache reads and writes: `cortex.cache.store`
+     * when pinned, else Redis when it answers, else the default store. The
+     * warning limiter claims its keys here, so every node shares them.
+     *
+     * @internal
+     */
+    public function store(): Repository
+    {
+        return $this->repository();
     }
 
     private function repository(): Repository

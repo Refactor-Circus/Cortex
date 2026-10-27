@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Illuminate\Database\QueryException;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionVersionModel;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionVersionModel;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
@@ -153,6 +153,7 @@ it('stores models under their own class names', function (string $model): void {
     ConcreteAgentOverrideVersionModel::class,
     ToolDescriptionModel::class,
     ToolDescriptionVersionModel::class,
-    McpInstructionModel::class,
-    McpInstructionVersionModel::class,
+    // McpInstructionModel and McpInstructionVersionModel moved from the
+    // McpServer domain and keep their old class names as morph aliases:
+    // tests/Feature/Compat/MorphAliasesTest.php covers what they store.
 ]);

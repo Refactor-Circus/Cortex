@@ -17,13 +17,13 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionD
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\RunConcreteAgentData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\UpdateConcreteAgentToolsData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
-use RefactorCircus\Cortex\Domains\McpServer\Actions\CreateMcpInstructionVersionAction;
-use RefactorCircus\Cortex\Domains\McpServer\Actions\DeleteMcpInstructionAction;
-use RefactorCircus\Cortex\Domains\McpServer\Actions\ListMcpInstructionVersionsAction;
-use RefactorCircus\Cortex\Domains\McpServer\Actions\ListMcpServersAction;
-use RefactorCircus\Cortex\Domains\McpServer\Actions\PublishMcpInstructionVersionAction;
-use RefactorCircus\Cortex\Domains\McpServer\Actions\ShowMcpInstructionAction;
-use RefactorCircus\Cortex\Domains\McpServer\Data\CreateMcpInstructionVersionData;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\CreateMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\DeleteMcpInstructionAction;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\ListMcpInstructionVersionsAction;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\ListMcpServersAction;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\PublishMcpInstructionVersionAction;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\ShowMcpInstructionAction;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Data\CreateMcpInstructionVersionData;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\ListRedirectDomainsAction;
@@ -229,7 +229,7 @@ it('gives every action exactly one start and one finish event', function (): voi
         }
     }
 
-    expect($actions)->toHaveCount(34)
+    expect($actions)->toHaveCount(36)
         ->and($unpaired)->toBe([]);
 });
 

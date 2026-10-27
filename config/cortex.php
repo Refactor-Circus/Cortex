@@ -7,10 +7,10 @@ use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideMode
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverridePolicy;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverrideVersionPolicy;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel;
-use RefactorCircus\Cortex\Domains\McpServer\Policies\McpInstructionPolicy;
-use RefactorCircus\Cortex\Domains\McpServer\Policies\McpInstructionVersionPolicy;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionVersionModel;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Policies\McpInstructionPolicy;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Policies\McpInstructionVersionPolicy;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Policies\RedirectDomainPolicy;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
@@ -55,6 +55,24 @@ return [
     | gate, as before. Versions defer to their virtual agent or override:
     | reading one needs `view` on it, adding or publishing one needs `update`.
     | Point a model at your own class to replace its policy.
+    |
+    | updateTools: The McpInstructionModel ability that overrides or clears a
+    |              concrete MCP server's tool list. The bundled default
+    |              allows guests too, and whoever passes it can put any
+    |              registered Cortex tool in front of every client of that
+    |              server, so outside `local` Cortex logs a warning at boot
+    |              while guests are allowed. A policy of your own without an
+    |              updateTools method denies it. To allow trusted users only
+    |              (README: "Who may change a server's tools"):
+    |
+    |              public function updateTools(?Authenticatable $user, McpInstructionModel $instruction): bool
+    |              {
+    |                  if ($user === null) {
+    |                      return false;
+    |                  }
+    |
+    |                  return $user->can('manage-mcp-tools');
+    |              }
     |
     */
 
@@ -156,7 +174,9 @@ return [
     |
     | The `servers` list holds MCP server classes whose instructions Cortex
     | manages (versioned overrides replacing the code-declared value when
-    | published). Cortex's own server is always registered as 'cortex'.
+    | published) and whose tool list it can override (see the updateTools
+    | ability under Policies). Cortex's own server is always registered as
+    | 'cortex', and its tools cannot be overridden.
     | String keys set the server's registered name; unkeyed entries
     | derive it from the class. Servers may also be registered at
     | runtime via Cortex::servers()->register($name, $class).
@@ -176,6 +196,26 @@ return [
         'servers' => [
             // 'support' => \App\Mcp\SupportServer::class,
         ],
+
+        /*
+        |----------------------------------------------------------------------
+        | MCP Warning Rate Limit
+        |----------------------------------------------------------------------
+        |
+        | warning_ttl: How long, in seconds, Cortex stays quiet about a stored
+        |              server override it cannot serve as saved once it has
+        |              logged it: a stale, failing or ambiguous tool entry,
+        |              a tools value that is not a list, the missing `tools`
+        |              column, or a failed server context rebuild. Each logs
+        |              once per server and entry per window, across requests,
+        |              through the publication cache store, so use a store
+        |              every node shares. Default 3600 (one hour); values
+        |              below 1 count as 1. Lower it while fixing overrides,
+        |              raise it to quiet a busy log.
+        |
+        */
+
+        'warning_ttl' => 3600,
     ],
 
     /*

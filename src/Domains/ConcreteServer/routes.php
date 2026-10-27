@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Support\Facades\Route;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Http\Controllers\McpInstructionController;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Http\Controllers\McpServerController;
+use RefactorCircus\Cortex\Domains\ConcreteServer\Http\Controllers\McpServerToolsController;
+
+Route::get('servers', [McpServerController::class, 'index'])->name('servers.index');
+
+Route::put('servers/{server}/tools', [McpServerToolsController::class, 'update'])->name('servers.tools.update');
+Route::delete('servers/{server}/tools', [McpServerToolsController::class, 'destroy'])->name('servers.tools.destroy');
+
+Route::get('servers/{server}/instructions', [McpInstructionController::class, 'show'])->name('servers.instructions.show');
+Route::delete('servers/{server}/instructions', [McpInstructionController::class, 'destroy'])->name('servers.instructions.destroy');
+Route::get('servers/{server}/instructions/versions', [McpInstructionController::class, 'versions'])->name('servers.instructions.versions.index');
+Route::post('servers/{server}/instructions/versions', [McpInstructionController::class, 'store'])->name('servers.instructions.versions.store');
+Route::post('servers/{server}/instructions/versions/{version}/publish', [McpInstructionController::class, 'publish'])
+    ->whereNumber('version')->name('servers.instructions.versions.publish');

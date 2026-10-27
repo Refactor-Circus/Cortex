@@ -9,11 +9,20 @@
     @include('cortex::ui.partials.override', [
         'override' => $instruction,
         'subject' => $subject,
-        'versionClass' => \RefactorCircus\Cortex\Domains\McpServer\Models\McpInstructionVersionModel::class,
+        'versionClass' => \RefactorCircus\Cortex\Domains\ConcreteServer\Models\McpInstructionVersionModel::class,
         'fallback' => $codeInstructions,
         'versions' => $versions,
         'storeRoute' => route('atrium.cortex.servers.instructions.store', $server),
         'destroyRoute' => route('atrium.cortex.servers.instructions.destroy', $server),
         'publishRoute' => fn (int $version) => route('atrium.cortex.servers.instructions.publish', [$server, $version]),
     ])
+
+    {{-- No tool editor for a server whose tools cannot be overridden (the cortex server). --}}
+    @if ($toolEditor !== null)
+        @include('cortex::ui.servers.partials.tools', [
+            'server' => $server,
+            'subject' => $subject,
+            'toolEditor' => $toolEditor,
+        ])
+    @endif
 </x-atrium::layout>
