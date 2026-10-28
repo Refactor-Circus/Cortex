@@ -1,0 +1,7 @@
+id: 2026-10-27-1055-fix-setup-php-2-40-0-bump
+title: Fix CI failure on Dependabot setup-php 2.40.0 bump
+status: done
+review_passes: 2
+created: 2026-10-27
+ticket: { provider: github, key: "#13", url: "https://github.com/Refactor-Circus/Cortex/issues/13" }
+standards: {}

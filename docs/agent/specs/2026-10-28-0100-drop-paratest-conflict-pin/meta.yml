@@ -1,0 +1,6 @@
+id: 2026-10-28-0100-drop-paratest-conflict-pin
+title: Drop the paratest conflict pin and require pest ^5.3.4
+status: merged
+created: 2026-10-28
+ticket: { provider: github, key: "#13", url: "https://github.com/Refactor-Circus/Cortex/issues/13" }
+pr: { number: 14, url: "https://github.com/Refactor-Circus/Cortex/pull/14" }
