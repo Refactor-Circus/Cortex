@@ -21,6 +21,7 @@ In scope:
 
 - D-001: Cortex references Roster only by screen keys and the model classes it already supports through `RedirectDomains` (`Cortex/src/Domains/RedirectDomain/Services/RedirectDomains.php:78`). It adds no `class_exists()` checks for Roster UI. If Roster isn't installed, the registrations never render.
 - D-002: open for spec review: whether Roster's organization and user models are looked up by the morph types already registered with Cortex's `RedirectDomains`, or by the screen's record.
+- D-003: the organization tab registers as `cortex.mcp` (vendor-prefixed, Atrium D-008). Old `?tab=mcp` links fall back to the default tab.
 
 ## Context
 
