@@ -1,0 +1,10 @@
+id: 2026-10-27-2251-drop-paratest-conflict-for-pest-5-3
+title: Drop brianium/paratest conflict so composer resolves with Pest 5.3
+status: closed
+review_passes: 2
+created: 2026-10-27
+ticket: { provider: github, key: "#13", url: https://github.com/Refactor-Circus/Cortex/issues/13 }
+standards:
+  refactor-circus/standards:
+    version: dev-main
+    reference: a5b675396232
