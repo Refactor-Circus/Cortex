@@ -36,7 +36,7 @@ it('renders no history on the screens that used to show it', function (): void {
 });
 
 it('names no history component or history navigation item in its code and docs', function (): void {
-    $root = dirname(__DIR__, 2);
+    $root = str_replace('\\', '/', dirname(__DIR__, 2));
     $files = [$root.'/README.md', $root.'/CLAUDE.md'];
 
     foreach (['resources', 'src', 'docs/agent/standards'] as $directory) {
@@ -44,7 +44,8 @@ it('names no history component or history navigation item in its code and docs',
 
         foreach ($iterator as $file) {
             if ($file instanceof SplFileInfo && $file->isFile()) {
-                $files[] = $file->getPathname();
+                // Forward slashes on Windows too, so the expectation below matches.
+                $files[] = str_replace('\\', '/', $file->getPathname());
             }
         }
     }
