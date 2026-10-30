@@ -12,7 +12,7 @@ use RuntimeException;
 
 /**
  * The bundled redirect-domain policy, with switches a test flips: abilities
- * it denies outright, a `viewAny` that throws, and a `viewAny` that runs one
+ * it denies outright, a `viewAny` with an owner that throws, and a `viewAny` that runs one
  * query, as an app's own policy might. Call `reset()` after each test.
  */
 final class SwitchableRedirectDomainPolicy extends RedirectDomainPolicy
@@ -37,7 +37,10 @@ final class SwitchableRedirectDomainPolicy extends RedirectDomainPolicy
 
     public function viewAny(?Authenticatable $user, ?Model $owner = null): bool
     {
-        if (self::$throws) {
+        // Only the owned check throws: the host page's layout also asks
+        // `viewAny` of the class for Cortex's sidebar item, which is not the
+        // check under test.
+        if (self::$throws && $owner !== null) {
             throw new RuntimeException('The redirect-domain policy failed.');
         }
 

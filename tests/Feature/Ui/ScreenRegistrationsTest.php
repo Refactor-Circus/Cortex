@@ -13,6 +13,12 @@ use RefactorCircus\Cortex\CortexServiceProvider;
  * `cortex.atrium.redirect_domains.screens`. Each test empties the registry,
  * sets the map and runs the provider's registration again, as `boot()` does.
  */
+afterEach(function (): void {
+    // Back to testing before the migrations roll back, which would ask to
+    // confirm in production.
+    app()->detectEnvironment(fn (): string => 'testing');
+});
+
 function bootScreenRegistrations(): void
 {
     app(ScreenExtensions::class)->flush();
