@@ -26,13 +26,14 @@ function packageDocument(string $path): string
 }
 
 /**
- * The CHANGELOG's Unreleased section, up to the next release heading.
+ * The CHANGELOG's v0.1.0 section, which carries these upgrade notes, up to
+ * the next release heading.
  */
-function unreleasedChangelog(): string
+function releaseChangelog(): string
 {
     $changelog = packageDocument('CHANGELOG.md');
 
-    expect(preg_match('/^## \[Unreleased\].*?(?=^## \[)/ms', $changelog, $matches))->toBe(1, 'CHANGELOG.md has no Unreleased section.');
+    expect(preg_match('/^## \[v0\.1\.0\].*?(?=^## \[|\z)/ms', $changelog, $matches))->toBe(1, 'CHANGELOG.md has no v0.1.0 section.');
 
     return $matches[0];
 }
@@ -172,8 +173,8 @@ it('mentions both server tool MCP tools in the Boost skill', function (): void {
 });
 
 describe('CHANGELOG', function (): void {
-    it('keeps the upgrade keywords in the Unreleased section', function (string $keyword): void {
-        expect(unreleasedChangelog())->toContain($keyword);
+    it('keeps the upgrade keywords in the v0.1.0 section', function (string $keyword): void {
+        expect(releaseChangelog())->toContain($keyword);
     })->with([
         'optimized autoloader' => ['dump-autoload -o'],
         'publish the migrations' => ['vendor:publish'],
@@ -182,8 +183,8 @@ describe('CHANGELOG', function (): void {
         'restart workers' => ['restart'],
     ]);
 
-    it('opens the Unreleased section with the updateTools upgrade note', function (): void {
-        expect(preg_match('/^### .*?(?=^### )/ms', unreleasedChangelog(), $first))->toBe(1)
+    it('opens the v0.1.0 section with the updateTools upgrade note', function (): void {
+        expect(preg_match('/^### .*?(?=^### )/ms', releaseChangelog(), $first))->toBe(1)
             ->and($first[0])->toContain('updateTools')
             ->toContain('/cortex/servers/{server}/tools');
     });
@@ -193,7 +194,7 @@ describe('CHANGELOG', function (): void {
      * domains names each of its seven topics, and the Atrium conflict.
      */
     it('carries the Atrium screens and owned redirect domains upgrade note', function (string $keyword): void {
-        expect(markdownSection(unreleasedChangelog(), 'Upgrade notes (Atrium screens and owned redirect domains)'))->toContain($keyword);
+        expect(markdownSection(releaseChangelog(), 'Upgrade notes (Atrium screens and owned redirect domains)'))->toContain($keyword);
     })->with([
         'Atrium suggested' => ['suggest'],
         'the new config key' => ['redirect_domains'],
@@ -206,7 +207,7 @@ describe('CHANGELOG', function (): void {
     ]);
 
     it('states the Atrium conflict constraint composer.json declares in the upgrade note', function (): void {
-        expect(markdownSection(unreleasedChangelog(), 'Upgrade notes (Atrium screens and owned redirect domains)'))
+        expect(markdownSection(releaseChangelog(), 'Upgrade notes (Atrium screens and owned redirect domains)'))
             ->toContain('`'.atriumConflictConstraint().'`');
     });
 });

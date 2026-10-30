@@ -1,6 +1,8 @@
 # Release Notes
 
-## [Unreleased](https://github.com/Refactor-Circus/Cortex/commits/main)
+## [Unreleased](https://github.com/Refactor-Circus/Cortex/compare/v0.1.0...main)
+
+## [v0.1.0](https://github.com/Refactor-Circus/Cortex/commits/v0.1.0) - 2026-10-30
 
 ### Upgrade notes (security-relevant)
 
@@ -329,8 +331,3 @@
 - New migration `2026_10_12_000001_add_cortex_performance_indexes` indexes the sub-agent pivot's `sub_agent_id`. Run `php artisan migrate` after updating (publish it first with `cortex-migrations` if you published the migrations).
 - The global search checks concrete agent results against their overrides in one query, and the settings panel counts MCP servers without resolving them.
 - On Redis, a publish can take up to `cortex.cache.fresh` seconds to reach every worker; the config file and README now say so.
-
-
-## [v0.1.0](https://github.com/Refactor-Circus/Cortex/compare/...v0.1.0) - 202x-xx-xx
-
-Initial pre-release.
