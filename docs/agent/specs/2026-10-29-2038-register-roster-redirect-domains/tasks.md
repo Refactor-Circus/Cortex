@@ -56,7 +56,7 @@ depends on: 3, 4
 files: README.md, CHANGELOG.md, tests/Feature/DocsTest.php
 criteria: 18, 19
 
-- [ ] 5.1 Write tests in DocsTest for the README heading and phrases and the CHANGELOG keywords listed in criterion 18.
-- [ ] 5.2 Add the README "Redirect domains on other screens" section (config, keys, visibility, owner update policy, Atrium is suggested, conflict, fail-fast in local/testing and report-and-skip in production, CI lane as the authoritative proof).
-- [ ] 5.3 Add the CHANGELOG upgrade note covering the seven topics of criterion 18, including the owned-domain policy change and the Atrium conflict.
-- [ ] 5.4 Run composer test (including test:without-atrium) and vendor/bin/pest; all green
+- [x] 5.1 Write tests in DocsTest for the README heading and phrases and the CHANGELOG keywords listed in criterion 18.
+- [x] 5.2 Add the README "Redirect domains on other screens" section (config, keys, visibility, owner update policy, Atrium is suggested, conflict, fail-fast in local/testing and report-and-skip in production, CI lane as the authoritative proof).
+- [x] 5.3 Add the CHANGELOG upgrade note covering the seven topics of criterion 18, including the owned-domain policy change and the Atrium conflict.
+- [x] 5.4 Run composer test (including test:without-atrium) and vendor/bin/pest; all green

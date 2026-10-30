@@ -247,3 +247,47 @@ Existing tests changed here, which the PR must list under criterion 14:
 - `tests/Feature/Mcp/ServerToolOverrideTest.php`: `servers that are not overridable (AC 12)` → `ignores a cortex row with tools on the registered cortex route`
 
 Result: `composer test:unit` passes, 808 tests and 3259 assertions. Pint passes on both changed files.
+
+## Group 5
+
+README and CHANGELOG (criteria 18 and 19). Branch `ring-master/2026-10-29-2038-register-roster-redirect-domains`.
+
+### Files
+
+- `tests/Feature/DocsTest.php`: adds a `markdownSection()` helper. It returns a heading's section, up to the next heading of the same or a higher level. New tests:
+  - **README.** A dataset asserts that the "Redirect domains on other screens" section contains each of these: `redirect_domains.screens`, `cortex.mcp`, `cortex.redirect-domains`, `Atrium is suggested`, `can('update', $owner)`, `cortex.policies`, `conflict`, `report` and `CI`. Because the test reads that section, a missing heading fails it. A second test asserts the README no longer says Atrium is something Cortex "requires".
+  - **CHANGELOG.** A dataset asserts that the Unreleased section's "Upgrade notes (Atrium screens and owned redirect domains)" contains each of the seven topic keywords (`suggest`, `redirect_domains`, `owner_type`, `update`, `History`, `?tab=mcp`, `merge`) and `conflict`.
+- `README.md`:
+  - **New section.** "Redirect domains on other screens" sits under MCP Server, after OAuth Redirect Domains. It covers:
+    - the config map and its default
+    - what keys and values mean, with the `cortex.mcp` tab and `cortex.redirect-domains` section keys
+    - `[]`, a missing key, and screens that nobody declares
+    - the four visibility rules, and that a throwing policy is hidden
+    - the form fields and where the forms redirect afterwards
+    - the owner-`update` rule for owned domains, how to replace it through `cortex.policies`, and that null-owner domains are unchanged
+    - the malformed-entry rule: throw in local and testing, report and skip elsewhere
+    - "Atrium is suggested, not required", with no error and no log entry when Atrium is absent
+    - the `<0.1.0` conflict
+    - the in-process `test:without-atrium` suite and the CI lane, which is the authoritative proof
+  - **Edits elsewhere.** Other passages contradicted the change, so they were edited:
+    - Installation now says to require Atrium for the dashboard.
+    - Dashboard now says Atrium is suggested instead of "which it requires".
+    - Authorization names owned redirect domains as the exception to "allow everything".
+    - OAuth Redirect Domains no longer says Roster manages the domains, and now describes the owner-`update` rule.
+- `CHANGELOG.md`: a new "Upgrade notes (Atrium screens and owned redirect domains)" section in Unreleased, placed second. The existing test needs the `updateTools` note to stay first. It covers:
+  - the grouped merge
+  - Atrium moved to `suggest`, with the `<0.1.0` conflict
+  - the new config key, with the absent-key default and the malformed-entry rule
+  - `owner_type`/`owner_id` on the UI store and destroy routes
+  - the owned-domain policy change over the UI, the JSON API and MCP (401 for a guest and 403 for a signed-in user over JSON, a deleted owner, no owner policy, null-owner domains unchanged)
+  - the history UI removed (Keen provides it)
+  - `?tab=mcp` changing to `cortex.mcp`, with Roster's route names gone
+
+### Tests
+
+Following the prompt, the full suite was not run here; the gate runs it, covering task 5.4. `DocsTest` and `NoHistoryUiTest` were run on their own: 36 tests pass. `NoHistoryUiTest` greps the README for `audit-trail` and `historyNavItem`, and neither appears. Pint passes on `DocsTest.php`.
+
+### Deviations
+
+- **README edits outside the new section.** The Installation, Dashboard, Authorization and OAuth Redirect Domains passages said Cortex requires Atrium, that Roster manages owned domains, or that every bundled policy allows everything. Each statement is now false, so each was corrected. All of these edits are in `README.md`, which this group owns.
+- **Older Unreleased entries left as written.** Two older Unreleased entries describe history UI that this change removes: the "Audit log" sidebar link under Added, and the `<x-atrium::audit-trail>` per-record history. They were left as they are. The new upgrade note says the history UI is removed. Whether to also prune those two entries before the release is up to the PR reviewer.
