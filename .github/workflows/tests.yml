@@ -77,3 +77,40 @@ jobs:
       - name: Test Suite (Windows)
         if: runner.os == 'Windows'
         run: vendor/bin/pest
+
+  # The authoritative no-Atrium proof: Atrium is uninstalled, so no classmap or
+  # Composer `files` entry can reach it, as the in-process suite cannot see.
+  without-atrium:
+    runs-on: ubuntu-latest
+
+    name: P8.5 - L13.* - without Atrium
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
+        with:
+          php-version: 8.5
+          extensions: dom, curl, libxml, mbstring, zip, fileinfo, sqlite, pdo_sqlite, bcmath, intl
+          ini-values: error_reporting=E_ALL
+          tools: composer:v2
+          coverage: none
+
+      - name: Remove Atrium
+        run: composer remove --dev refactor-circus/atrium --no-update --no-interaction
+
+      - name: Install dependencies
+        run: |
+          composer update --prefer-stable --prefer-dist --no-interaction --no-progress --no-scripts
+          composer run prepare
+
+      - name: Dump autoloader
+        run: composer dump-autoload
+
+      - name: Atrium is not installed
+        run: test ! -e vendor/refactor-circus/atrium
+
+      - name: Test Suite without Atrium
+        run: composer test:without-atrium
