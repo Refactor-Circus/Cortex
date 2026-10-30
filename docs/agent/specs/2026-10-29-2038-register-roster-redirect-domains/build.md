@@ -291,3 +291,13 @@ Following the prompt, the full suite was not run here; the gate runs it, coverin
 
 - **README edits outside the new section.** The Installation, Dashboard, Authorization and OAuth Redirect Domains passages said Cortex requires Atrium, that Roster manages owned domains, or that every bundled policy allows everything. Each statement is now false, so each was corrected. All of these edits are in `README.md`, which this group owns.
 - **Older Unreleased entries left as written.** Two older Unreleased entries describe history UI that this change removes: the "Audit log" sidebar link under Added, and the `<x-atrium::audit-trail>` per-record history. They were left as they are. The new upgrade note says the history UI is removed. Whether to also prune those two entries before the release is up to the PR reviewer.
+
+### Retry
+
+`9c74c52` was checked against criterion 18 and the retry prompt. Both the README's "Redirect domains on other screens" section and the CHANGELOG's upgrade note cover every required topic, and both state the Atrium conflict as exactly `<0.1.0`, which matches `composer.json`. The README and CHANGELOG needed no change.
+
+- `tests/Feature/DocsTest.php`: the old tests only checked for the word `conflict`. A new `atriumConflictConstraint()` helper reads the constraint from `composer.json`. Two new tests use it: one asserts the constraint is `<0.1.0` and that the README section states it, and one asserts the CHANGELOG upgrade note states it. If the docs and `composer.json` drift apart, the tests fail.
+
+Tests: as the prompt asks, the full suite was not run here; the gate runs it, covering task 5.4. `DocsTest` alone passes (35 tests, 134 assertions), and Pint passes on it.
+
+Deviations: none beyond those above.

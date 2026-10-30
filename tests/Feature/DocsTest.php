@@ -55,6 +55,19 @@ function markdownSection(string $markdown, string $heading): string
 }
 
 /**
+ * The Atrium `conflict` constraint `composer.json` declares.
+ */
+function atriumConflictConstraint(): string
+{
+    $composer = json_decode(packageDocument('composer.json'), true, flags: JSON_THROW_ON_ERROR);
+    $constraint = $composer['conflict']['refactor-circus/atrium'] ?? null;
+
+    expect($constraint)->toBeString('composer.json has no conflict on refactor-circus/atrium.');
+
+    return (string) $constraint;
+}
+
+/**
  * The fenced PHP blocks of a Markdown document.
  *
  * @return list<string>
@@ -142,6 +155,11 @@ describe('README', function (): void {
         'the authoritative proof' => ['CI'],
     ]);
 
+    it('states the Atrium conflict constraint composer.json declares', function (): void {
+        expect(atriumConflictConstraint())->toBe('<0.1.0')
+            ->and(markdownSection(packageDocument('README.md'), 'Redirect domains on other screens'))->toContain('`'.atriumConflictConstraint().'`');
+    });
+
     it('no longer says Cortex requires Atrium', function (): void {
         expect(packageDocument('README.md'))->not->toContain('which it requires');
     });
@@ -186,6 +204,11 @@ describe('CHANGELOG', function (): void {
         'grouped merge' => ['merge'],
         'the Atrium conflict' => ['conflict'],
     ]);
+
+    it('states the Atrium conflict constraint composer.json declares in the upgrade note', function (): void {
+        expect(markdownSection(unreleasedChangelog(), 'Upgrade notes (Atrium screens and owned redirect domains)'))
+            ->toContain('`'.atriumConflictConstraint().'`');
+    });
 });
 
 describe('config/cortex.php', function (): void {
