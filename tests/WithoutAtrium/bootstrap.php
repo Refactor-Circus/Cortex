@@ -30,6 +30,13 @@ foreach ([...get_declared_classes(), ...get_declared_interfaces()] as $declared)
 }
 
 foreach (ClassLoader::getRegisteredLoaders() as $loader) {
+    // Only loaders that can reach Atrium matter. Others, such as the scoped,
+    // classmap-authoritative loader Laravel Herd prepends from its dump.phar,
+    // never resolve an Atrium class and are left alone.
+    if (! array_key_exists($prefix, $loader->getPrefixesPsr4()) && $loader->findFile($probe) === false) {
+        continue;
+    }
+
     if ($loader->isClassMapAuthoritative() || $loader->getApcuPrefix() !== null) {
         throw new RuntimeException('The WithoutAtrium suite cannot run with an authoritative classmap or APCu autoloading: run `composer dump-autoload` without --classmap-authoritative or --apcu.');
     }

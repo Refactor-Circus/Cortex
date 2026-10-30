@@ -301,3 +301,10 @@ Following the prompt, the full suite was not run here; the gate runs it, coverin
 Tests: as the prompt asks, the full suite was not run here; the gate runs it, covering task 5.4. `DocsTest` alone passes (35 tests, 134 assertions), and Pint passes on it.
 
 Deviations: none beyond those above.
+
+## Rework round 1
+
+- **WithoutAtrium bootstrap guard (gate blocker).** The guard in `tests/WithoutAtrium/bootstrap.php` checked every registered Composer loader. That included the scoped loader Laravel Herd prepends from `Herd.app/.../valet/dump.phar`, which is classmap-authoritative over its own vendored classes. Because of it the suite refused to start, even though the project's own loader is neither authoritative nor APCu-backed. The guard now skips any loader that has no `RefactorCircus\Atrium\` PSR-4 prefix and cannot find `RefactorCircus\Atrium\Atrium`. A loader that can reach Atrium still fails on an authoritative classmap, APCu or an Atrium classmap entry, as before. `composer test:without-atrium` now passes (7 tests, 20 assertions).
+- **Ringside generated files (gate blocker).** Ran `composer exec ringside sync` in the worktree. `AGENTS.md` gained the "Keep this checkout on `main`" line from the current Ringside template. `composer exec ringside check` passes.
+
+Tests: `composer test:unit` passes (828 tests, 3334 assertions). `composer test:without-atrium` passes (7 tests). `composer lint:check` passes.
