@@ -6,11 +6,11 @@ depends on: none
 files: src/Domains/RedirectDomain/Policies/RedirectDomainPolicy.php, src/Atrium/Http/Controllers/RedirectDomainUiController.php, tests/Feature/OwnedRedirectDomainPolicyTest.php, tests/Feature/Ui/RedirectDomainOwnerControllerTest.php, tests/Feature/RedirectDomainsTest.php, tests/Fixtures/OwnerPolicyFixture.php
 criteria: 7, 8, 14
 
-- [ ] 1.1 Write tests: OwnedRedirectDomainPolicyTest (guest, user without owner update, user with it, null-owner unchanged, deleted owner, over JSON, MCP and Gate) and RedirectDomainOwnerControllerTest (owner types, partial owner, unknown owner, owner-scoped destroy, same-origin redirect and the lookalike, userinfo, scheme-mismatch and missing-referrer fallbacks) per criteria 7 and 8.
-- [ ] 1.2 Change RedirectDomainPolicy create and delete for owned domains to `$user !== null && $user->can('update', $owner)` (deleted owner denied, null owner unchanged) and update its docblock.
-- [ ] 1.3 Add optional owner_type/owner_id to RedirectDomainUiController store and destroy (ownerRules validation, RedirectDomains::owner(), ownedBy scope, create/delete authorization, same-origin url()->previous() else atrium.cortex.redirect-domains.index).
-- [ ] 1.4 Sign in a user before the owned calls in RedirectDomainsTest `manages domains over the json api` and `creates and deletes domains over mcp with parity to the http payload` only, leaving their assertions unchanged.
-- [ ] 1.5 Run vendor/bin/pest; all green
+- [x] 1.1 Write tests: OwnedRedirectDomainPolicyTest (guest, user without owner update, user with it, null-owner unchanged, deleted owner, over JSON, MCP and Gate) and RedirectDomainOwnerControllerTest (owner types, partial owner, unknown owner, owner-scoped destroy, same-origin redirect and the lookalike, userinfo, scheme-mismatch and missing-referrer fallbacks) per criteria 7 and 8.
+- [x] 1.2 Change RedirectDomainPolicy create and delete for owned domains to `$user !== null && $user->can('update', $owner)` (deleted owner denied, null owner unchanged) and update its docblock.
+- [x] 1.3 Add optional owner_type/owner_id to RedirectDomainUiController store and destroy (ownerRules validation, RedirectDomains::owner(), ownedBy scope, create/delete authorization, same-origin url()->previous() else atrium.cortex.redirect-domains.index).
+- [x] 1.4 Sign in a user before the owned calls in RedirectDomainsTest `manages domains over the json api` and `creates and deletes domains over mcp with parity to the http payload` only, leaving their assertions unchanged.
+- [x] 1.5 Run vendor/bin/pest; all green
 
 ## Group 2: Composer, arch rule, test host and the no-Atrium proof
 package: Cortex
@@ -18,12 +18,12 @@ depends on: none
 files: composer.json, tests/ArchTest.php, tests/TestCase.php, tests/Pest.php, tests/Feature/ComposerTest.php, workbench/app/Http/Controllers/TestHostScreenController.php, workbench/app/Models/Organization.php, workbench/app/Policies/OrganizationPolicy.php, workbench/app/Policies/UserPolicy.php, workbench/database/migrations/, workbench/resources/views/test-host.blade.php, phpunit.xml.dist, phpunit.without-atrium.xml, tests/WithoutAtrium/, .github/workflows/tests.yml
 criteria: 9, 14, 15, 16, 17
 
-- [ ] 2.1 Write tests: ComposerTest (require only keystone among refactor-circus, atrium in suggest and require-dev, atrium conflict starting with `<`, no roster), the WithoutAtrium suite assertions of criterion 17, and a test-host smoke test that the workbench screen renders for roster.organization, roster.user and acme.account.
-- [ ] 2.2 Move refactor-circus/atrium from require to require-dev, add it to suggest with a description, and add a conflict on Atrium older than the screen-registry release (`<1.0.0` if Atrium is untagged, recorded in the PR).
-- [ ] 2.3 Add the arch rule `only the Atrium layer uses Atrium` to tests/ArchTest.php.
-- [ ] 2.4 Build the workbench test host (TestHostScreenController, Organization model and migration, OrganizationPolicy and UserPolicy with a deny flag, test-host view with screen-tabs, screen-tab-panel and screen-sections) and wire it plus ResetsScreenExtensions into tests/TestCase.php and tests/Pest.php.
-- [ ] 2.5 Add phpunit.without-atrium.xml, tests/WithoutAtrium/bootstrap.php (removes the Atrium PSR-4 prefix and throws if findFile still resolves) and WithoutAtriumTestCase, exclude it from phpunit.xml.dist, add the `test:without-atrium` composer script called by `composer test` after `@test:unit`, and add the `without-atrium` CI job.
-- [ ] 2.6 Run vendor/bin/pest; all green
+- [x] 2.1 Write tests: ComposerTest (require only keystone among refactor-circus, atrium in suggest and require-dev, atrium conflict starting with `<`, no roster), the WithoutAtrium suite assertions of criterion 17, and a test-host smoke test that the workbench screen renders for roster.organization, roster.user and acme.account.
+- [x] 2.2 Move refactor-circus/atrium from require to require-dev, add it to suggest with a description, and add a conflict on Atrium older than the screen-registry release (`<1.0.0` if Atrium is untagged, recorded in the PR).
+- [x] 2.3 Add the arch rule `only the Atrium layer uses Atrium` to tests/ArchTest.php.
+- [x] 2.4 Build the workbench test host (TestHostScreenController, Organization model and migration, OrganizationPolicy and UserPolicy with a deny flag, test-host view with screen-tabs, screen-tab-panel and screen-sections) and wire it plus ResetsScreenExtensions into tests/TestCase.php and tests/Pest.php.
+- [x] 2.5 Add phpunit.without-atrium.xml, tests/WithoutAtrium/bootstrap.php (removes the Atrium PSR-4 prefix and throws if findFile still resolves) and WithoutAtriumTestCase, exclude it from phpunit.xml.dist, add the `test:without-atrium` composer script called by `composer test` after `@test:unit`, and add the `without-atrium` CI job.
+- [x] 2.6 Run vendor/bin/pest; all green
 
 ## Group 3: Redirect domains on other packages' screens
 package: Cortex
