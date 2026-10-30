@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    The WithoutAtrium suite (`composer test:without-atrium`): Cortex booted,
+    serving its HTTP API and MCP, with Atrium's autoload prefix removed by
+    tests/WithoutAtrium/bootstrap.php. Tests run in file order, so the removal
+    is proven first. Never run it with an optimized or authoritative
+    classmap; the bootstrap refuses to. The `without-atrium` CI job, with
+    Atrium uninstalled, is the authoritative proof.
+-->
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    backupGlobals="false"
+    bootstrap="tests/WithoutAtrium/bootstrap.php"
+    colors="true"
+    processIsolation="false"
+    stopOnFailure="false"
+    executionOrder="default"
+    failOnWarning="true"
+    failOnRisky="true"
+    failOnEmptyTestSuite="true"
+    beStrictAboutOutputDuringTests="true"
+    cacheDirectory=".phpunit.cache"
+    backupStaticProperties="false"
+>
+    <testsuites>
+        <testsuite name="WithoutAtrium">
+            <directory>tests/WithoutAtrium</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing" force="true"/>
+        <env name="CACHE_STORE" value="array" force="true"/>
+        <env name="SESSION_DRIVER" value="array" force="true"/>
+    </php>
+</phpunit>

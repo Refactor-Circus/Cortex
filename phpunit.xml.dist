@@ -28,6 +28,8 @@
         <testsuite name="Modes">
             <directory>tests/Modes</directory>
         </testsuite>
+        <!-- tests/WithoutAtrium runs only from phpunit.without-atrium.xml
+             (`composer test:without-atrium`), whose bootstrap removes Atrium. -->
     </testsuites>
     <source>
         <include>
