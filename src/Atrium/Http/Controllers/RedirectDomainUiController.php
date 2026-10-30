@@ -6,9 +6,14 @@ namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use RefactorCircus\Atrium\Domains\Screens\Data\Screen;
+use RefactorCircus\Atrium\Domains\Screens\Services\ScreenExtensions;
 use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
+use RefactorCircus\Cortex\Atrium\Screens;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\ListRedirectDomainsAction;
@@ -19,8 +24,9 @@ use RefactorCircus\Cortex\Domains\RedirectDomain\Services\RedirectDomains;
 use RefactorCircus\Cortex\Exceptions\UnexpectedResultException;
 
 /**
- * Every stored redirect domain, whoever owns it. Domains added here belong
- * to no owner.
+ * Every stored redirect domain, whoever owns it. Domains added on this
+ * screen belong to no owner; a host screen's form names its record as the
+ * owner with `owner_type` and `owner_id`.
  */
 final class RedirectDomainUiController
 {
@@ -44,7 +50,7 @@ final class RedirectDomainUiController
      * own block, then the stored domains, global or owned, a page at a time,
      * optionally one source's only.
      */
-    public function index(Request $request): View
+    public function index(Request $request, ScreenExtensions $extensions): View
     {
         $this->authorizeScreen('viewAny', RedirectDomainModel::class);
 
@@ -63,31 +69,99 @@ final class RedirectDomainUiController
             'source' => $source,
             'sources' => self::SOURCES,
             'enabled' => app(RedirectDomains::class)->enabled(),
+            // Only stored rows get `row.actions`: a configured domain is no model.
+            'resolved' => $extensions->resolve(Screens::declare('cortex.redirect-domains', Screen::LIST, null, RedirectDomainModel::class), $request),
         ]);
     }
 
+    /**
+     * Add a domain, for the owner named by `owner_type` and `owner_id` when
+     * the form names one (a host screen's record), else for no owner.
+     */
     public function store(Request $request): RedirectResponse
     {
-        $this->authorizeScreen('create', RedirectDomainModel::class, [null]);
+        $owner = $this->owner($request);
 
-        app(CreateRedirectDomainAction::class)->execute(CreateRedirectDomainData::from($request->all()));
+        $this->authorizeScreen('create', RedirectDomainModel::class, [$owner]);
 
-        return redirect()
-            ->route('atrium.cortex.redirect-domains.index')
-            ->with('status', __('cortex::cortex.redirect_domain_added'));
+        app(CreateRedirectDomainAction::class)->execute(CreateRedirectDomainData::from($request->all()), $owner);
+
+        return $this->back($request, $owner)->with('status', __('cortex::cortex.redirect_domain_added'));
     }
 
-    public function destroy(string $domain): RedirectResponse
+    /**
+     * Remove a domain. With an owner named, only one of that owner's domains
+     * is found, so a form for one owner cannot remove another's.
+     */
+    public function destroy(Request $request, string $domain): RedirectResponse
     {
-        $model = RedirectDomainModel::query()->findOrFail($domain);
+        $owner = $this->owner($request);
+
+        $model = $owner === null
+            ? RedirectDomainModel::query()->findOrFail($domain)
+            : RedirectDomainModel::query()->ownedBy($owner)->whereKey($domain)->firstOrFail();
 
         $this->authorizeScreen('delete', $model);
 
         app(DeleteRedirectDomainAction::class)->execute($model);
 
-        return redirect()
-            ->route('atrium.cortex.redirect-domains.index')
-            ->with('status', __('cortex::cortex.redirect_domain_removed'));
+        return $this->back($request, $owner)->with('status', __('cortex::cortex.redirect_domain_removed'));
+    }
+
+    /**
+     * The owner the form names, or null when it names none. Both fields or
+     * neither: one without the other is invalid. The type is a morph alias or
+     * a model class `RedirectDomains::owner()` resolves; anything else, and an
+     * unknown key, is not found.
+     */
+    private function owner(Request $request): ?Model
+    {
+        $validated = Validator::make($request->only(['owner_type', 'owner_id']), [
+            'owner_type' => ['nullable', 'required_with:owner_id', 'string', 'max:255'],
+            'owner_id' => ['nullable', 'required_with:owner_type', 'string', 'max:255'],
+        ])->validate();
+
+        $type = $validated['owner_type'] ?? null;
+        $id = $validated['owner_id'] ?? null;
+
+        return app(RedirectDomains::class)->owner(
+            is_string($type) ? $type : null,
+            is_string($id) ? $id : null,
+        );
+    }
+
+    /**
+     * Where a write goes next: without an owner, the redirect-domains screen;
+     * with one, back to the page the form was on when its scheme, host and
+     * port are exactly this request's, else (a foreign or missing referrer)
+     * the redirect-domains screen. Only the path and query are kept, on the
+     * request's own origin, so no referrer can send the browser elsewhere.
+     */
+    private function back(Request $request, ?Model $owner): RedirectResponse
+    {
+        $index = route('atrium.cortex.redirect-domains.index');
+
+        if ($owner === null) {
+            return redirect()->to($index);
+        }
+
+        $origin = $request->getSchemeAndHttpHost();
+        $previous = parse_url(url()->previous($index));
+        $own = parse_url($origin);
+
+        if (! is_array($previous) || ! is_array($own)) {
+            return redirect()->to($index);
+        }
+
+        foreach (['scheme', 'host', 'port'] as $part) {
+            if (($previous[$part] ?? null) !== ($own[$part] ?? null)) {
+                return redirect()->to($index);
+            }
+        }
+
+        $query = isset($previous['query']) ? '?'.$previous['query'] : '';
+
+        return redirect()->to($origin.($previous['path'] ?? '/').$query);
     }
 
     /**

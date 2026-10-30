@@ -18,7 +18,6 @@
     ],
     "require": {
         "php": "^8.5",
-        "refactor-circus/atrium": "dev-main",
         "refactor-circus/keystone": "dev-main",
         "laravel/ai": "^1.2",
         "laravel/framework": "^13.35",
@@ -33,13 +32,18 @@
         "pestphp/pest-plugin-laravel": "^5.0.1",
         "pestphp/pest-plugin-type-coverage": "^5.0.3",
         "phpstan/extension-installer": "^1.4.3",
+        "refactor-circus/atrium": "dev-main",
         "refactor-circus/keen": "dev-main",
         "refactor-circus/pennantplus": "dev-main",
         "refactor-circus/ringside": "dev-main",
         "refactor-circus/standards": "dev-main"
     },
     "suggest": {
+        "refactor-circus/atrium": "Show the Cortex dashboard and its redirect-domain tab and section on other packages' screens (v0.1.0 or later, which carries the screen-extensions registry).",
         "refactor-circus/pennantplus": "Switch Cortex in Atrium on and off with the CortexSupportFeature Pennant feature (dev-main)."
+    },
+    "conflict": {
+        "refactor-circus/atrium": "<0.1.0"
     },
     "autoload": {
         "psr-4": {
@@ -90,12 +94,16 @@
         "test:unit": [
             "vendor/bin/pest --parallel"
         ],
+        "test:without-atrium": [
+            "vendor/bin/pest --configuration=phpunit.without-atrium.xml"
+        ],
         "test": [
             "@composer dump-autoload",
             "@analyse",
             "@lint:check",
             "@test:types",
-            "@test:unit"
+            "@test:unit",
+            "@test:without-atrium"
         ],
         "clear": [
             "@php vendor/bin/testbench package:purge-skeleton --ansi"

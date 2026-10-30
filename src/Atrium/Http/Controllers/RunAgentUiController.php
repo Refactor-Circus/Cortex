@@ -7,8 +7,12 @@ namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use RefactorCircus\Atrium\Domains\Screens\Data\ResolvedScreen;
+use RefactorCircus\Atrium\Domains\Screens\Data\Screen;
+use RefactorCircus\Atrium\Domains\Screens\Services\ScreenExtensions;
 use RefactorCircus\Cortex\Atrium\CortexPlugin;
 use RefactorCircus\Cortex\Atrium\RunnableAgents;
+use RefactorCircus\Cortex\Atrium\Screens;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\RunConcreteAgentAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\RunConcreteAgentData;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\RunVirtualAgentAction;
@@ -22,7 +26,7 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
  */
 final class RunAgentUiController
 {
-    public function create(Request $request): View
+    public function create(Request $request, ScreenExtensions $extensions): View
     {
         abort_unless(CortexPlugin::mayViewAgents($request->user()), 403);
 
@@ -35,16 +39,21 @@ final class RunAgentUiController
             'agents' => $options,
             'selected' => $request->string('agent')->toString(),
             'result' => null,
+            'resolved' => $this->screen($extensions, $request),
         ]);
     }
 
-    public function store(Request $request): View
+    public function store(Request $request, ScreenExtensions $extensions): View
     {
         $data = $request->validate([
             'agent' => ['required', 'string', Rule::in(array_keys(RunnableAgents::all()))],
         ] + RunVirtualAgentData::rules() + RunConcreteAgentData::rules());
 
         abort_unless(RunnableAgents::allows($request->user(), (string) $data['agent']), 403);
+
+        // Before the run, so a `?tab=` the viewer may not open refuses the
+        // request without calling the agent.
+        $resolved = $this->screen($extensions, $request);
 
         [$kind, $key] = explode(':', (string) $data['agent'], 2);
 
@@ -63,6 +72,16 @@ final class RunAgentUiController
             'selected' => $data['agent'],
             'input' => $data['input'],
             'result' => $response,
+            'resolved' => $resolved,
         ]);
+    }
+
+    /**
+     * The run page, with no record and no subject: an extension's
+     * `permission()` is never granted here.
+     */
+    private function screen(ScreenExtensions $extensions, Request $request): ResolvedScreen
+    {
+        return $extensions->resolve(Screens::declare('cortex.run', Screen::DETAIL, null, null), $request);
     }
 }

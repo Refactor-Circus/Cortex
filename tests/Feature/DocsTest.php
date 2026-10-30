@@ -38,6 +38,36 @@ function unreleasedChangelog(): string
 }
 
 /**
+ * A Markdown section, from its heading (any level) up to the next heading of
+ * the same or a higher level.
+ */
+function markdownSection(string $markdown, string $heading): string
+{
+    $found = preg_match('/^(#+) '.preg_quote($heading, '/').'[ \t]*$/m', $markdown, $match, PREG_OFFSET_CAPTURE);
+
+    expect($found)->toBe(1, "No heading \"{$heading}\".");
+
+    $level = strlen($match[1][0]);
+    $body = substr($markdown, $match[0][1] + strlen($match[0][0]));
+    $end = preg_match('/^#{1,'.$level.'} /m', $body, $next, PREG_OFFSET_CAPTURE) === 1 ? $next[0][1] : strlen($body);
+
+    return $match[0][0].substr($body, 0, $end);
+}
+
+/**
+ * The Atrium `conflict` constraint `composer.json` declares.
+ */
+function atriumConflictConstraint(): string
+{
+    $composer = json_decode(packageDocument('composer.json'), true, flags: JSON_THROW_ON_ERROR);
+    $constraint = $composer['conflict']['refactor-circus/atrium'] ?? null;
+
+    expect($constraint)->toBeString('composer.json has no conflict on refactor-circus/atrium.');
+
+    return (string) $constraint;
+}
+
+/**
  * The fenced PHP blocks of a Markdown document.
  *
  * @return list<string>
@@ -106,6 +136,33 @@ describe('README', function (): void {
         expect($readme)->toContain('`updateTools`')
             ->and(array_filter(phpBlocks($readme), deniesUpdateToolsByDefault(...)))->not->toBeEmpty('README.md has no PHP snippet whose updateTools returns false.');
     });
+
+    /*
+     * Criterion 18: the redirect domains Cortex puts on other packages'
+     * screens, and Atrium as a suggestion.
+     */
+    it('documents redirect domains on other screens in their own section', function (string $phrase): void {
+        expect(markdownSection(packageDocument('README.md'), 'Redirect domains on other screens'))->toContain($phrase);
+    })->with([
+        'the config key' => ['redirect_domains.screens'],
+        'the tab key' => ['cortex.mcp'],
+        'the section key' => ['cortex.redirect-domains'],
+        'Atrium is optional' => ['Atrium is suggested'],
+        'the owner policy' => ["can('update', \$owner)"],
+        'replacing the policy' => ['cortex.policies'],
+        'the Atrium conflict' => ['conflict'],
+        'production skips malformed entries' => ['report'],
+        'the authoritative proof' => ['CI'],
+    ]);
+
+    it('states the Atrium conflict constraint composer.json declares', function (): void {
+        expect(atriumConflictConstraint())->toBe('<0.1.0')
+            ->and(markdownSection(packageDocument('README.md'), 'Redirect domains on other screens'))->toContain('`'.atriumConflictConstraint().'`');
+    });
+
+    it('no longer says Cortex requires Atrium', function (): void {
+        expect(packageDocument('README.md'))->not->toContain('which it requires');
+    });
 });
 
 it('mentions both server tool MCP tools in the Boost skill', function (): void {
@@ -129,6 +186,28 @@ describe('CHANGELOG', function (): void {
         expect(preg_match('/^### .*?(?=^### )/ms', unreleasedChangelog(), $first))->toBe(1)
             ->and($first[0])->toContain('updateTools')
             ->toContain('/cortex/servers/{server}/tools');
+    });
+
+    /*
+     * Criterion 18: the upgrade note for Atrium screens and owned redirect
+     * domains names each of its seven topics, and the Atrium conflict.
+     */
+    it('carries the Atrium screens and owned redirect domains upgrade note', function (string $keyword): void {
+        expect(markdownSection(unreleasedChangelog(), 'Upgrade notes (Atrium screens and owned redirect domains)'))->toContain($keyword);
+    })->with([
+        'Atrium suggested' => ['suggest'],
+        'the new config key' => ['redirect_domains'],
+        'the owner fields' => ['owner_type'],
+        'owned domains ask update on the owner' => ['update'],
+        'history UI removed' => ['History'],
+        'the Roster tab key' => ['?tab=mcp'],
+        'grouped merge' => ['merge'],
+        'the Atrium conflict' => ['conflict'],
+    ]);
+
+    it('states the Atrium conflict constraint composer.json declares in the upgrade note', function (): void {
+        expect(markdownSection(unreleasedChangelog(), 'Upgrade notes (Atrium screens and owned redirect domains)'))
+            ->toContain('`'.atriumConflictConstraint().'`');
     });
 });
 

@@ -21,6 +21,13 @@ arch('the package source declares strict types')
     ->expect('RefactorCircus\Cortex')
     ->toUseStrictTypes();
 
+// Atrium is suggested, not required: only src/Atrium names its classes, and
+// CortexServiceProvider reaches that layer behind a class_exists() guard.
+arch('only the Atrium layer uses Atrium')
+    ->expect('RefactorCircus\Cortex')
+    ->not->toUse('RefactorCircus\Atrium')
+    ->ignoring('RefactorCircus\Cortex\Atrium');
+
 arch('actions are final classes')
     ->expect(Arch::domainNamespaces('RefactorCircus\Cortex', CORTEX_DOMAINS, 'Actions'))
     ->classes()

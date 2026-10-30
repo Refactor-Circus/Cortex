@@ -33,7 +33,7 @@ Atrium owns every component and style; Cortex ships no `resources/css`, no `Atri
 
 - Views use only `x-atrium::*` components and the utilities Atrium safelists. No `<style>` blocks and no `style=` attributes. `tests/Feature/Ui/StylesTest.php` checks this with `RefactorCircus\Atrium\Testing\AtriumStyles`.
 - Status and errors use `<x-atrium::flash :keys="['prompt', 'agent']" />`; tag filters are `x-atrium::chip`s; searches are `x-atrium::search-input`.
-- History is `<x-atrium::audit-trail source="cortex" />`, with `:subject` on a record's screen. The content-versions partial stays, since versions are publishable content.
+- Every page with a controller view declares a standard Atrium screen with `Atrium\Screens::declare($key, $kind, $record, $subject)` (keys `cortex.*`), resolves it with `ScreenExtensions::resolve()` after its own authorization and renders `x-atrium::screen-tabs`, `x-atrium::screen-tab-panel` and every slot it declares, as Atrium's own screens do. Cortex has no history UI: no history slot, audit subject or audit component, and no history navigation item (History is Keen's, attached by wildcard). The content-versions partial stays, since versions are publishable content.
 - `CortexPlugin::features()` uses Atrium's `featuresFromConfig()`. Cortex keeps its own `Atrium\ScreenAccess` and `AuthorizesScreens`: Atrium's copies follow Keystone's `authorization` switch and refuse guests, while Cortex asks the Gate as the signed-in user or as a guest, with extra arguments.
 
 ## Quick Commands
@@ -59,4 +59,5 @@ Atrium owns every component and style; Cortex ships no `resources/css`, no `Atri
 - Specs, product docs and local standards live in `docs/agent/`. Shared standards come from `vendor/` through `docs/agent/standards.index.yml`; read the matching standards before changing code.
 - Workflow: `/ring-master-shape-spec` → `/ring-master-write-spec` → `/ring-master-create-tasks` → `/ring-master-implement` → `/ring-master-verify-spec`.
 - Done means `composer test` passes. When work must break a standard, add a row to `docs/agent/standards-feedback.md`.
+- Keep this checkout on `main`: other packages' jobs build against it. Never switch branches, commit or stash here; do any change that is not a factory job (which makes its own) in a worktree beside the package: `git worktree add ../<Package>--<slug> -b <branch> origin/main`, removed once it is merged.
 <!-- ring-master:end -->

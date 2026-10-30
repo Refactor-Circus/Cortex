@@ -41,11 +41,14 @@ Publish the config file to customize routes, the dashboard, MCP transports, and 
 php artisan vendor:publish --tag="cortex-config"
 ```
 
-The dashboard renders through Atrium, so publish its assets too:
+The dashboard renders through [Atrium](https://github.com/refactor-circus/atrium), which Cortex suggests but does not require. To use the dashboard, require Atrium and publish its assets:
 
 ```bash
+composer require refactor-circus/atrium
 php artisan vendor:publish --tag="atrium-assets"
 ```
+
+Without Atrium, Cortex has no dashboard, and its JSON API and MCP server work as usual. See [Redirect domains on other screens](#redirect-domains-on-other-screens).
 
 ## Configuration
 
@@ -100,7 +103,7 @@ return [
 
 Every API endpoint and MCP tool that touches a model checks it through the Gate, using the policies in `cortex.policies`. It checks as the signed-in user, or as a guest when nobody is signed in. Listing or creating checks `viewAny` or `create` against the model class. Reading, changing, deleting, publishing or running checks `view`, `update`, `delete`, `publish` or `run` against the record.
 
-Cortex records have no owner, so the bundled policies allow everything and your middleware stays the gate, as before. Version policies defer to their virtual agent or override through the Gate: reading a version needs `view` on it, adding or publishing one needs `update`. Point a model at your own policy class in `cortex.policies` to restrict it.
+Cortex records have no owner, so the bundled policies allow everything and your middleware stays the gate, as before. Redirect domains are the exception: adding or removing one that belongs to an owner, such as an organization, asks `update` on that owner (see [who may manage an owner's domains](#redirect-domains-on-other-screens)). Version policies defer to their virtual agent or override through the Gate: reading a version needs `view` on it, adding or publishing one needs `update`. Point a model at your own policy class in `cortex.policies` to restrict it.
 
 Changing a concrete MCP server's tool list checks its own ability, `updateTools`, which the bundled policy allows for guests too. Read [who may change a server's tools](#who-may-change-a-servers-tools) before exposing the routes.
 
@@ -108,7 +111,7 @@ Changing a concrete MCP server's tool list checks its own ability, `updateTools`
 
 ## Dashboard
 
-Cortex renders its dashboard through [Atrium](https://github.com/refactor-circus/atrium), which it requires. Install Atrium's gate and Cortex appears in the sidebar automatically:
+Cortex renders its dashboard through [Atrium](https://github.com/refactor-circus/atrium). Atrium is suggested, not required: require `refactor-circus/atrium` to get the dashboard. Without it there is no dashboard, and nothing reports its absence. Install Atrium's gate and Cortex appears in the sidebar automatically:
 
 ```php
 use Illuminate\Support\Facades\Gate;
@@ -133,7 +136,7 @@ The screens follow Atrium's screen conventions: actions are icon buttons with th
 
 Cortex ships no stylesheet and no components of its own: its views use Atrium's components (`search-input`, `chip`, `flash`, form controls, tables, cards) and the utilities Atrium compiles. A test asserts it with `RefactorCircus\Atrium\Testing\AtriumStyles`.
 
-With an audit log such as [refactor-circus/keen](https://github.com/Refactor-Circus/Keen) installed, the screens show history through Atrium's `<x-atrium::audit-trail>`: the virtual agents list shows all of Cortex's, and a virtual agent, a tool description, an MCP server instruction or a concrete agent override shows its own, below its versions. Without an audit log nothing is shown.
+Every page declares itself as an Atrium screen (`cortex.virtual-agents`, `cortex.virtual-agent`, `cortex.tools`, `cortex.redirect-domains` and so on), so other packages can add tabs and sections to it through `Atrium::screens()` without Cortex knowing them. Cortex shows no history of its own: an audit log such as [refactor-circus/keen](https://github.com/Refactor-Circus/Keen) adds History to the screens itself.
 
 To switch Cortex in the dashboard on and off as a whole - navigation, search, settings and pages, which answer `404` while it is off - install [refactor-circus/pennantplus](https://github.com/Refactor-Circus/PennantPlus). `RefactorCircus\Cortex\Atrium\Features\CortexSupportFeature` is on until its global value is set, and only its global value counts:
 
@@ -433,9 +436,52 @@ laravel/mcp's dynamic client registration (`Mcp::oauthRoutes()`) only accepts re
 - **API and MCP:** `/cortex/redirect-domains` and the `list-redirect-domains-tool`, `create-redirect-domain-tool` and `delete-redirect-domain-tool` tools.
 - **Code:** `app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData('claude.ai'), $owner)`.
 
-A domain may belong to any model, such as an organization or a user (Roster manages them on its organization and user pages), or to no one. Hosts, origins and full redirect URLs are all stored as their origin: `claude.ai`, `https://claude.ai/` and `https://claude.ai/api/mcp/auth_callback` are all `https://claude.ai`. Only config can allow `*`.
+A domain may belong to any model, such as an organization or a user, or to no one. Cortex shows an owner's domains on that owner's own screens, such as Roster's organization and user pages (see [Redirect domains on other screens](#redirect-domains-on-other-screens)). Hosts, origins and full redirect URLs are all stored as their origin: `claude.ai`, `https://claude.ai/` and `https://claude.ai/api/mcp/auth_callback` are all `https://claude.ai`. Only config can allow `*`.
 
-Registration is anonymous, so every client may register on every allowed origin, whoever added it; the owner says who manages a domain, not who may use it. Users still approve each client on the consent screen. The configured domains, `*` and localhost keep working as laravel/mcp documents. Set `cortex.redirect_domains.enabled` to `false` to use the configured domains alone. The policy in `cortex.policies` receives the owner on `create`, so an application can let an organization's admins manage only that organization's domains.
+Registration is anonymous, so every client may register on every allowed origin, whoever added it; the owner says who manages a domain, not who may use it. Users still approve each client on the consent screen. The configured domains, `*` and localhost keep working as laravel/mcp documents. Set `cortex.redirect_domains.enabled` to `false` to use the configured domains alone. The policy in `cortex.policies` receives the owner on `create`. For a domain with an owner, the bundled policy lets only a user who may `update` the owner add or remove it, so the owner's own policy decides.
+
+### Redirect domains on other screens
+
+Cortex shows an owner's redirect domains on other packages' Atrium screens, such as Roster's organization and user pages, so they are managed where the owner is. Which screens get them is set in `cortex.atrium.redirect_domains.screens`:
+
+```php
+// config/cortex.php
+'atrium' => [
+    'redirect_domains' => [
+        'screens' => [
+            'roster.organization' => 'tab',
+            'roster.user' => 'aside',
+        ],
+    ],
+],
+```
+
+- **Keys** are Atrium screen keys. The screen's record is the owner of the domains shown.
+- **`tab`** adds the `cortex.mcp` tab, labelled "MCP" and opened with `?tab=cortex.mcp`.
+- **Any other value** names the slot that gets the `cortex.redirect-domains` section, such as `aside`, `before`, `after` or `header.actions`.
+- **`[]`** puts the domains on no screen.
+- **No key.** A config published before this key existed has no `redirect_domains` entry under `atrium`, and gets the default map above.
+- **Undeclared screens.** A screen that no installed package declares shows nothing, so the defaults are harmless without Roster.
+
+The tab or section is shown only when all of these hold:
+
+- stored redirect domains are on (`cortex.redirect_domains.enabled`)
+- the screen's record is a saved Eloquent model
+- Cortex is on in Atrium for the request: `cortex.ui.enabled` is true and every feature in `cortex.atrium.features` is on
+- the viewer passes `viewAny` on `RedirectDomainModel` with the owner
+
+A policy that throws is reported and hides the tab or section; it never breaks the host page. The panel lists the owner's domains. The add form shows to viewers who pass `create` with the owner, and the remove button shows on each domain the viewer may `delete`. The forms post `owner_type` (the owner's morph class) and `owner_id` to Cortex's `atrium.cortex.redirect-domains.store` and `atrium.cortex.redirect-domains.destroy` routes. Afterwards they go back to the host page when it is on the same scheme, host and port, and to Cortex's redirect-domains screen otherwise.
+
+**Who may manage an owner's domains.** For a domain with an owner, the bundled `RedirectDomainPolicy` allows `create` and `delete` only to a signed-in user who may update the owner, `$user->can('update', $owner)`, so the owner's own policy decides. This applies on the screens, over the JSON API and over MCP. Guests are refused. So is a domain whose owner row is gone, and an owner model with no policy and no `update` ability. Domains without an owner are unchanged, and everyone may still add and remove them. To decide otherwise, point `RedirectDomainModel` at your own policy class in `cortex.policies`.
+
+**Malformed entries.** An entry is malformed when its value is not a string, is empty, or names a screen key or slot that Atrium rejects. In the `local` and `testing` environments it throws `InvalidArgumentException` at boot. In every other environment, production included, it is reported once with `report()` and skipped; the other entries still register and the application keeps booting. Until the report is acted on, that screen has no redirect domains.
+
+**Atrium is suggested, not required.** Cortex lists `refactor-circus/atrium` under `suggest` in its `composer.json`. Without Atrium, the dashboard and these screens are simply absent: there is no error and no log entry, and the JSON API and MCP server keep working. Atrium versions older than its screen registry are refused through a Composer `conflict` (`<0.1.0`), so a mismatched install fails at `composer update` rather than at runtime.
+
+Cortex's test suite proves it runs without Atrium in two ways:
+
+- `composer test:without-atrium`, part of `composer test`, runs in process with Atrium's classes removed from the autoloader. It cannot catch an Atrium class reached through a classmap or a Composer `files` entry.
+- The `without-atrium` CI job uninstalls Atrium and runs the same suite. This CI lane is the authoritative proof.
 
 ## Events
 

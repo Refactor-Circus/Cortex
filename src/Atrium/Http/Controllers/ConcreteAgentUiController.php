@@ -7,8 +7,11 @@ namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use RefactorCircus\Atrium\Domains\Screens\Data\Screen;
+use RefactorCircus\Atrium\Domains\Screens\Services\ScreenExtensions;
 use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
 use RefactorCircus\Cortex\Atrium\ScreenAccess;
+use RefactorCircus\Cortex\Atrium\Screens;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\DeleteConcreteAgentOverrideAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\ListConcreteAgentsAction;
@@ -26,23 +29,27 @@ final class ConcreteAgentUiController
 {
     use AuthorizesScreens;
 
-    public function index(): View
+    public function index(Request $request, ScreenExtensions $extensions): View
     {
         $this->authorizeScreen('viewAny', ConcreteAgentOverrideModel::class);
 
         /** @var view-string $view */
         $view = 'cortex::ui.concrete-agents.index';
 
-        return view($view, ['agents' => app(ListConcreteAgentsAction::class)->execute()]);
+        return view($view, [
+            'agents' => app(ListConcreteAgentsAction::class)->execute(),
+            'resolved' => $extensions->resolve(Screens::declare('cortex.concrete-agents', Screen::LIST, null, ConcreteAgentOverrideModel::class), $request),
+        ]);
     }
 
-    public function show(string $agent): View
+    public function show(Request $request, ScreenExtensions $extensions, string $agent): View
     {
         $this->assertRegistered($agent);
 
         $details = app(ShowConcreteAgentAction::class)->execute($agent);
+        $subject = ScreenAccess::concreteAgent($agent, $details['override']);
 
-        $this->authorizeScreen('view', ScreenAccess::concreteAgent($agent, $details['override']));
+        $this->authorizeScreen('view', $subject);
 
         /** @var view-string $view */
         $view = 'cortex::ui.concrete-agents.show';
@@ -50,9 +57,10 @@ final class ConcreteAgentUiController
         return view($view, [
             'agent' => $details,
             'override' => $details['override'],
-            'subject' => ScreenAccess::concreteAgent($agent, $details['override']),
+            'subject' => $subject,
             'versions' => $details['override']?->versions()->chaperone('concreteAgentOverride')->orderByDesc('version')->get() ?? collect(),
             'availableTools' => $this->availableTools($details['default_tools']),
+            'resolved' => $extensions->resolve(Screens::declare('cortex.concrete-agent', Screen::DETAIL, $subject, null), $request),
         ]);
     }
 
