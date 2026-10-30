@@ -10,7 +10,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use RefactorCircus\Atrium\Domains\Screens\Data\Screen;
+use RefactorCircus\Atrium\Domains\Screens\Services\ScreenExtensions;
 use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
+use RefactorCircus\Cortex\Atrium\Screens;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\CreateRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\DeleteRedirectDomainAction;
 use RefactorCircus\Cortex\Domains\RedirectDomain\Actions\ListRedirectDomainsAction;
@@ -47,7 +50,7 @@ final class RedirectDomainUiController
      * own block, then the stored domains, global or owned, a page at a time,
      * optionally one source's only.
      */
-    public function index(Request $request): View
+    public function index(Request $request, ScreenExtensions $extensions): View
     {
         $this->authorizeScreen('viewAny', RedirectDomainModel::class);
 
@@ -66,6 +69,8 @@ final class RedirectDomainUiController
             'source' => $source,
             'sources' => self::SOURCES,
             'enabled' => app(RedirectDomains::class)->enabled(),
+            // Only stored rows get `row.actions`: a configured domain is no model.
+            'resolved' => $extensions->resolve(Screens::declare('cortex.redirect-domains', Screen::LIST, null, RedirectDomainModel::class), $request),
         ]);
     }
 

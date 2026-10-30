@@ -6,13 +6,16 @@ namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use RefactorCircus\Atrium\Domains\Screens\Data\Screen;
+use RefactorCircus\Atrium\Domains\Screens\Services\ScreenExtensions;
+use RefactorCircus\Cortex\Atrium\Screens;
 use RefactorCircus\Cortex\Domains\Tool\Data\ListToolsData;
 use RefactorCircus\Cortex\Domains\Tool\Models\ToolDescriptionModel;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
 
 final class ToolUiController
 {
-    public function index(Request $request): View
+    public function index(Request $request, ScreenExtensions $extensions): View
     {
         $filters = ListToolsData::from($request->query());
 
@@ -26,6 +29,7 @@ final class ToolUiController
             'tag' => $filters->tag,
             // Each row's description link is checked against its override.
             'descriptions' => ToolDescriptionModel::query()->get()->keyBy('tool'),
+            'resolved' => $extensions->resolve(Screens::declare('cortex.tools', Screen::LIST, null, ToolDescriptionModel::class), $request),
         ]);
     }
 }

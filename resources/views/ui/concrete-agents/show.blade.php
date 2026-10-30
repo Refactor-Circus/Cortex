@@ -1,5 +1,11 @@
 @php($toolsOverridden = $override?->tools !== null)
 @php($checkedTools = $toolsOverridden ? $override->tools : $agent['default_tools'])
+{{-- The `cortex.concrete-agent` screen: header actions always render; an open
+     registered tab's panel replaces the editors, and `before`, `aside` and
+     `after` render only around them, `aside` in a right-hand column only
+     while it has visible sections. --}}
+@php($panelOpen = $resolved->openRegisteredTab !== null)
+@php($aside = ! $panelOpen && $resolved->sections('aside') !== [])
 
 <x-atrium::layout :title="$agent['name']">
     <x-atrium::page-header :title="$agent['name']" :description="$agent['class']">
@@ -10,83 +16,108 @@
             @endcortexCan
             <x-atrium::icon-button icon="arrow-left" :label="__('cortex::cortex.back_to_concrete_agents')" variant="ghost"
                                    :href="route('atrium.cortex.concrete-agents.index')" data-testid="back" />
+            <x-atrium::screen-sections :screen="$resolved" slot="header.actions" />
         </x-slot:actions>
     </x-atrium::page-header>
 
-    @unless ($agent['overridable'])
-        <div class="mt-5">
-            <x-atrium::alert variant="warning">{{ __('cortex::cortex.not_overridable') }}</x-atrium::alert>
-        </div>
-    @endunless
+    <x-atrium::screen-tabs :screen="$resolved" class="mt-4" />
 
-    @include('cortex::ui.partials.override', [
-        'override' => $override,
-        'subject' => $subject,
-        'versionClass' => \RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel::class,
-        'fallback' => $agent['default_instructions'],
-        'liveTitle' => __('cortex::cortex.live_prompt'),
-        'versions' => $versions,
-        'storeRoute' => route('atrium.cortex.concrete-agents.store', $agent['name']),
-        'destroyRoute' => route('atrium.cortex.concrete-agents.destroy', $agent['name']),
-        'publishRoute' => fn (int $version) => route('atrium.cortex.concrete-agents.publish', [$agent['name'], $version]),
-    ])
+    @if ($panelOpen)
+        <x-atrium::screen-tab-panel :screen="$resolved" class="mt-5" />
+    @else
+        <x-atrium::screen-sections :screen="$resolved" slot="before" class="mt-5" />
 
-    <div class="mt-5">
-        <x-atrium::card :title="__('cortex::cortex.tools')">
-            <div class="mb-3 flex items-center gap-2">
-                @if (! $agent['tools_overridable'])
-                    <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('locked')" :label="__('cortex::cortex.locked')" data-status="locked" />
-                    @if ($agent['overridable'])
-                        <p class="text-sm text-on-surface dark:text-on-surface-dark">{{ __('cortex::cortex.tools_locked_hint') }}</p>
-                    @endif
-                @elseif ($toolsOverridden)
-                    <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('overridden')" :label="__('cortex::cortex.overridden')" data-status="overridden" />
-                    <p class="text-sm text-on-surface dark:text-on-surface-dark">{{ __('cortex::cortex.tools_override_hint') }}</p>
-                @else
-                    <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('from_code')" :label="__('cortex::cortex.from_code')" data-status="from_code" />
-                    <p class="text-sm text-on-surface dark:text-on-surface-dark">{{ __('cortex::cortex.tools_no_override_hint') }}</p>
-                @endif
+        @if ($aside)
+            <div class="grid gap-6 lg:grid-cols-3">
+                <div class="lg:col-span-2">
+        @endif
+
+        @unless ($agent['overridable'])
+            <div class="mt-5">
+                <x-atrium::alert variant="warning">{{ __('cortex::cortex.not_overridable') }}</x-atrium::alert>
             </div>
+        @endunless
 
-            @php($mayUpdateTools = \RefactorCircus\Cortex\Atrium\ScreenAccess::allows('update', $subject))
+        @include('cortex::ui.partials.override', [
+            'override' => $override,
+            'subject' => $subject,
+            'versionClass' => \RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel::class,
+            'fallback' => $agent['default_instructions'],
+            'liveTitle' => __('cortex::cortex.live_prompt'),
+            'versions' => $versions,
+            'storeRoute' => route('atrium.cortex.concrete-agents.store', $agent['name']),
+            'destroyRoute' => route('atrium.cortex.concrete-agents.destroy', $agent['name']),
+            'publishRoute' => fn (int $version) => route('atrium.cortex.concrete-agents.publish', [$agent['name'], $version]),
+        ])
 
-            <form method="POST" action="{{ route('atrium.cortex.concrete-agents.tools', $agent['name']) }}" class="flex flex-col gap-4">
-                @csrf
-                @method('PUT')
-
-                @if (! $agent['tools_overridable'] || ! $mayUpdateTools)
-                    <ul class="flex flex-col gap-1 text-sm">
-                        @foreach ($agent['tools_overridable'] ? $checkedTools : $agent['default_tools'] as $tool)
-                            <li><code class="text-xs">{{ $tool }}</code></li>
-                        @endforeach
-                    </ul>
-                @elseif ($availableTools === [])
-                    <x-atrium::empty-state :title="__('cortex::cortex.no_tools_available')" />
-                @else
-                    @include('cortex::ui.partials.tool-picker', [
-                        'pickerTools' => collect($availableTools)->map(fn ($tool) => [
-                            'name' => $tool['name'],
-                            'label' => in_array($tool['name'], $agent['default_tools'], true) ? $tool['name'].' ('.__('cortex::cortex.from_code').')' : $tool['name'],
-                            'tags' => $tool['tags'],
-                        ])->all(),
-                        'checked' => $checkedTools,
-                        'idPrefix' => 'tool-',
-                    ])
-                @endif
-
-                @if ($mayUpdateTools)
-                    <div class="flex items-center gap-2">
-                        @if ($agent['tools_overridable'])
-                            <x-atrium::icon-button icon="check" :label="__('cortex::cortex.save_tools')" variant="primary" type="submit" data-testid="save-tools" />
+        <div class="mt-5">
+            <x-atrium::card :title="__('cortex::cortex.tools')">
+                <div class="mb-3 flex items-center gap-2">
+                    @if (! $agent['tools_overridable'])
+                        <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('locked')" :label="__('cortex::cortex.locked')" data-status="locked" />
+                        @if ($agent['overridable'])
+                            <p class="text-sm text-on-surface dark:text-on-surface-dark">{{ __('cortex::cortex.tools_locked_hint') }}</p>
                         @endif
+                    @elseif ($toolsOverridden)
+                        <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('overridden')" :label="__('cortex::cortex.overridden')" data-status="overridden" />
+                        <p class="text-sm text-on-surface dark:text-on-surface-dark">{{ __('cortex::cortex.tools_override_hint') }}</p>
+                    @else
+                        <x-atrium::status-dot :variant="\RefactorCircus\Cortex\Atrium\Badges::forStatus('from_code')" :label="__('cortex::cortex.from_code')" data-status="from_code" />
+                        <p class="text-sm text-on-surface dark:text-on-surface-dark">{{ __('cortex::cortex.tools_no_override_hint') }}</p>
+                    @endif
+                </div>
 
-                        @if ($toolsOverridden)
-                            <x-atrium::icon-button icon="arrow-uturn-left" :label="__('cortex::cortex.use_code_tools')" variant="ghost" type="submit"
-                                                   name="use_code_tools" value="1" data-testid="reset-tools" />
-                        @endif
-                    </div>
-                @endif
-            </form>
-        </x-atrium::card>
-    </div>
+                @php($mayUpdateTools = \RefactorCircus\Cortex\Atrium\ScreenAccess::allows('update', $subject))
+
+                <form method="POST" action="{{ route('atrium.cortex.concrete-agents.tools', $agent['name']) }}" class="flex flex-col gap-4">
+                    @csrf
+                    @method('PUT')
+
+                    @if (! $agent['tools_overridable'] || ! $mayUpdateTools)
+                        <ul class="flex flex-col gap-1 text-sm">
+                            @foreach ($agent['tools_overridable'] ? $checkedTools : $agent['default_tools'] as $tool)
+                                <li><code class="text-xs">{{ $tool }}</code></li>
+                            @endforeach
+                        </ul>
+                    @elseif ($availableTools === [])
+                        <x-atrium::empty-state :title="__('cortex::cortex.no_tools_available')" />
+                    @else
+                        @include('cortex::ui.partials.tool-picker', [
+                            'pickerTools' => collect($availableTools)->map(fn ($tool) => [
+                                'name' => $tool['name'],
+                                'label' => in_array($tool['name'], $agent['default_tools'], true) ? $tool['name'].' ('.__('cortex::cortex.from_code').')' : $tool['name'],
+                                'tags' => $tool['tags'],
+                            ])->all(),
+                            'checked' => $checkedTools,
+                            'idPrefix' => 'tool-',
+                        ])
+                    @endif
+
+                    @if ($mayUpdateTools)
+                        <div class="flex items-center gap-2">
+                            @if ($agent['tools_overridable'])
+                                <x-atrium::icon-button icon="check" :label="__('cortex::cortex.save_tools')" variant="primary" type="submit" data-testid="save-tools" />
+                            @endif
+
+                            @if ($toolsOverridden)
+                                <x-atrium::icon-button icon="arrow-uturn-left" :label="__('cortex::cortex.use_code_tools')" variant="ghost" type="submit"
+                                                       name="use_code_tools" value="1" data-testid="reset-tools" />
+                            @endif
+                        </div>
+                    @endif
+                </form>
+            </x-atrium::card>
+        </div>
+
+        @if ($aside)
+                </div>
+
+                <aside class="mt-5 flex flex-col gap-4" data-testid="screen-aside">
+                    <x-atrium::screen-sections :screen="$resolved" slot="aside" />
+                </aside>
+            </div>
+        @endif
+
+        <x-atrium::screen-sections :screen="$resolved" slot="after" class="mt-5" />
+    @endif
 </x-atrium::layout>

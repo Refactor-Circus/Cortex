@@ -8,7 +8,10 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use RefactorCircus\Atrium\Domains\Screens\Data\Screen;
+use RefactorCircus\Atrium\Domains\Screens\Services\ScreenExtensions;
 use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
+use RefactorCircus\Cortex\Atrium\Screens;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\CreateVirtualAgentAction;
@@ -25,7 +28,7 @@ final class VirtualAgentUiController
 {
     use AuthorizesScreens;
 
-    public function index(Request $request): View
+    public function index(Request $request, ScreenExtensions $extensions): View
     {
         $this->authorizeScreen('viewAny', VirtualAgentModel::class);
 
@@ -41,17 +44,22 @@ final class VirtualAgentUiController
                 page: $filters->page,
                 summary: true,
             )),
+            'resolved' => $extensions->resolve(Screens::declare('cortex.virtual-agents', Screen::LIST, null, VirtualAgentModel::class), $request),
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request, ScreenExtensions $extensions): View
     {
         $this->authorizeScreen('create', VirtualAgentModel::class);
 
         /** @var view-string $view */
         $view = 'cortex::ui.virtual-agents.form';
 
-        return view($view, [...$this->formData(), 'agent' => null]);
+        return view($view, [
+            ...$this->formData(),
+            'agent' => null,
+            'resolved' => $extensions->resolve(Screens::declare('cortex.virtual-agent-create', Screen::DETAIL, null, VirtualAgentModel::class), $request),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -65,7 +73,7 @@ final class VirtualAgentUiController
             ->with('status', __('cortex::cortex.agent_created'));
     }
 
-    public function edit(VirtualAgentModel $agent): View
+    public function edit(Request $request, ScreenExtensions $extensions, VirtualAgentModel $agent): View
     {
         $this->authorizeScreen('view', $agent);
 
@@ -76,6 +84,7 @@ final class VirtualAgentUiController
             ...$this->formData($agent),
             'agent' => $agent->load(['publishedVersion', 'subAgents']),
             'versions' => $agent->versions()->chaperone('virtualAgent')->orderByDesc('version')->get(),
+            'resolved' => $extensions->resolve(Screens::declare('cortex.virtual-agent', Screen::DETAIL, $agent, null), $request),
         ]);
     }
 

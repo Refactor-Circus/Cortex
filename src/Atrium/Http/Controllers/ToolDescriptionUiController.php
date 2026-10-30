@@ -7,8 +7,11 @@ namespace RefactorCircus\Cortex\Atrium\Http\Controllers;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use RefactorCircus\Atrium\Domains\Screens\Data\Screen;
+use RefactorCircus\Atrium\Domains\Screens\Services\ScreenExtensions;
 use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
 use RefactorCircus\Cortex\Atrium\ScreenAccess;
+use RefactorCircus\Cortex\Atrium\Screens;
 use RefactorCircus\Cortex\Domains\Tool\Actions\CreateToolDescriptionVersionAction;
 use RefactorCircus\Cortex\Domains\Tool\Actions\DeleteToolDescriptionAction;
 use RefactorCircus\Cortex\Domains\Tool\Actions\PublishToolDescriptionVersionAction;
@@ -21,13 +24,14 @@ final class ToolDescriptionUiController
 {
     use AuthorizesScreens;
 
-    public function show(string $tool): View
+    public function show(Request $request, ScreenExtensions $extensions, string $tool): View
     {
         $this->assertRegistered($tool);
 
         $description = $this->override($tool);
+        $subject = ScreenAccess::toolDescription($tool, $description);
 
-        $this->authorizeScreen('view', ScreenAccess::toolDescription($tool, $description));
+        $this->authorizeScreen('view', $subject);
 
         /** @var view-string $view */
         $view = 'cortex::ui.tools.description';
@@ -36,8 +40,9 @@ final class ToolDescriptionUiController
             'tool' => $tool,
             'codeDescription' => app(ToolRegistry::class)->get($tool)->description(),
             'description' => $description,
-            'subject' => ScreenAccess::toolDescription($tool, $description),
+            'subject' => $subject,
             'versions' => $description?->versions()->chaperone('toolDescription')->orderByDesc('version')->get() ?? collect(),
+            'resolved' => $extensions->resolve(Screens::declare('cortex.tool-description', Screen::DETAIL, $subject, null), $request),
         ]);
     }
 

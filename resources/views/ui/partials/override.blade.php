@@ -54,9 +54,4 @@
             </form>
         </x-atrium::card>
     @endif
-
-    {{-- The override's own history; versions above are its publishable content. --}}
-    @if ($override)
-        <x-atrium::audit-trail source="cortex" :subject="$override" />
-    @endif
 </div>
