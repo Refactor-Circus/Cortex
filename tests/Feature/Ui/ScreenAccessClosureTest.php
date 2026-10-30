@@ -98,6 +98,9 @@ it('asks a viewAny section on the virtual agents list of the class', function ()
         ->and($screen->permits('viewAny', accessClosureRequest(accessClosureUser(['virtual-agents.viewAny'])), null))->toBeTrue()
         ->and(app(ScreenExtensions::class)->resolve($screen, accessClosureRequest(accessClosureUser([])))->sections('before'))->toBe([]);
 
+    // Answers are remembered per request, so forget the denial above.
+    app()->forgetScopedInstances();
+
     $this->actingAs(accessClosureUser(['virtual-agents.viewAny']))
         ->get(route('atrium.cortex.virtual-agents.index'))
         ->assertOk()
