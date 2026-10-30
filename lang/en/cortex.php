@@ -149,6 +149,11 @@ return [
     'redirect_domain_invalid' => 'Enter a host or an http(s) URL, such as claude.ai or https://claude.ai.',
     'redirect_domains_disabled' => 'Stored redirect domains are switched off (cortex.redirect_domains.enabled), so only the configured ones are accepted.',
 
+    // Redirect domains on other packages' screens
+    'mcp' => 'MCP',
+    'owned_redirect_domains_hint' => 'Origins MCP clients may register OAuth redirect URIs on for this record. Any client may register on them; each user still approves the client.',
+    'add_owned_domain' => 'Add domain',
+
     // Shared
     'save' => 'Save',
     'cancel' => 'Cancel',

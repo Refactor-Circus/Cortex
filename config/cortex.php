@@ -155,11 +155,41 @@ return [
     |
     | Individual pages and controls are still shown per the policies above.
     |
+    | redirect_domains.screens: Other packages' Atrium screens that show an
+    |           owner's OAuth redirect domains, keyed by screen key. The
+    |           screen's record is the owner. A value of `tab` adds the
+    |           `cortex.mcp` tab (opened with ?tab=cortex.mcp); any other
+    |           value names the slot (`before`, `after`, `aside`,
+    |           `header.actions`, ...) that gets the `cortex.redirect-domains`
+    |           section. A screen nobody declares shows nothing. Set it to []
+    |           to put the UI on no screen; a published config without this
+    |           key gets the defaults below.
+    |
+    |           The tab and the section show only while stored domains are on
+    |           (`redirect_domains.enabled` below), the record is saved, Cortex
+    |           is on in Atrium (the features above) and the viewer passes
+    |           `viewAny` with the owner in the RedirectDomainModel policy.
+    |           The add form and remove buttons follow `create` and `delete`,
+    |           which the bundled policy grants only to signed-in users who may
+    |           `update` the owner, by the owner's own policy.
+    |
+    |           A malformed entry (a value that is not a non-empty string, or a
+    |           screen key or slot Atrium rejects) throws at boot in the local
+    |           and testing environments; elsewhere it is reported once and
+    |           skipped, and the other entries still register.
+    |
     */
 
     'atrium' => [
         'features' => [
             CortexSupportFeature::class,
+        ],
+
+        'redirect_domains' => [
+            'screens' => [
+                'roster.organization' => 'tab',
+                'roster.user' => 'aside',
+            ],
         ],
     ],
 

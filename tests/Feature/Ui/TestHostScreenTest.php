@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 use RefactorCircus\Atrium\Domains\Screens\Data\TabDefinition;
+use RefactorCircus\Atrium\Domains\Screens\Services\ScreenExtensions;
 use RefactorCircus\Atrium\Facades\Atrium;
 use Workbench\App\Models\Organization;
 use Workbench\App\Models\User;
@@ -24,6 +25,9 @@ function testHostScreens(): array
 }
 
 it('renders the workbench screen for its key and record', function (string $key, Closure $record): void {
+    // The host alone, without what Cortex registers on it by default.
+    app(ScreenExtensions::class)->flush();
+
     $model = $record();
 
     $this->get(route('test-host', ['key' => $key, 'id' => $model->getKey()]))
