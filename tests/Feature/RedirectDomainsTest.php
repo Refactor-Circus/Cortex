@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Auth\GenericUser;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Testing\TestResponse;
@@ -131,6 +132,9 @@ it('manages domains over the json api', function (): void {
         ->assertJsonPath('data.owner_type', null)
         ->json('data.id');
 
+    // Owned domains need a signed-in user who may update the owner.
+    $this->actingAs(new GenericUser(['id' => 1]));
+
     $this->postJson(route('cortex.redirect-domains.store'), [
         'domain' => 'chatgpt.com',
         'owner_type' => $owner->getMorphClass(),
@@ -172,6 +176,9 @@ it('lists domains over mcp with parity to the http payload', function (): void {
 
 it('creates and deletes domains over mcp with parity to the http payload', function (): void {
     $owner = VirtualAgentModel::factory()->create();
+
+    // Owned domains need a signed-in user who may update the owner.
+    $this->actingAs(new GenericUser(['id' => 1]));
 
     $response = mcpTool(CreateRedirectDomainTool::class, [
         'domain' => 'https://claude.ai',
