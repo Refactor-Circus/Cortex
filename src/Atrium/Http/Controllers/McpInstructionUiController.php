@@ -8,8 +8,11 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use RefactorCircus\Atrium\Domains\Screens\Data\Screen;
+use RefactorCircus\Atrium\Domains\Screens\Services\ScreenExtensions;
 use RefactorCircus\Cortex\Atrium\Http\Controllers\Concerns\AuthorizesScreens;
 use RefactorCircus\Cortex\Atrium\ScreenAccess;
+use RefactorCircus\Cortex\Atrium\Screens;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\ClearConcreteServerToolsAction;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\CreateMcpInstructionVersionAction;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\DeleteMcpInstructionAction;
@@ -28,13 +31,14 @@ final class McpInstructionUiController
 {
     use AuthorizesScreens;
 
-    public function show(string $server): View
+    public function show(Request $request, ScreenExtensions $extensions, string $server): View
     {
         $this->assertRegistered($server);
 
         $instruction = $this->override($server);
+        $subject = ScreenAccess::serverInstruction($server, $instruction);
 
-        $this->authorizeScreen('view', ScreenAccess::serverInstruction($server, $instruction));
+        $this->authorizeScreen('view', $subject);
 
         /** @var view-string $view */
         $view = 'cortex::ui.servers.instructions';
@@ -43,9 +47,10 @@ final class McpInstructionUiController
             'server' => $server,
             'codeInstructions' => app(McpServerRegistry::class)->defaultInstructions($server),
             'instruction' => $instruction,
-            'subject' => ScreenAccess::serverInstruction($server, $instruction),
+            'subject' => $subject,
             'versions' => $instruction?->versions()->chaperone('mcpInstruction')->orderByDesc('version')->get() ?? collect(),
             'toolEditor' => $this->toolEditor($server, $instruction),
+            'resolved' => $extensions->resolve(Screens::declare('cortex.server-instructions', Screen::DETAIL, $subject, null), $request),
         ]);
     }
 

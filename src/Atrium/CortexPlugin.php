@@ -63,7 +63,8 @@ class CortexPlugin extends Plugin
     /**
      * Each item is shown when the policy check behind its page passes, asked
      * as the JSON API asks it. Tools and servers are listed by the API
-     * without a policy check, so they are shown to everyone in Atrium.
+     * without a policy check, so they are shown to everyone in Atrium. There
+     * is no history item: History attaches to the screens themselves.
      */
     public function navigation(): array
     {
@@ -107,9 +108,6 @@ class CortexPlugin extends Plugin
                 ->group('Cortex')
                 ->sort(60)
                 ->authorize(fn (Request $request): bool => ScreenAccess::allowsFor($request->user(), 'viewAny', RedirectDomainModel::class)),
-
-            // The package's own audit log, while an audit log is installed.
-            $this->historyNavItem('cortex')->group('Cortex')->sort(90),
         ];
     }
 

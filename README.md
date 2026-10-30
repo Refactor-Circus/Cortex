@@ -133,7 +133,7 @@ The screens follow Atrium's screen conventions: actions are icon buttons with th
 
 Cortex ships no stylesheet and no components of its own: its views use Atrium's components (`search-input`, `chip`, `flash`, form controls, tables, cards) and the utilities Atrium compiles. A test asserts it with `RefactorCircus\Atrium\Testing\AtriumStyles`.
 
-With an audit log such as [refactor-circus/keen](https://github.com/Refactor-Circus/Keen) installed, the screens show history through Atrium's `<x-atrium::audit-trail>`: the virtual agents list shows all of Cortex's, and a virtual agent, a tool description, an MCP server instruction or a concrete agent override shows its own, below its versions. Without an audit log nothing is shown.
+Every page declares itself as an Atrium screen (`cortex.virtual-agents`, `cortex.virtual-agent`, `cortex.tools`, `cortex.redirect-domains` and so on), so other packages can add tabs and sections to it through `Atrium::screens()` without Cortex knowing them. Cortex shows no history of its own: an audit log such as [refactor-circus/keen](https://github.com/Refactor-Circus/Keen) adds History to the screens itself.
 
 To switch Cortex in the dashboard on and off as a whole - navigation, search, settings and pages, which answer `404` while it is off - install [refactor-circus/pennantplus](https://github.com/Refactor-Circus/PennantPlus). `RefactorCircus\Cortex\Atrium\Features\CortexSupportFeature` is on until its global value is set, and only its global value counts:
 
