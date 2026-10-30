@@ -31,11 +31,11 @@ depends on: 1, 2
 files: config/cortex.php, src/Atrium/ScreenRegistrations.php, src/CortexServiceProvider.php, resources/views/ui/screens/redirect-domains.blade.php, lang/en/cortex.php, tests/Feature/Ui/ScreenRegistrationsTest.php, tests/Feature/Ui/OwnedRedirectDomainsTest.php, tests/Feature/Ui/VisibilityTest.php, tests/Feature/Ui/StylesTest.php, tests/Feature/NoRosterReferenceTest.php, docs/agent/standards-feedback.md
 criteria: 1, 2, 3, 4, 5, 6
 
-- [ ] 3.1 Write tests: ScreenRegistrationsTest (default map, absent-key fallback, empty list, custom list, ui disabled, null/empty/bogus-slot throw in testing, production reports one and registers the valid entry), OwnedRedirectDomainsTest and VisibilityTest per criterion 6, the query-count and throwing-policy cases of criterion 3, the src grep for `roster`, and StylesTest coverage of the new view.
-- [ ] 3.2 Add `atrium.redirect_domains.screens` with its banner and default map to config/cortex.php.
-- [ ] 3.3 Implement ScreenRegistrations::register() (per-entry try, throw in local/testing, report and skip elsewhere) and call it from a private registerAtriumScreens() in CortexServiceProvider behind the registerAtriumPlugin() guard, and add the standards-feedback row for throwing InvalidArgumentException.
-- [ ] 3.4 Implement the shared authorize closure (cheap early returns, caught policy exceptions) and resolver, and the cortex::ui.screens.redirect-domains view with the hint, add form, owned table, remove buttons and empty state, plus the `mcp` and `owned_redirect_domains_hint` lang keys.
-- [ ] 3.5 Run vendor/bin/pest; all green
+- [x] 3.1 Write tests: ScreenRegistrationsTest (default map, absent-key fallback, empty list, custom list, ui disabled, null/empty/bogus-slot throw in testing, production reports one and registers the valid entry), OwnedRedirectDomainsTest and VisibilityTest per criterion 6, the query-count and throwing-policy cases of criterion 3, the src grep for `roster`, and StylesTest coverage of the new view.
+- [x] 3.2 Add `atrium.redirect_domains.screens` with its banner and default map to config/cortex.php.
+- [x] 3.3 Implement ScreenRegistrations::register() (per-entry try, throw in local/testing, report and skip elsewhere) and call it from a private registerAtriumScreens() in CortexServiceProvider behind the registerAtriumPlugin() guard, and add the standards-feedback row for throwing InvalidArgumentException.
+- [x] 3.4 Implement the shared authorize closure (cheap early returns, caught policy exceptions) and resolver, and the cortex::ui.screens.redirect-domains view with the hint, add form, owned table, remove buttons and empty state, plus the `mcp` and `owned_redirect_domains_hint` lang keys.
+- [x] 3.5 Run vendor/bin/pest; all green
 
 ## Group 4: Declare Cortex's own screens and remove history UI
 package: Cortex
@@ -43,12 +43,12 @@ depends on: 1, 2
 files: src/Atrium/Screens.php, src/Atrium/CortexPlugin.php, src/Atrium/Http/Controllers/ConcreteAgentUiController.php, src/Atrium/Http/Controllers/McpInstructionUiController.php, src/Atrium/Http/Controllers/RedirectDomainUiController.php, src/Atrium/Http/Controllers/RunAgentUiController.php, src/Atrium/Http/Controllers/ServerUiController.php, src/Atrium/Http/Controllers/ToolDescriptionUiController.php, src/Atrium/Http/Controllers/ToolUiController.php, src/Atrium/Http/Controllers/VirtualAgentUiController.php, resources/views/ui/virtual-agents/index.blade.php, resources/views/ui/virtual-agents/form.blade.php, resources/views/ui/concrete-agents/index.blade.php, resources/views/ui/concrete-agents/show.blade.php, resources/views/ui/run.blade.php, resources/views/ui/tools/index.blade.php, resources/views/ui/tools/description.blade.php, resources/views/ui/servers/index.blade.php, resources/views/ui/servers/instructions.blade.php, resources/views/ui/redirect-domains/index.blade.php, resources/views/ui/partials/override.blade.php, tests/Feature/Ui/DeclaredScreensTest.php, tests/Feature/Ui/ScreenAccessClosureTest.php, tests/Feature/Ui/ScreenLayoutTest.php, tests/Feature/Ui/AuditTrailTest.php, tests/Feature/HistoryNavigationTest.php, tests/Feature/NoHistoryUiTest.php, CLAUDE.md, README.md, resources/boost/, docs/agent/standards/cortex/atrium-screens.md
 criteria: 10, 11, 12, 13, 14
 
-- [ ] 4.1 Write tests: DeclaredScreensTest dataset over the 11 screens (every standard slot, tab via ?tab=, per-kind leakage, no history slot, no row slot on configured redirect-domain rows), ScreenAccessClosureTest (view, viewAny, run never), ScreenLayoutTest (aside landmark, assertSeeInOrder for header.actions and row.actions, open tab hides page content), and NoHistoryUiTest (no atrium.history.show nav item, grep for audit-trail and historyNavItem).
-- [ ] 4.2 Add Screens::declare() with the criterion 11 access closure and declare and resolve each of the 11 screens in their controllers, passing `resolved` to the views.
-- [ ] 4.3 Render screen-tabs, screen-tab-panel and the standard slot sections in every Cortex view per Atrium criterion 15, leaving markup unchanged when nothing is registered.
-- [ ] 4.4 Remove the audit-trail calls from ui/virtual-agents/index, ui/virtual-agents/form and ui/partials/override, drop historyNavItem() from CortexPlugin::navigation(), delete tests/Feature/Ui/AuditTrailTest.php and replace `links its own audit log from its sidebar group` with the criterion 13 assertion.
-- [ ] 4.5 Drop audit-trail and history-nav text from CLAUDE.md, README.md (the audit-trail paragraph) and resources/boost, and replace the History section of docs/agent/standards/cortex/atrium-screens.md with the screen-declaration rule.
-- [ ] 4.6 Run vendor/bin/pest; all green
+- [x] 4.1 Write tests: DeclaredScreensTest dataset over the 11 screens (every standard slot, tab via ?tab=, per-kind leakage, no history slot, no row slot on configured redirect-domain rows), ScreenAccessClosureTest (view, viewAny, run never), ScreenLayoutTest (aside landmark, assertSeeInOrder for header.actions and row.actions, open tab hides page content), and NoHistoryUiTest (no atrium.history.show nav item, grep for audit-trail and historyNavItem).
+- [x] 4.2 Add Screens::declare() with the criterion 11 access closure and declare and resolve each of the 11 screens in their controllers, passing `resolved` to the views.
+- [x] 4.3 Render screen-tabs, screen-tab-panel and the standard slot sections in every Cortex view per Atrium criterion 15, leaving markup unchanged when nothing is registered.
+- [x] 4.4 Remove the audit-trail calls from ui/virtual-agents/index, ui/virtual-agents/form and ui/partials/override, drop historyNavItem() from CortexPlugin::navigation(), delete tests/Feature/Ui/AuditTrailTest.php and replace `links its own audit log from its sidebar group` with the criterion 13 assertion.
+- [x] 4.5 Drop audit-trail and history-nav text from CLAUDE.md, README.md (the audit-trail paragraph) and resources/boost, and replace the History section of docs/agent/standards/cortex/atrium-screens.md with the screen-declaration rule.
+- [x] 4.6 Run vendor/bin/pest; all green
 
 ## Group 5: README and CHANGELOG
 package: Cortex
