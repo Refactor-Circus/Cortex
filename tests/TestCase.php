@@ -11,7 +11,6 @@ use Laravel\Ai\AiServiceProvider;
 use Laravel\Mcp\Server\McpServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use RefactorCircus\Atrium\AtriumServiceProvider;
-use RefactorCircus\Atrium\Testing\ResetsScreenExtensions;
 use RefactorCircus\Cortex\CortexServiceProvider;
 use Workbench\App\Http\Controllers\TestHostScreenController;
 use Workbench\App\Models\Organization;
@@ -21,8 +20,6 @@ use Workbench\App\Policies\UserPolicy;
 
 abstract class TestCase extends Orchestra
 {
-    use ResetsScreenExtensions;
-
     protected function setUp(): void
     {
         parent::setUp();
