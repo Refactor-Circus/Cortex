@@ -321,3 +321,12 @@ Docs and local standards (AC 17, 18, 19, 20).
   - The file is outside this group, and it carries a `reviewed_hash` override marker.
   - The line is stale but harmless. Follow-up: drop that line and re-accept the override with `ringside index --accept`.
 - `workbench/app/Http/Middleware/SignInWorkbenchUser.php` says "dashboard URL" in a docblock. It is outside this group and does not mention Atrium, so it is left alone.
+
+### Retry check
+
+- The earlier commit already held every task of this group, so no docs, standards or test code changed on retry.
+- A search of README, `AGENTS.md`/`CLAUDE.md` (still a symlink), `.github/CONTRIBUTING.md`, the Boost skill and `docs/agent/standards/cortex/` found no `dashboard`, `cortex.ui`, `cortex.atrium`, `cortexCan`, `without-atrium`, `src/Atrium`, `PennantPlus` or `CortexSupportFeature`. `atrium-screens.md` is absent. `CHANGELOG.md` has `## [v2.0.0]` (compare `v0.1.0...v2.0.0`) above v0.1.0, and `Unreleased` compares from `v2.0.0`.
+- Re-checked here, all against this worktree and all passing:
+  - `DocsTest` (84 tests, 248 assertions), `GuestToolsWarningTest`, `NoAtriumTest` and `OpenApiTest`.
+  - `composer analyse` (PHPStan, 0 errors), Pint `--test`, and `--type-coverage --min=100` (100.0 %).
+- The full parallel suite is left to the gate.
