@@ -108,3 +108,7 @@ Settings summary endpoint: `GET {prefix}/settings-summary` (`cortex.settings-sum
 ### Deviations
 
 - `tests/Feature/EventsTest.php` is outside this group's file list. As in Groups 1 and 2, it was updated for the new action: `ShowSettingsSummaryAction` added to the "starts and finishes every action once" run (36 to 37 event types) and the action count raised from 38 to 39.
+
+### Retry check
+
+- The earlier commit already held every task of this group, so no code changed on retry. Re-checked: the two new test files, `EventsTest`, `ArchTest`, `tests/Feature/Http`, `OutputSchemaTest`, `DocsTest`, `ToolsMigrationTest` and the without-Atrium suite pass. `phpstan analyse` (whole package), `pint --test` and `--type-coverage --min=100` pass too. The full parallel suite is left to the gate.
