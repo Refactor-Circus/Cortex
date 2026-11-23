@@ -34,6 +34,11 @@ return [
     | auth:sanctum) before exposing these routes in production - they manage
     | and execute agents.
     |
+    | The package's openapi.json documents every route, and client/ holds the
+    | typed TypeScript client generated from it (@refactor-circus/cortex-client,
+    | paths relative to the prefix). Regenerate both with
+    | `composer client:generate` after changing a route.
+    |
     */
 
     'routes' => [

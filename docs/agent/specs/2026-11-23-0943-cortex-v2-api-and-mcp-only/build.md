@@ -208,3 +208,54 @@ Remove the Atrium UI, AC 7 to 12.
 - The earlier commit already held every task of this group, so no code changed on retry.
 - A search of `src/`, `config/`, `lang/`, `workbench/`, `tests/`, `composer.json`, `testbench.yaml`, `phpunit.xml.dist` and `.github/` found no leftover `ui.enabled`, `cortex::ui`, `SupportFeature`, `ScreenExtensions`, `cortex-views`, `viewAtrium`, `test-host` or `cortexCan`. The only files naming Atrium are the three tests that assert its absence and `.github/CONTRIBUTING.md`, which Group 7 updates.
 - Re-checked here: every test file this group touched passes (`NoAtriumTest`, `ComposerTest`, `ArchTest`, `DocsTest`, `ExampleTest`, `LockedToolsTest`, `PerformanceTest`, `RedirectDomainsTest`, `ToolTagsTest`, `NoRosterReferenceTest`, `McpRegistrationTest`, `ServerToolOverrideTest`, `ToolOnlyRowTest`), and so does `tests/Feature/Compat`: 186 tests in all. `composer analyse` also passes. The full suite is left to the gate.
+
+## Group 6
+
+OpenAPI export and TypeScript client, AC 13, 14, 15, 16.
+
+### Files
+
+- `composer.json`: `dedoc/scramble` `^0.13.55` in `require-dev`, the newest stable (it supports Laravel 13). Adds the `openapi:export` script (`@php vendor/bin/testbench scramble:export --path=openapi.json`) and the `client:generate` script (`@openapi:export`, `npm --prefix client ci`, `npm --prefix client run generate`, `npm --prefix client run typecheck`).
+- `testbench.yaml`: `Dedoc\Scramble\ScrambleServiceProvider` is the first provider. `tests/TestCase` lists its providers itself and ignores package discovery, so the tests never load Scramble.
+- `workbench/app/Providers/WorkbenchServiceProvider.php`: configures Scramble in a `booted` callback, after Scramble's own boot has loaded `config('scramble')`:
+  - `api_path` is `cortex.routes.prefix`.
+  - Only routes named `cortex.*` are documented.
+  - `info.version` is `2.0.0`, with a fixed description and the title `Cortex API`.
+  - A document transformer sets the server to the relative `/{prefix}`, so `APP_URL` cannot change the document.
+  - While `scramble:export` runs, the default connection becomes a migrated in-memory SQLite database (see Deviations).
+- `openapi.json`: the generated document. It has 29 paths, which are every `cortex.*` route, `search`, `runnable-agents`, `settings-summary` and `history` included.
+- `client/`:
+  - `package.json`: `@refactor-circus/cortex-client` `2.0.0`, `private`, ESM. `types` and `exports["."]` point at `./src/index.ts`. Dependency `openapi-fetch ^0.17.0`. Dev dependencies `openapi-typescript ^7.13.0` and `typescript ^5.9.3`. Scripts `generate` and `typecheck` (`tsc --noEmit`).
+  - `package-lock.json`, `tsconfig.json` (strict, Bundler resolution, `noEmit`) and `.gitignore` (`node_modules`).
+  - `scripts/generate.mjs`: runs openapi-typescript's API on `../openapi.json`. It writes `src/schema.d.ts` with the first line `// openapi.json sha256: <hex>; generated, do not edit. Regenerate with: composer client:generate`.
+  - `src/schema.d.ts`: the generated schema.
+  - `src/index.ts`: `createCortexClient({ baseUrl, headers?, fetch?, credentials? })`, which returns `Client<paths>`. It also exports the `CortexClient` alias, the `CortexClientOptions` interface, and the `paths`, `components` and `operations` types.
+- `config/cortex.php`: the routes banner names `openapi.json`, `client/`, `@refactor-circus/cortex-client` and `composer client:generate`.
+- `tests/Feature/OpenApiTest.php`.
+
+### Tests
+
+`tests/Feature/OpenApiTest.php` has 8 cases:
+
+- It re-exports through `Process` (`php vendor/bin/testbench scramble:export --path=<tmp>`) and expects the output to equal `openapi.json` byte for byte (AC 14).
+- `info.version` is `2.0.0`.
+- The document's operations (`METHOD /path`) equal the registered `cortex.*` routes, with the prefix stripped, `HEAD` dropped and `{x?}` read as `{x}`. They include `search`, `runnable-agents`, `settings-summary` and `redirect-domains` (AC 13).
+- The first line of `schema.d.ts` holds the sha256 of `openapi.json` (AC 16).
+- `client/package.json` has the right name, version, `types`, `exports`, dependencies and scripts, and the lockfile exists (AC 15).
+- `index.ts` exports `createCortexClient` returning `Client<paths>` and re-exports `paths`, `components` and `operations`.
+- `dedoc/scramble` is in `require-dev` only and `testbench.yaml` loads its provider.
+- The routes banner names the document, the client and the command.
+
+Checked here:
+
+- `composer client:generate` ran end to end, including `tsc --noEmit`.
+- `tests/Feature/OpenApiTest.php` passes: 8 tests, 34 assertions.
+- Pint passes on the changed PHP files.
+- The full suite is left to the gate. `composer test` needs no Node.
+
+### Deviations
+
+- Scramble reads model columns, for example to decide whether a relation is nullable, from the default database. The output therefore depended on the state of the workbench database. On top of that, Scramble did not migrate when run with `APP_ENV=testing`, which is how the Pest child process runs: Laravel does not reroute console events under unit tests. The workbench therefore points the default connection at an in-memory SQLite database and runs `migrate` from its `booted` callback, but only while `scramble:export` runs. This keeps the export identical whatever the environment or database state. The behaviour is workbench-only, and the spec's "the workbench config pins those values" covers it.
+- The document's server is the relative `/cortex` rather than Scramble's `url(api_path)`, which would depend on `APP_URL`. This matches the spec's note that the client `baseUrl` includes the prefix.
+- `client/package.json` is `"private": true` so that it cannot be published to npm by mistake (D-010). This does not stop it from being installed from git.
+- `composer require` also refreshed this worktree's untracked `composer.lock`. As a side effect it dropped `refactor-circus/atrium`, `refactor-circus/pennantplus` and `laravel/pennant` from `vendor/`, which resolves the Group 5 note.

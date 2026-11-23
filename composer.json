@@ -24,6 +24,7 @@
         "laravel/mcp": "^1.0.1"
     },
     "require-dev": {
+        "dedoc/scramble": "^0.13.55",
         "larastan/larastan": "^3.13",
         "laravel/pao": "^1.1.5",
         "laravel/pint": "^1.32.1, !=1.32.2",
@@ -94,6 +95,15 @@
         ],
         "clear": [
             "@php vendor/bin/testbench package:purge-skeleton --ansi"
+        ],
+        "openapi:export": [
+            "@php vendor/bin/testbench scramble:export --path=openapi.json"
+        ],
+        "client:generate": [
+            "@openapi:export",
+            "npm --prefix client ci",
+            "npm --prefix client run generate",
+            "npm --prefix client run typecheck"
         ],
         "local:install": [
             "@php bin/composer-local.php",

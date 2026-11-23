@@ -59,11 +59,11 @@ depends on: 5
 files: composer.json, testbench.yaml, workbench/app/Providers/WorkbenchServiceProvider.php, config/cortex.php, openapi.json, client/package.json, client/package-lock.json, client/tsconfig.json, client/.gitignore, client/scripts/generate.mjs, client/src/index.ts, client/src/schema.d.ts, tests/Feature/OpenApiTest.php
 criteria: 13, 14, 15, 16
 
-- [ ] 6.1 Write `tests/Feature/OpenApiTest.php`: re-export via `Process` (`php vendor/bin/testbench scramble:export --path=<tmp>`) equals committed `openapi.json`; `info.version` is `2.0.0`; the document's operations (method + path) equal the registered `cortex.*` routes, `search`, `runnable-agents` and `settings-summary` included; first line of `client/src/schema.d.ts` holds sha256 of `openapi.json`; `client/package.json` has name `@refactor-circus/cortex-client`, version `2.0.0`, the deps of AC 15; `client/src/index.ts` exports `createCortexClient`; `dedoc/scramble` in require-dev only
-- [ ] 6.2 Add `dedoc/scramble` to require-dev, `Dedoc\Scramble\ScrambleServiceProvider` to `testbench.yaml`, and Scramble config in `WorkbenchServiceProvider` (api path from `cortex.routes.prefix`, routes filtered to `cortex.*` names, version `2.0.0`, fixed description); composer scripts `openapi:export` and `client:generate`
-- [ ] 6.3 Create `client/` (package.json, tsconfig, .gitignore, `scripts/generate.mjs` writing the sha256 header, `src/index.ts` with `createCortexClient` and type re-exports); run `composer client:generate` and commit `openapi.json`, `client/package-lock.json` and `client/src/schema.d.ts`
-- [ ] 6.4 Routes banner in `config/cortex.php` names `openapi.json`, `client/` and `composer client:generate`
-- [ ] 6.5 Run vendor/bin/pest; all green
+- [x] 6.1 Write `tests/Feature/OpenApiTest.php`: re-export via `Process` (`php vendor/bin/testbench scramble:export --path=<tmp>`) equals committed `openapi.json`; `info.version` is `2.0.0`; the document's operations (method + path) equal the registered `cortex.*` routes, `search`, `runnable-agents` and `settings-summary` included; first line of `client/src/schema.d.ts` holds sha256 of `openapi.json`; `client/package.json` has name `@refactor-circus/cortex-client`, version `2.0.0`, the deps of AC 15; `client/src/index.ts` exports `createCortexClient`; `dedoc/scramble` in require-dev only
+- [x] 6.2 Add `dedoc/scramble` to require-dev, `Dedoc\Scramble\ScrambleServiceProvider` to `testbench.yaml`, and Scramble config in `WorkbenchServiceProvider` (api path from `cortex.routes.prefix`, routes filtered to `cortex.*` names, version `2.0.0`, fixed description); composer scripts `openapi:export` and `client:generate`
+- [x] 6.3 Create `client/` (package.json, tsconfig, .gitignore, `scripts/generate.mjs` writing the sha256 header, `src/index.ts` with `createCortexClient` and type re-exports); run `composer client:generate` and commit `openapi.json`, `client/package-lock.json` and `client/src/schema.d.ts`
+- [x] 6.4 Routes banner in `config/cortex.php` names `openapi.json`, `client/` and `composer client:generate`
+- [x] 6.5 Run vendor/bin/pest; all green
 
 ## Group 7: Docs and local standards
 depends on: 6
