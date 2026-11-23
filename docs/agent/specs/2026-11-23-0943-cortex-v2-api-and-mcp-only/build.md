@@ -330,3 +330,18 @@ Docs and local standards (AC 17, 18, 19, 20).
   - `DocsTest` (84 tests, 248 assertions), `GuestToolsWarningTest`, `NoAtriumTest` and `OpenApiTest`.
   - `composer analyse` (PHPStan, 0 errors), Pint `--test`, and `--type-coverage --min=100` (100.0 %).
 - The full parallel suite is left to the gate.
+
+## Rework round 1
+
+### Fixes
+
+- Minor, stale-docs: `docs/agent/standards/testing/test-layers.md` no longer shows the `uses(PennantPlusTestCase::class)->in('Modes/PennantPlus');` line. The `tests/Pest.php` sample now lists only `TestCase` and `RenamedTablesTestCase`, the modes that still exist. The file never mentioned `WithoutAtrium`.
+  - No re-accept was needed. The override's `reviewed_hash` is a hash of the upstream standard it overrides, not of this file. After `ringside sync` (the index is gitignored), `ringside check` passes.
+
+### Skipped
+
+- Nit, naming: `SearchAgentsRequest` keeps its name. The spec sets that name, and renaming it to `IndexAgentSearchRequest` would go against the spec.
+
+### Tests
+
+- `composer test:unit`: 719 passed (2612 assertions).
