@@ -37,3 +37,8 @@ Agent search endpoint: `GET {prefix}/search?q=` (`cortex.search.index`), AC 1, 2
 - The `LIKE` clauses use literal column names (`name like ? escape '!'`) through `whereRaw`, because PHPStan requires a literal string for raw SQL. `!` is the escape character because a backslash behaves differently on MySQL and SQLite.
 - The test-only denying policies (`SearchHidingVirtualAgentPolicy`, `SearchHidingConcreteAgentOverridePolicy`) are declared in the action test file, as `GuestToolsWarningTest` does, instead of in `tests/Fixtures/Policies/`. That folder is outside this group's file list.
 - The old `CortexPlugin::search()` neither ordered results nor escaped wildcards. The new action does both, as AC 1 and D-003 require.
+
+### Retry fix
+
+- The gate failed in `tests/Feature/EventsTest.php` ("gives every action exactly one start and one finish event"), which pins the number of action classes at 36. `SearchAgentsAction` makes it 37. This file is outside the group's list. It was changed because no other change makes the gate pass: the count went from 36 to 37, and `SearchAgentsAction` was added to the "starts and finishes every action once" run, so that test's count of start/finish event types went from 34 to 35. Groups 2 and 3 add actions and must bump these counts again.
+- Checked here: this group's two test files, `ArchTest`, `EventsTest`, `tests/Feature/Http`, `OutputSchemaTest`, the without-Atrium suite, `phpstan`, `pint --test` and `--type-coverage --min=100` all pass. The full suite is left to the gate.
