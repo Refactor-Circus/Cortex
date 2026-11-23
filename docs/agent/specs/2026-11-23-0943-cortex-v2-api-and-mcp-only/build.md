@@ -259,3 +259,12 @@ Checked here:
 - The document's server is the relative `/cortex` rather than Scramble's `url(api_path)`, which would depend on `APP_URL`. This matches the spec's note that the client `baseUrl` includes the prefix.
 - `client/package.json` is `"private": true` so that it cannot be published to npm by mistake (D-010). This does not stop it from being installed from git.
 - `composer require` also refreshed this worktree's untracked `composer.lock`. As a side effect it dropped `refactor-circus/atrium`, `refactor-circus/pennantplus` and `laravel/pennant` from `vendor/`, which resolves the Group 5 note.
+
+### Retry check
+
+- The earlier commit already held every task of this group, so no code changed on retry.
+- Re-checked here, all passing:
+  - `tests/Feature/OpenApiTest.php` (8 tests, 34 assertions), run serially and with `--parallel`. The fresh export still equals the committed `openapi.json`, and the `schema.d.ts` header still matches its sha256.
+  - `ArchTest`, `TablesTest`, `NoRosterReferenceTest`, `ComposerTest`, `DocsTest`, `WarningLimiterTest`, `NoAtriumTest`, `ExampleTest` and `tests/Feature/Compat`: 129 tests.
+  - `composer analyse`, `composer lint:check` and `composer test:types` (100.0 %).
+- The full suite is left to the gate.
