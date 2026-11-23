@@ -7,10 +7,10 @@ depends on: none
 files: src/Domains/VirtualAgent/Actions/SearchAgentsAction.php, src/Domains/VirtualAgent/Data/SearchAgentsData.php, src/Domains/VirtualAgent/Events/AgentsSearchingActionEvent.php, src/Domains/VirtualAgent/Events/AgentsSearchedActionEvent.php, src/Domains/VirtualAgent/Http/Requests/SearchAgentsRequest.php, src/Domains/VirtualAgent/Http/Resources/AgentReferenceResource.php, src/Domains/VirtualAgent/Http/Controllers/AgentSearchController.php, src/Domains/VirtualAgent/routes.php, tests/Feature/SearchAgentsActionsTest.php, tests/Feature/Http/SearchAgentsTest.php
 criteria: 1, 2, 5
 
-- [ ] 1.1 Write tests: action test (virtual by name and slug, wildcard `%`/`_` matched literally, 5-per-kind limit, ordering, concrete case-insensitive match, `view` filtering per result with a denying test policy, override lookup in one query, events dispatched); HTTP test (`cortex.search.index` payload shape, 422 without `q` and over 255 chars, 401 guest / 403 user when `viewAny` denied on both models, one half only when one `viewAny` denied)
-- [ ] 1.2 Add `SearchAgentsData` (`query`, rules `q` required string max 255 mapped from input `q`), the event pair and `SearchAgentsAction::handle(SearchAgentsData, ?Authenticatable $user)` returning `list<array{type,key,name}>`; port the logic from `src/Atrium/CortexPlugin::search()` without URLs or labels
-- [ ] 1.3 Add final `AgentReferenceResource` (model-less, `schema()` with required `type`, `key`, `name`), `SearchAgentsRequest` (authorize `viewAny` on either model; `rules()` from the Data; `persist()` via `fromValidated`), `AgentSearchController@index`, and route `GET search` named `search.index` in VirtualAgent `routes.php`
-- [ ] 1.4 Run vendor/bin/pest; all green
+- [x] 1.1 Write tests: action test (virtual by name and slug, wildcard `%`/`_` matched literally, 5-per-kind limit, ordering, concrete case-insensitive match, `view` filtering per result with a denying test policy, override lookup in one query, events dispatched); HTTP test (`cortex.search.index` payload shape, 422 without `q` and over 255 chars, 401 guest / 403 user when `viewAny` denied on both models, one half only when one `viewAny` denied)
+- [x] 1.2 Add `SearchAgentsData` (`query`, rules `q` required string max 255 mapped from input `q`), the event pair and `SearchAgentsAction::handle(SearchAgentsData, ?Authenticatable $user)` returning `list<array{type,key,name}>`; port the logic from `src/Atrium/CortexPlugin::search()` without URLs or labels
+- [x] 1.3 Add final `AgentReferenceResource` (model-less, `schema()` with required `type`, `key`, `name`), `SearchAgentsRequest` (authorize `viewAny` on either model; `rules()` from the Data; `persist()` via `fromValidated`), `AgentSearchController@index`, and route `GET search` named `search.index` in VirtualAgent `routes.php`
+- [x] 1.4 Run vendor/bin/pest; all green
 
 ## Group 2: Runnable agents endpoint
 depends on: 1
