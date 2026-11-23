@@ -27,10 +27,10 @@ depends on: 2
 files: src/Domains/VirtualAgent/Actions/ShowSettingsSummaryAction.php, src/Domains/VirtualAgent/Events/SettingsSummaryShowingActionEvent.php, src/Domains/VirtualAgent/Events/SettingsSummaryShownActionEvent.php, src/Domains/VirtualAgent/Http/Requests/ShowSettingsSummaryRequest.php, src/Domains/VirtualAgent/Http/Resources/SettingsSummaryResource.php, src/Domains/VirtualAgent/Http/Controllers/SettingsSummaryController.php, src/Domains/VirtualAgent/routes.php, tests/Feature/ShowSettingsSummaryActionsTest.php, tests/Feature/Http/SettingsSummaryTest.php
 criteria: 4, 5
 
-- [ ] 3.1 Write tests: action test (providers from `cortex.providers` as `[{name, models}]`, `[]` when unset, counts equal registry `names()` counts after registering extra tools/agents/servers, `cache_enabled` follows config, events); HTTP test (`cortex.settings-summary.show` JSON paths and types, reachable as a guest like `providers.index`)
-- [ ] 3.2 Add the event pair and `ShowSettingsSummaryAction` ported from `CortexPlugin::settings()`
-- [ ] 3.3 Add final `SettingsSummaryResource` with `schema()`, `ShowSettingsSummaryRequest`, `SettingsSummaryController@show` and route `GET settings-summary` named `settings-summary.show`
-- [ ] 3.4 Run vendor/bin/pest; all green
+- [x] 3.1 Write tests: action test (providers from `cortex.providers` as `[{name, models}]`, `[]` when unset, counts equal registry `names()` counts after registering extra tools/agents/servers, `cache_enabled` follows config, events); HTTP test (`cortex.settings-summary.show` JSON paths and types, reachable as a guest like `providers.index`)
+- [x] 3.2 Add the event pair and `ShowSettingsSummaryAction` ported from `CortexPlugin::settings()`
+- [x] 3.3 Add final `SettingsSummaryResource` with `schema()`, `ShowSettingsSummaryRequest`, `SettingsSummaryController@show` and route `GET settings-summary` named `settings-summary.show`
+- [x] 3.4 Run vendor/bin/pest; all green
 
 ## Group 4: MCP tools for the new endpoints
 depends on: 3

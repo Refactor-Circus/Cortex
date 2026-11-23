@@ -45,6 +45,7 @@ use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ListVirtualAgentVersionsA
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\PublishVirtualAgentVersionAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\RunVirtualAgentAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\SearchAgentsAction;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ShowSettingsSummaryAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\ShowVirtualAgentVersionAction;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Actions\UpdateVirtualAgentAction;
@@ -198,12 +199,13 @@ it('starts and finishes every action once, in order', function (): void {
     app(ListProvidersAction::class)->execute();
     app(SearchAgentsAction::class)->execute(new SearchAgentsData(query: 'echo'));
     app(ListRunnableAgentsAction::class)->execute();
+    app(ShowSettingsSummaryAction::class)->execute();
 
     $started = collect($starts)->map(fn (object $event): string => class_basename($event))->unique();
     $finished = collect($stops)->map(fn (object $event): string => class_basename($event))->unique();
 
-    expect($started)->toHaveCount(36)
-        ->and($finished)->toHaveCount(36)
+    expect($started)->toHaveCount(37)
+        ->and($finished)->toHaveCount(37)
         ->and(count($starts))->toBe(count($stops))
         ->and($started->all())->toContain(
             'VirtualAgentCreatingActionEvent', 'VirtualAgentVersionCreatingActionEvent', 'VirtualAgentVersionPublishingActionEvent',
@@ -234,7 +236,7 @@ it('gives every action exactly one start and one finish event', function (): voi
         }
     }
 
-    expect($actions)->toHaveCount(38)
+    expect($actions)->toHaveCount(39)
         ->and($unpaired)->toBe([]);
 });
 

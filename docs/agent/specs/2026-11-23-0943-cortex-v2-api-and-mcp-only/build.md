@@ -75,3 +75,36 @@ Runnable agents endpoint: `GET {prefix}/runnable-agents` (`cortex.runnable-agent
 - `tests/Feature/EventsTest.php` is outside this group's file list. It pins the action count and the start/finish event types, so it was updated as Group 1 noted: `ListRunnableAgentsAction` added to the "starts and finishes every action once" run (35 to 36 event types) and the action count raised from 37 to 38. Group 3 must bump them again.
 - The test-only denying policies (`RunnableHidingVirtualAgentPolicy`, `RunnableHidingConcreteAgentOverridePolicy`) are declared in the action test file, as in Group 1, since `tests/Fixtures/Policies/` is outside the file list.
 - The old `RunnableAgents::options()` fetched every override; the action fetches only the registered agents' overrides (still one query).
+
+## Group 3
+
+Settings summary endpoint: `GET {prefix}/settings-summary` (`cortex.settings-summary.show`), AC 4, 5.
+
+### Files
+
+- `src/Domains/VirtualAgent/Events/SettingsSummaryShowingActionEvent.php` (no payload, as `ProvidersListingActionEvent`), `SettingsSummaryShownActionEvent.php` (carries the summary array).
+- `src/Domains/VirtualAgent/Actions/ShowSettingsSummaryAction.php`: `handle()` returning `array{providers: list<array{name, models}>, tool_count, agent_count, server_count, cache_enabled}`. Ported from `CortexPlugin::settings()` without the panel label, description and view: `providers` maps the `cortex.providers` config (`name => models`) to `[{name, models}]` (`[]` when unset or empty), the counts are `count(names())` of the injected `ToolRegistry`, `AgentRegistry` and `McpServerRegistry` singletons, and `cache_enabled` is `(bool) config('cortex.cache.enabled', true)`. Read action: no transaction.
+- `src/Domains/VirtualAgent/Http/Resources/SettingsSummaryResource.php`: final, model-less, `schema()` with every field `required()` (`providers` as an array of `{name, models}` objects).
+- `src/Domains/VirtualAgent/Http/Requests/ShowSettingsSummaryRequest.php`: no `authorize()` override (the base allows; D-005), `persist()` returns `(new SettingsSummaryResource(...))->response()`.
+- `src/Domains/VirtualAgent/Http/Controllers/SettingsSummaryController.php`: `show()` returns `$request->persist()`.
+- `src/Domains/VirtualAgent/routes.php`: `GET settings-summary` named `settings-summary.show`.
+
+### Tests
+
+- `tests/Feature/ShowSettingsSummaryActionsTest.php` covers:
+  - configured providers as `[{name, models}]`, in config order
+  - `[]` when `cortex.providers` is empty or null
+  - counts equal each registry's `names()` count after registering a tool, two agents and a server, and each rises by one when one more of each is registered
+  - `cache_enabled` following `cortex.cache.enabled` (true and false)
+  - both events dispatched, the shown event carrying the result
+- `tests/Feature/Http/SettingsSummaryTest.php` covers:
+  - the exact `{"data": {...}}` payload with a configured provider, registered tool/agent/server and the cache off
+  - the JSON types of every field
+  - `data.providers` is `[]` when none are configured
+  - reachable as a guest (as `cortex.providers.index` is) and as a signed-in user
+  - the route path `{prefix}/settings-summary`
+- Checked here: the two new test files, `EventsTest` and `ArchTest` pass; `pint --test` passes; `phpstan analyse` passes on the new source files. The full suite is left to the gate.
+
+### Deviations
+
+- `tests/Feature/EventsTest.php` is outside this group's file list. As in Groups 1 and 2, it was updated for the new action: `ShowSettingsSummaryAction` added to the "starts and finishes every action once" run (36 to 37 event types) and the action count raised from 38 to 39.
