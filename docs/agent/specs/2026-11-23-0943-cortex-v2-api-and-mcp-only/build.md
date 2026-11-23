@@ -141,3 +141,9 @@ MCP tools for the new endpoints, AC 6.
 ### Deviations
 
 - `tests/Feature/Mcp/OutputSchemaTest.php` is outside this group's file list. It pins the number of tools that answer with structured content at 27. The three new tools all do, so the count is now 30. The test's own assertion (every such tool declares `outputSchema()`) is unchanged.
+
+### Retry fix
+
+- The earlier commit already held every task of this group, so no group 4 code changed on retry.
+- `tests/Feature/Mcp/ServerContextPinTest.php` failed in this worktree, and the failure is not caused by this group. `composer.lock` is not tracked, and `laravel/mcp: ^1.0.1` resolved to v1.2.1 here; the main checkout has v1.1.2. v1.2.1 adds an optional promoted `?HeaderBag $headers = null` as the last `ServerContext` constructor parameter, so the vendor pin (D-025, D-051) no longer matched. `ServerContextRebuilder` copies every promoted constructor parameter by name, so it already carries `headers` over. The rebuild tests in the same file pass on v1.2.1. The pin now accepts the nine required parameters, optionally followed by `headers`; every parameter must still be promoted, and only `headers` may be optional. It holds on v1.1.2 and v1.2.1. This file is outside the group's list.
+- Checked here: `ServerContextPinTest`, `AgentDirectoryToolsTest` and `OutputSchemaTest` pass, and `pint --test` passes on the edited file. `tests/Feature/Mcp` and `tests/Unit` had only the pin failure before the fix. The full suite is left to the gate.
