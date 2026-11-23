@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Controllers\AgentSearchController;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Controllers\ProviderController;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Controllers\RunnableAgentController;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Controllers\VirtualAgentController;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Controllers\VirtualAgentRunController;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Http\Controllers\VirtualAgentVersionController;
@@ -27,3 +28,5 @@ Route::post('virtual-agents/{agent:slug}/versions/{version}/publish', [VirtualAg
 Route::get('providers', [ProviderController::class, 'index'])->name('providers.index');
 
 Route::get('search', [AgentSearchController::class, 'index'])->name('search.index');
+
+Route::get('runnable-agents', [RunnableAgentController::class, 'index'])->name('runnable-agents.index');

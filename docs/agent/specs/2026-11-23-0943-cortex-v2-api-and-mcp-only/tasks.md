@@ -17,10 +17,10 @@ depends on: 1
 files: src/Domains/VirtualAgent/Actions/ListRunnableAgentsAction.php, src/Domains/VirtualAgent/Events/RunnableAgentsListingActionEvent.php, src/Domains/VirtualAgent/Events/RunnableAgentsListedActionEvent.php, src/Domains/VirtualAgent/Http/Requests/IndexRunnableAgentsRequest.php, src/Domains/VirtualAgent/Http/Controllers/RunnableAgentController.php, src/Domains/VirtualAgent/routes.php, tests/Feature/ListRunnableAgentsActionsTest.php, tests/Feature/Http/RunnableAgentsTest.php
 criteria: 3, 5
 
-- [ ] 2.1 Write tests: action test (virtual by name then concrete sorted, `run` filtering for both kinds incl. concrete agents without an override, overrides in one query, events); HTTP test (`cortex.runnable-agents.index` shape, unpaginated, 401/403 when `viewAny` denied on both, `data: []` when nothing is runnable)
-- [ ] 2.2 Add the event pair and `ListRunnableAgentsAction::handle(?Authenticatable $user)` ported from `src/Atrium/RunnableAgents::options()` (unsaved `ConcreteAgentOverrideModel(['agent' => $name])` when no override exists), returning the AgentReferenceResource item shape
-- [ ] 2.3 Add `IndexRunnableAgentsRequest`, `RunnableAgentController@index` and route `GET runnable-agents` named `runnable-agents.index`
-- [ ] 2.4 Run vendor/bin/pest; all green
+- [x] 2.1 Write tests: action test (virtual by name then concrete sorted, `run` filtering for both kinds incl. concrete agents without an override, overrides in one query, events); HTTP test (`cortex.runnable-agents.index` shape, unpaginated, 401/403 when `viewAny` denied on both, `data: []` when nothing is runnable)
+- [x] 2.2 Add the event pair and `ListRunnableAgentsAction::handle(?Authenticatable $user)` ported from `src/Atrium/RunnableAgents::options()` (unsaved `ConcreteAgentOverrideModel(['agent' => $name])` when no override exists), returning the AgentReferenceResource item shape
+- [x] 2.3 Add `IndexRunnableAgentsRequest`, `RunnableAgentController@index` and route `GET runnable-agents` named `runnable-agents.index`
+- [x] 2.4 Run vendor/bin/pest; all green
 
 ## Group 3: Settings summary endpoint
 depends on: 2
