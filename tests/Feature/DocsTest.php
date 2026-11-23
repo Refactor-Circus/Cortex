@@ -5,12 +5,20 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\ClearServerToolsTool;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Mcp\Tools\UpdateServerToolsTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ListRunnableAgentsTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\SearchAgentsTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowSettingsSummaryTool;
 
 /*
  * AC 21 (D-040): the docs name the concrete server tool override's routes,
  * MCP tools and ability, carry the deny-by-default snippet, and the
- * CHANGELOG and config keep their stable keywords. The rest of the prose is
- * reviewed with the diff, not grepped.
+ * CHANGELOG and config keep their stable keywords.
+ *
+ * Cortex v2 (AC 17-19): the CHANGELOG's v2.0.0 notes name what left with the
+ * Atrium UI and what replaced it; README, the Boost skill, CLAUDE.md and
+ * AGENTS.md describe the JSON API + MCP package with Atrium v2 as its
+ * optional UI; the local standards no longer mention Atrium. The rest of the
+ * prose is reviewed with the diff, not grepped.
  */
 
 /**
@@ -26,16 +34,42 @@ function packageDocument(string $path): string
 }
 
 /**
- * The CHANGELOG's v0.1.0 section, which carries these upgrade notes, up to
+ * A release section of the CHANGELOG, from its `## [vX.Y.Z]` heading up to
  * the next release heading.
+ */
+function changelogRelease(string $version): string
+{
+    $changelog = packageDocument('CHANGELOG.md');
+    $pattern = '/^## \['.preg_quote($version, '/').'\].*?(?=^## \[|\z)/ms';
+
+    expect(preg_match($pattern, $changelog, $matches))->toBe(1, "CHANGELOG.md has no {$version} section.");
+
+    return $matches[0];
+}
+
+/**
+ * The CHANGELOG's v0.1.0 section, which carries the server tool override's
+ * upgrade notes.
  */
 function releaseChangelog(): string
 {
-    $changelog = packageDocument('CHANGELOG.md');
+    return changelogRelease('v0.1.0');
+}
 
-    expect(preg_match('/^## \[v0\.1\.0\].*?(?=^## \[|\z)/ms', $changelog, $matches))->toBe(1, 'CHANGELOG.md has no v0.1.0 section.');
-
-    return $matches[0];
+/**
+ * The documents that describe Cortex to people and agents. CLAUDE.md is a
+ * link to AGENTS.md; both are read, as tools read either.
+ *
+ * @return array<string, array{string}>
+ */
+function describingDocuments(): array
+{
+    return [
+        'README' => ['README.md'],
+        'Boost skill' => ['resources/boost/skills/cortex-development/SKILL.md'],
+        'CLAUDE.md' => ['CLAUDE.md'],
+        'AGENTS.md' => ['AGENTS.md'],
+    ];
 }
 
 /**
@@ -170,6 +204,112 @@ describe('config/cortex.php', function (): void {
     });
 });
 
-it('lists the ConcreteServer domain in the domains standard', function (): void {
-    expect(packageDocument('docs/agent/standards/cortex/domains.md'))->toContain('`ConcreteServer`');
+describe('CHANGELOG v2.0.0', function (): void {
+    it('names what left with the Atrium UI and what replaces it', function (string $keyword): void {
+        expect(changelogRelease('v2.0.0'))->toContain($keyword);
+    })->with([
+        'the UI moved to Atrium v2' => ['Atrium v2'],
+        'Atrium v2 integration config' => ['atrium.integrations.cortex.'],
+        'removed ui keys' => ['cortex.ui.'],
+        'removed atrium keys' => ['cortex.atrium.'],
+        'removed feature class' => ['CortexSupportFeature'],
+        'removed views' => ['cortex::ui.'],
+        'removed publish tag' => ['cortex-views'],
+        'removed routes' => ['atrium.cortex.'],
+        'search endpoint' => ['cortex.search.index'],
+        'runnable agents endpoint' => ['cortex.runnable-agents.index'],
+        'settings summary endpoint' => ['cortex.settings-summary.show'],
+        'search tool' => ['search-agents-tool'],
+        'runnable agents tool' => ['list-runnable-agents-tool'],
+        'settings summary tool' => ['show-settings-summary-tool'],
+        'OpenAPI document' => ['openapi.json'],
+        'client folder' => ['client/'],
+        'client package' => ['@refactor-circus/cortex-client'],
+        'client script' => ['client:generate'],
+    ]);
+
+    it('comes before v0.1.0 and has upgrade notes', function (): void {
+        $changelog = packageDocument('CHANGELOG.md');
+
+        expect(strpos($changelog, '## [v2.0.0]'))->toBeLessThan((int) strpos($changelog, '## [v0.1.0]'))
+            ->and(changelogRelease('v2.0.0'))->toMatch('/^### Upgrade notes/m')
+            ->toContain('v0.1.0...v2.0.0');
+    });
+});
+
+describe('README, Boost skill, CLAUDE.md and AGENTS.md', function (): void {
+    it('describe the JSON API and MCP package with its OpenAPI document and client', function (string $document, string $keyword): void {
+        expect(packageDocument($document))->toContain($keyword);
+    })->with(describingDocuments())->with([
+        'search endpoint' => ['cortex.search.index'],
+        'runnable agents endpoint' => ['cortex.runnable-agents.index'],
+        'settings summary endpoint' => ['cortex.settings-summary.show'],
+        'OpenAPI document' => ['openapi.json'],
+        'client package' => ['@refactor-circus/cortex-client'],
+        'client script' => ['client:generate'],
+        'optional UI' => ['Atrium v2'],
+    ]);
+
+    it('have no dashboard section and no removed config key', function (string $document): void {
+        $text = packageDocument($document);
+
+        expect($text)->not->toContain('cortex.ui')
+            ->not->toContain('cortex.atrium')
+            ->not->toContain('cortexCan')
+            ->not->toContain('CortexSupportFeature')
+            ->not->toContain('without-atrium')
+            ->not->toMatch('/^#{1,6} Dashboard\b/m');
+    })->with(describingDocuments());
+
+    it('name the new MCP tools by the names they are served under', function (string $document, string $tool): void {
+        expect(packageDocument($document))->toContain('`'.app($tool)->name().'`');
+    })->with([
+        'README' => ['README.md'],
+        'Boost skill' => ['resources/boost/skills/cortex-development/SKILL.md'],
+    ])->with([
+        'search' => [SearchAgentsTool::class],
+        'runnable agents' => [ListRunnableAgentsTool::class],
+        'settings summary' => [ShowSettingsSummaryTool::class],
+    ]);
+
+    it('name the new endpoints by their registered paths', function (string $name, string $path): void {
+        $route = Route::getRoutes()->getByName($name);
+
+        expect($route)->not->toBeNull()
+            ->and($route?->uri())->toBe($path)
+            ->and(packageDocument('README.md'))->toContain("/{$path}");
+    })->with([
+        'search' => ['cortex.search.index', 'cortex/search'],
+        'runnable agents' => ['cortex.runnable-agents.index', 'cortex/runnable-agents'],
+        'settings summary' => ['cortex.settings-summary.show', 'cortex/settings-summary'],
+    ]);
+});
+
+it('names the OpenAPI document and the client in the routes banner', function (): void {
+    expect(configBanner('routes'))->toContain('openapi.json')
+        ->toContain('client/')
+        ->toContain('composer client:generate');
+});
+
+describe('local standards', function (): void {
+    it('has no Atrium screens standard', function (): void {
+        expect(is_file(dirname(__DIR__, 2).'/docs/agent/standards/cortex/atrium-screens.md'))->toBeFalse();
+    });
+
+    it('no longer mentions Atrium', function (string $standard): void {
+        expect(packageDocument("docs/agent/standards/cortex/{$standard}.md"))->not->toMatch('/atrium/i');
+    })->with(['domains', 'optional-surfaces', 'testbench-environment']);
+
+    it('lists the ConcreteServer domain in the domains standard', function (): void {
+        expect(packageDocument('docs/agent/standards/cortex/domains.md'))->toContain('`ConcreteServer`');
+    });
+
+    it('names the package-wide reads the VirtualAgent domain serves', function (string $keyword): void {
+        expect(packageDocument('docs/agent/standards/cortex/domains.md'))->toContain($keyword);
+    })->with(['search', 'runnable agents', 'settings summary']);
+
+    it('pins the providers the TestCase boots, in order', function (): void {
+        expect(packageDocument('docs/agent/standards/cortex/testbench-environment.md'))
+            ->toContain('`AiServiceProvider`, `McpServiceProvider`, then `CortexServiceProvider`');
+    });
 });

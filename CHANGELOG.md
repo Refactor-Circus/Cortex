@@ -1,6 +1,29 @@
 # Release Notes
 
-## [Unreleased](https://github.com/Refactor-Circus/Cortex/compare/v0.1.0...main)
+## [Unreleased](https://github.com/Refactor-Circus/Cortex/compare/v2.0.0...main)
+
+## [v2.0.0](https://github.com/Refactor-Circus/Cortex/compare/v0.1.0...v2.0.0)
+
+Cortex is now a JSON API and an MCP server only. Its Atrium screens leave the package: Atrium v2 rebuilds them on the JSON API, through the committed `openapi.json` and the generated TypeScript client in `client/`.
+
+### Upgrade notes
+
+- **The Atrium UI is removed.** Cortex no longer registers an Atrium plugin, screens, navigation, search source or settings panel, and its `atrium.cortex.*` routes (the pages and the forms they posted to, `atrium.cortex.redirect-domains.store` and `atrium.cortex.redirect-domains.destroy` included) are gone. To keep a UI for Cortex, install Atrium v2 and switch its Cortex integration on under `atrium.integrations.cortex.*` (see Atrium's README); it calls the JSON API, so keep `cortex.routes.enabled` on and give Atrium's user a way through `cortex.routes.middleware`. Without Atrium v2, Cortex has no UI, and the JSON API and MCP server work as before.
+- **Removed config keys `cortex.ui.*` and `cortex.atrium.*`.** `cortex.ui.enabled`, `cortex.atrium.features` and `cortex.atrium.redirect_domains.screens` are no longer read. A published `config/cortex.php` that still has the `ui` and `atrium` sections keeps working, since they are ignored; delete them with the `use RefactorCircus\Cortex\Atrium\Features\CortexSupportFeature;` line at its top, which names a class that no longer exists.
+- **`CortexSupportFeature` is removed**, with the rest of `RefactorCircus\Cortex\Atrium\` (`CortexPlugin`, `ScreenAccess`, `RunnableAgents`, `Badges`, `Screens`, `ScreenRegistrations` and the `*UiController`s). Its stored Pennant values (`RefactorCircus\Cortex\Features\CortexSupportFeature`) are no longer read; purge them with `php artisan pennant:purge` if Pennant stays installed. refactor-circus/pennantplus is no longer suggested.
+- **The `cortex::ui.*` views and the `cortex-views` publish tag are removed**, with the `@cortexCan` Blade conditional. Delete `resources/views/vendor/cortex` if you published the views; nothing renders them any more.
+- **Owned redirect domains on other screens.** The redirect-domain tab and section that Cortex put on Roster's organization and user screens are Atrium v2's now; it lists an owner's domains with `GET /cortex/redirect-domains?owner_type=&owner_id=` and adds and removes them through `POST /cortex/redirect-domains` and `DELETE /cortex/redirect-domains/{id}`, under the same `RedirectDomainPolicy`.
+- **Translations.** `lang/en/cortex.php` keeps only the redirect-domain validation message (`cortex::cortex.redirect_domain_invalid`); the UI labels went with the screens. A published `cortex-lang` copy keeps working; its extra keys are unused.
+- **Composer.** refactor-circus/atrium is no longer in `suggest` or `conflict`; refactor-circus/keystone is the only suite package Cortex requires. There is no `composer test:without-atrium` any more.
+
+### Added
+
+- **Agent search.** `GET /cortex/search?q=` (route `cortex.search.index`) and the `search-agents-tool` MCP tool answer up to 5 virtual agents whose name or slug contains `q`, then up to 5 registered concrete agents whose name contains it, each as `{type, key, name}` (`type` is `virtual_agent` or `concrete_agent`). The caller needs `viewAny` on either agent model; each half is searched only under its own `viewAny`, and each result is kept only when the caller may `view` it.
+- **Runnable agents.** `GET /cortex/runnable-agents` (route `cortex.runnable-agents.index`) and the `list-runnable-agents-tool` MCP tool list every virtual agent, then every registered concrete agent, that the caller may `run`, in the same `{type, key, name}` shape and unpaginated. The caller needs `viewAny` on either agent model.
+- **Settings summary.** `GET /cortex/settings-summary` (route `cortex.settings-summary.show`) and the `show-settings-summary-tool` MCP tool answer the curated providers (`cortex.providers`) with their models, the numbers of registered tools, concrete agents and MCP servers, and whether the publication cache is on. Like `GET /cortex/providers`, it asks no policy.
+- Actions `SearchAgentsAction` (Data `SearchAgentsData`), `ListRunnableAgentsAction` and `ShowSettingsSummaryAction` in the `VirtualAgent` domain, with their event pairs `AgentsSearching/AgentsSearchedActionEvent`, `RunnableAgentsListing/RunnableAgentsListedActionEvent` and `SettingsSummaryShowing/SettingsSummaryShownActionEvent`. `CortexServer` now serves 34 tools.
+- **`openapi.json`.** The package root carries an OpenAPI document of every `cortex.*` route, exported from the workbench with Scramble (`composer openapi:export`). `dedoc/scramble` is a dev dependency only; hosts do not install it.
+- **TypeScript client.** `client/` is the `@refactor-circus/cortex-client` package (TypeScript source, not published to npm): `createCortexClient({ baseUrl, headers, fetch, credentials })` returns a typed openapi-fetch client generated from `openapi.json`. `composer client:generate` re-exports `openapi.json`, regenerates `client/src/schema.d.ts` and type-checks the client; a test fails when either file is stale.
 
 ## [v0.1.0](https://github.com/Refactor-Circus/Cortex/commits/v0.1.0) - 2026-10-30
 

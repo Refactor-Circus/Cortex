@@ -26,15 +26,15 @@ Clone your fork, then install the dev dependencies:
 composer install
 ```
 
-## Dashboard
+## OpenAPI document and TypeScript client
 
-The dashboard is server-rendered Blade in `resources/views/ui`, registered with Atrium by `src/Atrium/CortexPlugin.php`. There is no JavaScript build step. Preview it in the workbench with:
+Cortex ships no UI; Atrium v2 builds its screens on the JSON API. The API is described by `openapi.json` at the package root, and `client/` holds the typed TypeScript client generated from it, `@refactor-circus/cortex-client`. When you add or change a route, regenerate both (this needs Node and npm):
 
 ```bash
-composer serve
+composer client:generate
 ```
 
-Then open `/atrium`. The workbench opens the Atrium gate, so no login is needed.
+It exports `openapi.json` from the workbench, installs the client's packages, regenerates `client/src/schema.d.ts` and type-checks the client. Commit `openapi.json` and `client/src/schema.d.ts` together: the tests fail while either is stale. Try the API in the workbench with `composer serve`.
 
 ## Lint
 

@@ -268,3 +268,56 @@ Checked here:
   - `ArchTest`, `TablesTest`, `NoRosterReferenceTest`, `ComposerTest`, `DocsTest`, `WarningLimiterTest`, `NoAtriumTest`, `ExampleTest` and `tests/Feature/Compat`: 129 tests.
   - `composer analyse`, `composer lint:check` and `composer test:types` (100.0 %).
 - The full suite is left to the gate.
+
+## Group 7
+
+Docs and local standards (AC 17, 18, 19, 20).
+
+### Files
+
+- `tests/Feature/DocsTest.php`: written first. `changelogRelease($version)` generalises the v0.1.0 section reader, and `describingDocuments()` lists README, the Boost skill, `CLAUDE.md` and `AGENTS.md`. New cases:
+  - CHANGELOG v2.0.0 names: Atrium v2 and `atrium.integrations.cortex.`; `cortex.ui.` and `cortex.atrium.`; `CortexSupportFeature`, `cortex::ui.`, `cortex-views` and `atrium.cortex.`; the three route names and three MCP tool names; `openapi.json`, `client/`, `@refactor-circus/cortex-client` and `client:generate`. The section sits above v0.1.0, has upgrade notes, and links `v0.1.0...v2.0.0`.
+  - Each of the four documents names the three route names, `openapi.json`, `@refactor-circus/cortex-client`, `client:generate` and `Atrium v2`. None contains `cortex.ui`, `cortex.atrium`, `cortexCan`, `CortexSupportFeature` or `without-atrium`, or a Dashboard heading.
+  - README and the skill name the three MCP tools as they are served (`app($tool)->name()`). README names the three endpoints by their registered URIs.
+  - The routes banner names `openapi.json`, `client/` and `composer client:generate`.
+  - `atrium-screens.md` is gone. `domains.md`, `optional-surfaces.md` and `testbench-environment.md` do not match `/atrium/i`. `domains.md` names the three VirtualAgent reads, and `testbench-environment.md` pins `AiServiceProvider`, `McpServiceProvider`, then `CortexServiceProvider`.
+- `CHANGELOG.md`: a new `## [v2.0.0]` section (compare `v0.1.0...v2.0.0`, D-013), and `Unreleased` now compares from `v2.0.0`.
+  - Upgrade notes: the UI removed (use Atrium v2, `atrium.integrations.cortex.*`); `cortex.ui.*` and `cortex.atrium.*`; `CortexSupportFeature` and the rest of `Atrium\`; the `cortex::ui.*` views, `@cortexCan` and the `cortex-views` tag; the `atrium.cortex.*` routes; owned redirect domains now going through the owner filter; translations; Composer.
+  - Added: the three endpoints and tools, their actions, Data and events, `openapi.json`, and `client/`.
+- `README.md`:
+  - Removed: the Dashboard section, the Atrium install steps, `ui` in the config sample, "Redirect domains on other screens" (screens map, malformed entries, suggest/conflict, the without-Atrium testing notes), and every dashboard mention in other sections.
+  - Added: "A UI with Atrium v2"; three rows in the API table; "Agent search, runnable agents and settings summary" with sample payloads; "OpenAPI"; "TypeScript client". The MCP tool count is now 34.
+  - "Who may manage an owner's domains" is kept as its own subsection under OAuth Redirect Domains, and the Authorization link now points at it.
+- `resources/boost/skills/cortex-development/SKILL.md`:
+  - The description now says JSON API + MCP with Atrium v2.
+  - Step 3 is now "Add a UI with Atrium v2".
+  - The three endpoints are in the API list, the tool count is 34, and an OpenAPI/client paragraph is added.
+  - The dashboard anti-pattern is replaced.
+- `AGENTS.md` (`CLAUDE.md` is a symlink to it):
+  - Layout: no `src/Atrium`; the VirtualAgent reads are named, and an API + MCP-only paragraph is added.
+  - The Keystone boot list drops `registerAtriumPlugin()` and adds `loadTranslationsFrom()`.
+  - The Data bullet drops the Atrium-controller clause.
+  - "Frontend" is replaced by "API description and client".
+- `.github/CONTRIBUTING.md`: the Dashboard section is replaced by "OpenAPI document and TypeScript client".
+- `docs/agent/standards/cortex/atrium-screens.md`: deleted.
+- `docs/agent/standards/cortex/domains.md`:
+  - No `src/Atrium` and no `CortexSupportFeature` stored-name line.
+  - VirtualAgent lists search, runnable agents and the settings summary.
+  - A "no UI layer" line is added.
+- `docs/agent/standards/cortex/optional-surfaces.md`: the dashboard row is gone, and the description and tags are updated.
+- `docs/agent/standards/cortex/testbench-environment.md`: the provider order is Ai, Mcp, Cortex, and there is no `PennantPlusTestCase`.
+
+### Tests
+
+- Not run here: the gate runs the full suite (task 7.5 is ticked on that basis).
+- Pint `--test` passes on `tests/Feature/DocsTest.php`.
+- A grep confirmed that each of README, `AGENTS.md`/`CLAUDE.md` and the skill contains every required keyword and none of the forbidden ones.
+
+### Deviations
+
+- Extra file: `docs/policies.md`. It is outside the group's list, but it documented the removed screens: `ScreenAccess`, `@cortexCan` and the navigation table under "The dashboard". That section is replaced by "Agent search and runnable agents", which gives the two-step check. `GET /settings-summary` is added to the no-policy line.
+- The gitignored `docs/agent/standards.index.yml` was regenerated with `ringside sync` (run through `composer --working-dir=... exec`). It no longer lists `cortex/atrium-screens` or the old descriptions. It is not committed.
+- Left alone: `docs/agent/standards/testing/test-layers.md` still shows `uses(PennantPlusTestCase::class)->in('Modes/PennantPlus');` in its sample.
+  - The file is outside this group, and it carries a `reviewed_hash` override marker.
+  - The line is stale but harmless. Follow-up: drop that line and re-accept the override with `ringside index --accept`.
+- `workbench/app/Http/Middleware/SignInWorkbenchUser.php` says "dashboard URL" in a docblock. It is outside this group and does not mention Atrium, so it is left alone.

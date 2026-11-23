@@ -11,14 +11,14 @@
     <a href="https://packagist.org/packages/refactor-circus/cortex"><img src="https://img.shields.io/packagist/dt/refactor-circus/cortex.svg?style=flat-square" alt="Total Downloads"></a>
 </p>
 
-AI orchestration for Laravel. Cortex manages **virtual agents, concrete agents, tools, and MCP servers** on top of the [Laravel AI SDK](https://laravel.com/docs/ai-sdk), exposed through a REST API, a prebuilt dashboard, and an [MCP](https://laravel.com/docs/mcp) server mirroring the same operations.
+AI orchestration for Laravel. Cortex manages **virtual agents, concrete agents, tools, and MCP servers** on top of the [Laravel AI SDK](https://laravel.com/docs/ai-sdk), exposed through a JSON API and an [MCP](https://laravel.com/docs/mcp) server mirroring the same operations. The API is described by a committed [OpenAPI document](#openapi) and a [typed TypeScript client](#typescript-client); [Atrium v2](#a-ui-with-atrium-v2) is the optional UI built on them.
 
 - **Virtual agents** are database records that combine their own versioned prompt, registered tools, provider/model settings, and other agents (virtual or concrete) as sub-agents. Prompt content is immutable per version and a published pointer decides what runs; roll back by publishing an older version.
 - **Concrete agents** are classes in your code. Register them with Cortex to list, run and attach them as sub-agents, and override their prompt (versioned, publishable) and toolset without a deploy.
 - **Tools** are PHP classes implementing `Laravel\Ai\Contracts\Tool` or extending `Laravel\Mcp\Server\Tool` (wrapped automatically), registered by name in the Cortex tool registry. Their descriptions can be overridden at runtime with versioned, publishable content.
-- **MCP servers** registered with Cortex (concrete servers: classes in your code) get the same treatment for their instructions: versioned, publishable overrides that replace the code-declared instructions served to MCP clients, manageable over HTTP, MCP, and the dashboard. Their tool list can be overridden too, picked from the server's own tools and the registered Cortex tools.
+- **MCP servers** registered with Cortex (concrete servers: classes in your code) get the same treatment for their instructions: versioned, publishable overrides that replace the code-declared instructions served to MCP clients, manageable over HTTP and MCP. Their tool list can be overridden too, picked from the server's own tools and the registered Cortex tools.
 
-Run either kind via the API, the dashboard, the MCP server, or the `Cortex` facade.
+Run either kind via the API, the MCP server, or the `Cortex` facade.
 
 ## Installation
 
@@ -35,20 +35,13 @@ php artisan vendor:publish --tag="cortex-migrations"
 php artisan migrate
 ```
 
-Publish the config file to customize routes, the dashboard, MCP transports, and tools:
+Publish the config file to customize routes, MCP transports, and tools:
 
 ```bash
 php artisan vendor:publish --tag="cortex-config"
 ```
 
-The dashboard renders through [Atrium](https://github.com/refactor-circus/atrium), which Cortex suggests but does not require. To use the dashboard, require Atrium and publish its assets:
-
-```bash
-composer require refactor-circus/atrium
-php artisan vendor:publish --tag="atrium-assets"
-```
-
-Without Atrium, Cortex has no dashboard, and its JSON API and MCP server work as usual. See [Redirect domains on other screens](#redirect-domains-on-other-screens).
+Cortex ships no UI of its own. For screens, install [Atrium v2](#a-ui-with-atrium-v2), which manages Cortex through its JSON API.
 
 ## Configuration
 
@@ -58,9 +51,6 @@ return [
         'enabled' => true, // load the JSON API (and GET {prefix}/history)
         'prefix' => 'cortex',
         'middleware' => ['api'],
-    ],
-    'ui' => [
-        'enabled' => true, // register Cortex with the Atrium dashboard
     ],
     'mcp' => [
         'web' => ['enabled' => false, 'route' => 'mcp/cortex', 'middleware' => []],
@@ -97,59 +87,27 @@ return [
 `tables` names the table each Cortex record lives in. Rename them before running the migrations: the migrations, models, validation rules and queries all read them through `RefactorCircus\Cortex\Support\Tables`. A published config that lists only some tables keeps the defaults for the rest.
 
 > [!WARNING]
-> The API routes, dashboard, and MCP server manage **and execute** agents. The MCP transports are disabled by default and the API carries only the `api` middleware group. Before exposing them in production, add authentication — e.g. `'middleware' => ['api', 'auth:sanctum']` for the routes and `'middleware' => ['auth:sanctum']` for the MCP web transport. The dashboard is guarded by Atrium's `viewAtrium` gate; define it as shown under [Dashboard](#dashboard).
+> The API routes and MCP server manage **and execute** agents. The MCP transports are disabled by default and the API carries only the `api` middleware group. Before exposing them in production, add authentication — e.g. `'middleware' => ['api', 'auth:sanctum']` for the routes and `'middleware' => ['auth:sanctum']` for the MCP web transport. Atrium v2 calls the same routes, so its users pass the same middleware.
 
 ## Authorization
 
 Every API endpoint and MCP tool that touches a model checks it through the Gate, using the policies in `cortex.policies`. It checks as the signed-in user, or as a guest when nobody is signed in. Listing or creating checks `viewAny` or `create` against the model class. Reading, changing, deleting, publishing or running checks `view`, `update`, `delete`, `publish` or `run` against the record.
 
-Cortex records have no owner, so the bundled policies allow everything and your middleware stays the gate, as before. Redirect domains are the exception: adding or removing one that belongs to an owner, such as an organization, asks `update` on that owner (see [who may manage an owner's domains](#redirect-domains-on-other-screens)). Version policies defer to their virtual agent or override through the Gate: reading a version needs `view` on it, adding or publishing one needs `update`. Point a model at your own policy class in `cortex.policies` to restrict it.
+Cortex records have no owner, so the bundled policies allow everything and your middleware stays the gate, as before. Redirect domains are the exception: adding or removing one that belongs to an owner, such as an organization, asks `update` on that owner (see [who may manage an owner's domains](#who-may-manage-an-owners-domains)). Version policies defer to their virtual agent or override through the Gate: reading a version needs `view` on it, adding or publishing one needs `update`. Point a model at your own policy class in `cortex.policies` to restrict it.
 
 Changing a concrete MCP server's tool list checks its own ability, `updateTools`, which the bundled policy allows for guests too. Read [who may change a server's tools](#who-may-change-a-servers-tools) before exposing the routes.
 
 **Full guide:** [Policies](docs/policies.md). It covers what each endpoint and MCP tool checks, and how to replace a policy.
 
-## Dashboard
+## A UI with Atrium v2
 
-Cortex renders its dashboard through [Atrium](https://github.com/refactor-circus/atrium). Atrium is suggested, not required: require `refactor-circus/atrium` to get the dashboard. Without it there is no dashboard, and nothing reports its absence. Install Atrium's gate and Cortex appears in the sidebar automatically:
+Cortex is API and MCP only: it ships no views, screens or assets. [Atrium](https://github.com/refactor-circus/atrium) v2 is the optional UI. It manages virtual agents and their prompt versions, concrete agents and their overrides, runs, tools and MCP servers by calling Cortex's JSON API through [`@refactor-circus/cortex-client`](#typescript-client), and puts an owner's [redirect domains](#oauth-redirect-domains) on that owner's pages. Its Cortex integration is configured on Atrium's side, under `atrium.integrations.cortex.*`; see Atrium's README.
 
-```php
-use Illuminate\Support\Facades\Gate;
+Because Atrium v2 calls the same routes as any other client:
 
-Gate::define('viewAtrium', fn ($user) => $user->is_admin);
-```
-
-The dashboard covers virtual agents with their prompt versions, concrete agents with their prompt and toolset overrides, a run playground, the tool registry (filterable by tag) with a versioned description editor, and the MCP server registry with a versioned instructions editor and a tool list editor.
-
-Atrium owns the path, the middleware and the authorization gate, so there is nothing to configure here beyond the single switch:
-
-```php
-// config/cortex.php
-'ui' => ['enabled' => true],
-```
-
-Setting it to `false` removes Cortex from the dashboard and leaves the JSON API serving.
-
-Each page, action and control is checked against the same policies as the API: a navigation item, button, form or card shows only when its action would be allowed, and the action answers `403` otherwise. Views ask with `@cortexCan('update', $agent)`, the same check the controllers make. See [Policies](docs/policies.md#the-dashboard).
-
-The screens follow Atrium's screen conventions: actions are icon buttons with their label as tooltip, states (override or code, published, locked) are status dots with a `data-status` attribute, and every navigation item has an icon. `RefactorCircus\Cortex\Atrium\Badges` maps each state to its colour.
-
-Cortex ships no stylesheet and no components of its own: its views use Atrium's components (`search-input`, `chip`, `flash`, form controls, tables, cards) and the utilities Atrium compiles. A test asserts it with `RefactorCircus\Atrium\Testing\AtriumStyles`.
-
-Every page declares itself as an Atrium screen (`cortex.virtual-agents`, `cortex.virtual-agent`, `cortex.tools`, `cortex.redirect-domains` and so on), so other packages can add tabs and sections to it through `Atrium::screens()` without Cortex knowing them. Cortex shows no history of its own: an audit log such as [refactor-circus/keen](https://github.com/Refactor-Circus/Keen) adds History to the screens itself.
-
-To switch Cortex in the dashboard on and off as a whole - navigation, search, settings and pages, which answer `404` while it is off - install [refactor-circus/pennantplus](https://github.com/Refactor-Circus/PennantPlus). `RefactorCircus\Cortex\Atrium\Features\CortexSupportFeature` is on until its global value is set, and only its global value counts:
-
-```php
-use RefactorCircus\Cortex\Atrium\Features\CortexSupportFeature;
-use Laravel\Pennant\Feature;
-
-Feature::for(null)->deactivate(CortexSupportFeature::class);
-```
-
-The features checked are listed in `cortex.atrium.features`; point it at a subclass or your own feature names, or empty it to always show Cortex. Without refactor-circus/pennantplus the class cannot load and is skipped, so nothing is checked.
-
-> **Authentication.** The pages are server-rendered under Atrium's path (`/atrium/cortex/...` by default) behind its `web` middleware and `viewAtrium` gate, so they authenticate the way the rest of your application does. Without a `viewAtrium` gate, Atrium allows only the `local` environment.
+- keep `cortex.routes.enabled` on (the default);
+- `cortex.routes.middleware` decides who gets through, so authenticate Atrium's users there (e.g. `auth:sanctum`);
+- every call is checked against the same [policies](#authorization) as any other API call.
 
 ## Registering Tools
 
@@ -163,7 +121,7 @@ Cortex::tools()->register('search', \App\Ai\Tools\SearchTool::class);
 
 ### Tool Tags
 
-Tags group tools on the dashboard's tool list and in the agent tool pickers, which filter by tag, name and selection. A tool gets the tags given when it is registered plus one per matching namespace pattern:
+Tags group tools, so a tool list or an agent's tool picker can filter by them. A tool gets the tags given when it is registered plus one per matching namespace pattern:
 
 ```php
 // config/cortex.php
@@ -184,7 +142,7 @@ Tags are kebab-cased. `GET /cortex/tools?tag=catalog` and the `list-tools-tool` 
 
 ### Tool Description Overrides
 
-A tool's code-declared description can be overridden without a deploy: each tool has an optional, immutably versioned description with a published pointer — same model as agent prompts. Manage overrides from the dashboard or the API (`/cortex/tools/{tool}/description`). Extend `RefactorCircus\Cortex\Domains\Tool\Support\Tool` (or use the `RefactorCircus\Cortex\Domains\Tool\Concerns\HasVersionedDescription` trait on an existing MCP tool) so the tool also serves its published override when used directly outside Cortex.
+A tool's code-declared description can be overridden without a deploy: each tool has an optional, immutably versioned description with a published pointer — same model as agent prompts. Manage overrides through the API (`/cortex/tools/{tool}/description`). Extend `RefactorCircus\Cortex\Domains\Tool\Support\Tool` (or use the `RefactorCircus\Cortex\Domains\Tool\Concerns\HasVersionedDescription` trait on an existing MCP tool) so the tool also serves its published override when used directly outside Cortex.
 
 ## Concrete Agents
 
@@ -215,12 +173,12 @@ Register it in `config/cortex.php` under `agents` (string keys set the registere
 Cortex::agents()->register('triage', \App\Ai\Agents\TriageAgent::class);
 ```
 
-Wherever the agent runs — your own `TriageAgent::make()->prompt(...)`, the API, the dashboard or MCP — it uses the published Cortex overrides when they exist and its code declarations otherwise:
+Wherever the agent runs — your own `TriageAgent::make()->prompt(...)`, the API or MCP — it uses the published Cortex overrides when they exist and its code declarations otherwise:
 
 - **Prompt:** versioned and publishable, like tool descriptions. Removing the override restores the code prompt.
 - **Tools:** a replacement list picked from the class's own tools (by the name the model sees) and the registered Cortex tools (by registered name). Clearing it restores the code toolset. Names that no longer resolve are skipped at run time.
 
-Mark an agent `#[RefactorCircus\Cortex\Domains\ConcreteAgent\Support\LockedTools]` when its safety depends on the exact tools it holds. Cortex still manages its prompt, but rejects toolset overrides (clearing one is still allowed) and ignores any saved earlier. The dashboard shows its toolset as locked, and the API reports `tools_overridable: false`.
+Mark an agent `#[RefactorCircus\Cortex\Domains\ConcreteAgent\Support\LockedTools]` when its safety depends on the exact tools it holds. Cortex still manages its prompt, but rejects toolset overrides (clearing one is still allowed) and ignores any saved earlier. The API reports `tools_overridable: false`.
 
 Agents that cannot change their base class can use the `RefactorCircus\Cortex\Domains\ConcreteAgent\Concerns\HasCortexOverrides` trait instead. Registered agents without it are still listed, runnable and usable as sub-agents, but ignore overrides.
 
@@ -243,6 +201,9 @@ Everything is available over the REST API (prefix `cortex` by default):
 | DELETE | `/cortex/concrete-agents/{agent}/override` | Remove the prompt and toolset overrides |
 | GET/POST | `/cortex/concrete-agents/{agent}/versions` | List / create immutable prompt override versions |
 | POST | `/cortex/concrete-agents/{agent}/versions/{version}/publish` | Publish a prompt override version |
+| GET | `/cortex/search?q=` | Search virtual and concrete agents by name (route `cortex.search.index`) |
+| GET | `/cortex/runnable-agents` | List the agents the caller may run (route `cortex.runnable-agents.index`) |
+| GET | `/cortex/settings-summary` | Providers, registry counts and the cache switch (route `cortex.settings-summary.show`) |
 | GET | `/cortex/providers` | List providers with their models and default model |
 | GET | `/cortex/tools?tag=` | List registered tools with their schemas and tags, optionally one tag's |
 | GET/DELETE | `/cortex/tools/{tool}/description` | Show / remove the description override |
@@ -274,6 +235,58 @@ Virtual agent create/update payloads accept `instructions` (the prompt; required
 }
 ```
 
+### Agent search, runnable agents and settings summary
+
+Three reads serve a UI's search box, run form and settings panel. Each has an MCP tool with the same answer.
+
+- **Search:** `GET /cortex/search?q=triage` (route `cortex.search.index`, MCP tool `search-agents-tool`). `q` is required, at most 255 characters. It answers up to 5 virtual agents whose name or slug contains `q` (`%` and `_` match themselves), ordered by name, then up to 5 registered concrete agents whose name contains it, case-insensitively, ordered by name. The caller needs `viewAny` on `VirtualAgentModel` or on `ConcreteAgentOverrideModel`; each half is searched only under its own `viewAny`, and each result is kept only when the caller may `view` it.
+- **Runnable agents:** `GET /cortex/runnable-agents` (route `cortex.runnable-agents.index`, MCP tool `list-runnable-agents-tool`). Every virtual agent, then every registered concrete agent, each ordered by name, kept only when the caller may `run` it. Unpaginated. The caller needs `viewAny` on either agent model.
+- **Settings summary:** `GET /cortex/settings-summary` (route `cortex.settings-summary.show`, MCP tool `show-settings-summary-tool`). It answers the providers curated in `cortex.providers` (`[]` when none are) and the counts of registered tools, concrete agents and MCP servers, and says whether the [publication cache](#publication-cache) is on. Like `GET /cortex/providers` it asks no policy: your route middleware is its gate.
+
+Search and runnable agents answer the same item shape, where `key` is a virtual agent's slug or a concrete agent's registered name, the name that `virtual-agents.run` or `concrete-agents.run` takes:
+
+```json
+{"data": [
+    {"type": "virtual_agent", "key": "coordinator", "name": "Coordinator"},
+    {"type": "concrete_agent", "key": "triage", "name": "triage"}
+]}
+```
+
+```json
+{"data": {
+    "providers": [{"name": "anthropic", "models": ["claude-sonnet-5-5", "claude-opus-5-5"]}],
+    "tool_count": 4,
+    "agent_count": 1,
+    "server_count": 2,
+    "cache_enabled": true
+}}
+```
+
+### OpenAPI
+
+`openapi.json`, at the package root, describes every `cortex.*` route: its method, its path relative to `cortex.routes.prefix` (the document's server is `/cortex`) and the request and response shapes Scramble infers. Its `info.version` is `2.0.0`. It is exported from the package's workbench, so it describes Cortex's routes with the default prefix, whatever your application adds.
+
+Maintainers regenerate it with `composer openapi:export` after changing a route; a test fails while the committed file is stale. `dedoc/scramble` is a dev dependency of Cortex only, so your application does not install it.
+
+### TypeScript client
+
+`client/` holds `@refactor-circus/cortex-client`, a typed [openapi-fetch](https://openapi-ts.dev/openapi-fetch/) client generated from `openapi.json`. It ships as TypeScript source (no build step) and is not published to npm: consume it from the Cortex repository at the tag you use, as Atrium v2 does.
+
+```ts
+import { createCortexClient } from '@refactor-circus/cortex-client';
+
+const cortex = createCortexClient({
+    baseUrl: 'https://app.test/cortex', // your host, with cortex.routes.prefix
+    headers: { Authorization: `Bearer ${token}` },
+});
+
+const { data, error } = await cortex.GET('/search', { params: { query: { q: 'triage' } } });
+```
+
+`createCortexClient({ baseUrl, headers?, fetch?, credentials? })` returns openapi-fetch's `Client<paths>`; the `paths`, `components` and `operations` types are exported beside it. Pass `credentials: 'include'` for a host that authenticates with session cookies.
+
+`composer client:generate` re-exports `openapi.json`, installs the client's packages, regenerates `client/src/schema.d.ts` and type-checks the client. It needs Node and npm. The first line of `schema.d.ts` holds the sha256 of the `openapi.json` it came from, and a test fails when the two disagree, so `composer test` itself needs no Node.
+
 ## Running Agents from Code
 
 ```php
@@ -293,7 +306,7 @@ Providers, models, and settings fall back to your app's `config/ai.php` defaults
 
 ## Providers
 
-The dashboard's virtual agent form and `GET /cortex/providers` offer the same provider and model list. By default every text-capable provider configured for laravel/ai is offered, along with the models it declares (default, smartest, cheapest). Set `cortex.providers` to curate the list — it becomes authoritative when non-empty, with the first model of each provider used as its default:
+`GET /cortex/providers` offers the providers and models a virtual agent may use. By default every text-capable provider configured for laravel/ai is offered, along with the models it declares (default, smartest, cheapest). Set `cortex.providers` to curate the list — it becomes authoritative when non-empty, with the first model of each provider used as its default:
 
 ```php
 'providers' => [
@@ -309,7 +322,7 @@ On Redis, a publish clears the cached key, but a read or a `flexible()` backgrou
 
 ## MCP Server
 
-The `CortexServer` exposes the virtual agent, concrete agent, tool, and server operations as MCP tools (31 tools: virtual agent CRUD + run + prompt versions + publish, concrete agent list/show/run + prompt versions + publish + tools + remove overrides, list tools, server instructions + versions + publish, server tool override set/clear, OAuth redirect domains list/add/remove, and `list-cortex-history-tool` for the audit history). The provider and tool-description endpoints are HTTP-only. Enable a transport in the config:
+The `CortexServer` exposes the virtual agent, concrete agent, tool, and server operations as MCP tools (34 tools: virtual agent CRUD + run + prompt versions + publish, concrete agent list/show/run + prompt versions + publish + tools + remove overrides, list tools, server instructions + versions + publish, server tool override set/clear, OAuth redirect domains list/add/remove, `search-agents-tool`, `list-runnable-agents-tool`, `show-settings-summary-tool`, and `list-cortex-history-tool` for the audit history). The provider and tool-description endpoints are HTTP-only. Enable a transport in the config:
 
 ```php
 'mcp' => [
@@ -329,7 +342,7 @@ Mcp::web('/mcp/cortex', CortexServer::class)->middleware(['auth:sanctum']);
 
 ### Server Instruction Overrides
 
-An MCP server's code-declared instructions (the `#[Instructions]` attribute or `$instructions` property) can be overridden without a deploy: each registered server has an optional, immutably versioned instruction override with a published pointer — same model as agent prompts and tool descriptions. Manage overrides from the dashboard, the API (`/cortex/servers/{server}/instructions`), or the MCP tools.
+An MCP server's code-declared instructions (the `#[Instructions]` attribute or `$instructions` property) can be overridden without a deploy: each registered server has an optional, immutably versioned instruction override with a published pointer — same model as agent prompts and tool descriptions. Manage overrides through the API (`/cortex/servers/{server}/instructions`) or the MCP tools.
 
 Cortex's own server is always registered as `cortex`. Register additional servers in `config/cortex.php` under `mcp.servers` (string keys set the registered name; unkeyed entries derive it from the server's `#[Name]` attribute or class basename), or at runtime:
 
@@ -349,7 +362,6 @@ A concrete server is an MCP server class registered with Cortex. Its tool list c
 
 - **API:** `PUT /cortex/servers/{server}/tools` (route `cortex.servers.tools.update`) with `{"tools": ["lookup", "search"]}` sets the override. `DELETE /cortex/servers/{server}/tools` (route `cortex.servers.tools.destroy`) clears it, and the server serves its code tools again.
 - **MCP:** the `update-server-tools-tool` and `clear-server-tools-tool` tools on `CortexServer`, with the same input.
-- **Dashboard:** the server's screen has a checklist of the server's code tools (in code order), then the registered tools (in registry order), with a "restore code tools" button. Saving with nothing ticked serves no tools, so the form asks you to confirm it.
 - **Code:** `app(UpdateConcreteServerToolsAction::class)->execute('support', UpdateConcreteServerToolsData::from(['tools' => ['lookup']], 'support'))`, and `ClearConcreteServerToolsAction` to clear.
 
 The server list and the instructions show report four fields: `tools` (the effective list), `tools_overridden`, `missing_tools` (stored entries that are not served) and `ambiguous_tools` (stored entries that match both a code tool and a registered tool).
@@ -357,14 +369,14 @@ The server list and the instructions show report four fields: `tools` (the effec
 #### What gets served
 
 - **Names.** An entry names a code-declared tool by its `name()` first, otherwise a registered Cortex tool by its registered name. When both match, the code tool wins: the entry is listed in `ambiguous_tools` and a warning is logged. Two entries that resolve to the same served name are refused (422 on the later one).
-- **Order.** The stored order is a promise: clients get `tools/list` in the order you saved, and the `tools` field reports the same order. The dashboard checklist has no reorder control: it keeps the stored order for entries already in the list and adds new ones in checklist order. Send an explicit order through the API.
+- **Order.** The stored order is a promise: clients get `tools/list` in the order you saved, and the `tools` field reports the same order.
 - **Empty and null.** `[]` is a valid override that serves no tools at all; the API does not ask for confirmation. `null` (or no override) serves the code-declared tools.
 - **Flat list.** A server whose code tools sit behind `ToolSearch` is served a flat list once overridden; the grouping is dropped.
-- **Tools the server adds itself.** Tools a server adds in its constructor or `boot()` are served when an override names them. Validation, the `tools`/`missing_tools` fields and the dashboard checklist read the server's `$tools` default by reflection, though, so a server that builds its tools dynamically shows only that reflected list there: the update refuses a tool added at runtime, and a stored entry naming one is served but reported in `missing_tools`.
+- **Tools the server adds itself.** Tools a server adds in its constructor or `boot()` are served when an override names them. Validation and the `tools`/`missing_tools` fields read the server's `$tools` default by reflection, though, so a server that builds its tools dynamically shows only that reflected list there: the update refuses a tool added at runtime, and a stored entry naming one is served but reported in `missing_tools`.
 - **Gating.** A selected tool keeps its own gating. A tool whose `shouldRegister()` is false stays hidden from `tools/list` and `tools/call`, and a `Laravel\Ai` tool keeps its own eligibility check, which sees the MCP request and its user.
 - **Removed tools.** A tool the override leaves out is not just hidden: `tools/call` for it fails as an unknown tool.
 - **Stale and failing entries.** An entry that no longer resolves (a code tool removed from the class, a tool no longer registered) or whose tool throws while it is built is skipped, the rest is served, a warning is logged and the entry is reported in `missing_tools`. A stored value that is not a list counts as no override. Each warning is logged once per server and entry per `cortex.mcp.warning_ttl` seconds (default 3600).
-- **The `cortex` server.** Cortex's own server is the only one that cannot be overridden: the update and clear answer 422, a stored row is ignored, and its dashboard screen has no tool editor.
+- **The `cortex` server.** Cortex's own server is the only one that cannot be overridden: the update and clear answer 422, and a stored row is ignored.
 - **Cortex's management tools are not selectable.** `update-server-tools-tool` and the other `CortexServer` tools are not in the tool registry, so an override cannot put them on a server. Registering them with `Cortex::tools()->register()` makes them selectable, and puts Cortex's management in front of that server's clients: that is your call and your responsibility.
 - **No history of its own.** The tool list is not versioned: there are no versions and no publish step, and saving replaces the list.
 
@@ -398,7 +410,7 @@ class InstructionPolicy extends McpInstructionPolicy
 ],
 ```
 
-A policy of your own that has no `updateTools` method denies it (the Gate's default): the routes answer 403 to a signed-in user and 401 to a guest, the MCP tools refuse, and the dashboard shows the server's tools read-only. Add the method when you want the feature.
+A policy of your own that has no `updateTools` method denies it (the Gate's default): the routes answer 403 to a signed-in user and 401 to a guest, and the MCP tools refuse. Add the method when you want the feature.
 
 #### Deleting instructions keeps the tool override
 
@@ -432,56 +444,16 @@ The update, clear and delete re-read the override row with `lockForUpdate()` ins
 
 laravel/mcp's dynamic client registration (`Mcp::oauthRoutes()`) only accepts redirect URIs on the origins in `mcp.redirect_domains`, usually set from `MCP_REDIRECT_DOMAINS` in `.env`. Every new MCP client (Claude, ChatGPT, Cursor, an organization's own tool) would need a deploy. Cortex keeps a table of redirect domains beside that config and accepts both when a client registers, so new origins are added at runtime:
 
-- **Dashboard:** Cortex → Redirect domains is the global list: one table of every allowed origin, compiled from config, global domains and those organizations and users own, with each row's source and chips to filter by it. Global domains (no owner) are added and removed here; configured ones change only in config.
 - **API and MCP:** `/cortex/redirect-domains` and the `list-redirect-domains-tool`, `create-redirect-domain-tool` and `delete-redirect-domain-tool` tools.
 - **Code:** `app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData('claude.ai'), $owner)`.
 
-A domain may belong to any model, such as an organization or a user, or to no one. Cortex shows an owner's domains on that owner's own screens, such as Roster's organization and user pages (see [Redirect domains on other screens](#redirect-domains-on-other-screens)). Hosts, origins and full redirect URLs are all stored as their origin: `claude.ai`, `https://claude.ai/` and `https://claude.ai/api/mcp/auth_callback` are all `https://claude.ai`. Only config can allow `*`.
+A domain may belong to any model, such as an organization or a user, or to no one. The routes take the owner as `owner_type` (its morph class) and `owner_id`: `GET /cortex/redirect-domains?owner_type=organization&owner_id=1` lists only that owner's domains, and `POST /cortex/redirect-domains` with them adds a domain to that owner. Atrium v2 uses them to show an owner's domains on the owner's own pages. Hosts, origins and full redirect URLs are all stored as their origin: `claude.ai`, `https://claude.ai/` and `https://claude.ai/api/mcp/auth_callback` are all `https://claude.ai`. Only config can allow `*`.
 
-Registration is anonymous, so every client may register on every allowed origin, whoever added it; the owner says who manages a domain, not who may use it. Users still approve each client on the consent screen. The configured domains, `*` and localhost keep working as laravel/mcp documents. Set `cortex.redirect_domains.enabled` to `false` to use the configured domains alone. The policy in `cortex.policies` receives the owner on `create`. For a domain with an owner, the bundled policy lets only a user who may `update` the owner add or remove it, so the owner's own policy decides.
+Registration is anonymous, so every client may register on every allowed origin, whoever added it; the owner says who manages a domain, not who may use it. Users still approve each client on the consent screen. The configured domains, `*` and localhost keep working as laravel/mcp documents. Set `cortex.redirect_domains.enabled` to `false` to use the configured domains alone. The policy in `cortex.policies` receives the owner on `create`.
 
-### Redirect domains on other screens
+#### Who may manage an owner's domains
 
-Cortex shows an owner's redirect domains on other packages' Atrium screens, such as Roster's organization and user pages, so they are managed where the owner is. Which screens get them is set in `cortex.atrium.redirect_domains.screens`:
-
-```php
-// config/cortex.php
-'atrium' => [
-    'redirect_domains' => [
-        'screens' => [
-            'roster.organization' => 'tab',
-            'roster.user' => 'aside',
-        ],
-    ],
-],
-```
-
-- **Keys** are Atrium screen keys. The screen's record is the owner of the domains shown.
-- **`tab`** adds the `cortex.mcp` tab, labelled "MCP" and opened with `?tab=cortex.mcp`.
-- **Any other value** names the slot that gets the `cortex.redirect-domains` section, such as `aside`, `before`, `after` or `header.actions`.
-- **`[]`** puts the domains on no screen.
-- **No key.** A config published before this key existed has no `redirect_domains` entry under `atrium`, and gets the default map above.
-- **Undeclared screens.** A screen that no installed package declares shows nothing, so the defaults are harmless without Roster.
-
-The tab or section is shown only when all of these hold:
-
-- stored redirect domains are on (`cortex.redirect_domains.enabled`)
-- the screen's record is a saved Eloquent model
-- Cortex is on in Atrium for the request: `cortex.ui.enabled` is true and every feature in `cortex.atrium.features` is on
-- the viewer passes `viewAny` on `RedirectDomainModel` with the owner
-
-A policy that throws is reported and hides the tab or section; it never breaks the host page. The panel lists the owner's domains. The add form shows to viewers who pass `create` with the owner, and the remove button shows on each domain the viewer may `delete`. The forms post `owner_type` (the owner's morph class) and `owner_id` to Cortex's `atrium.cortex.redirect-domains.store` and `atrium.cortex.redirect-domains.destroy` routes. Afterwards they go back to the host page when it is on the same scheme, host and port, and to Cortex's redirect-domains screen otherwise.
-
-**Who may manage an owner's domains.** For a domain with an owner, the bundled `RedirectDomainPolicy` allows `create` and `delete` only to a signed-in user who may update the owner, `$user->can('update', $owner)`, so the owner's own policy decides. This applies on the screens, over the JSON API and over MCP. Guests are refused. So is a domain whose owner row is gone, and an owner model with no policy and no `update` ability. Domains without an owner are unchanged, and everyone may still add and remove them. To decide otherwise, point `RedirectDomainModel` at your own policy class in `cortex.policies`.
-
-**Malformed entries.** An entry is malformed when its value is not a string, is empty, or names a screen key or slot that Atrium rejects. In the `local` and `testing` environments it throws `InvalidArgumentException` at boot. In every other environment, production included, it is reported once with `report()` and skipped; the other entries still register and the application keeps booting. Until the report is acted on, that screen has no redirect domains.
-
-**Atrium is suggested, not required.** Cortex lists `refactor-circus/atrium` under `suggest` in its `composer.json`. Without Atrium, the dashboard and these screens are simply absent: there is no error and no log entry, and the JSON API and MCP server keep working. Atrium versions older than its screen registry are refused through a Composer `conflict` (`<0.1.0`), so a mismatched install fails at `composer update` rather than at runtime.
-
-Cortex's test suite proves it runs without Atrium in two ways:
-
-- `composer test:without-atrium`, part of `composer test`, runs in process with Atrium's classes removed from the autoloader. It cannot catch an Atrium class reached through a classmap or a Composer `files` entry.
-- The `without-atrium` CI job uninstalls Atrium and runs the same suite. This CI lane is the authoritative proof.
+For a domain with an owner, the bundled `RedirectDomainPolicy` allows `create` and `delete` only to a signed-in user who may update the owner, `$user->can('update', $owner)`, so the owner's own policy decides. This applies over the JSON API and over MCP, and so in Atrium v2. Guests are refused. So is a domain whose owner row is gone, and an owner model with no policy and no `update` ability. Domains without an owner are unchanged, and everyone may still add and remove them. To decide otherwise, point `RedirectDomainModel` at your own policy class in `cortex.policies`.
 
 ## Events
 
