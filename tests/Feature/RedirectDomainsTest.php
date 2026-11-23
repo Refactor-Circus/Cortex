@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Auth\GenericUser;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Testing\TestResponse;
 use Laravel\Mcp\Facades\Mcp;
@@ -192,48 +191,4 @@ it('creates and deletes domains over mcp with parity to the http payload', funct
     mcpTool(DeleteRedirectDomainTool::class, ['id' => $http['id']])->assertOk();
 
     expect(RedirectDomainModel::query()->count())->toBe(0);
-});
-
-it('manages domains from the dashboard', function (): void {
-    ValidateCsrfToken::except(['*']);
-    app()->detectEnvironment(fn (): string => 'local');
-    config(['mcp.redirect_domains' => ['https://cursor.com']]);
-    $owner = VirtualAgentModel::factory()->create(['name' => 'Acme agent']);
-    app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'chatgpt.com'), $owner);
-
-    app(CreateRedirectDomainAction::class)->execute(new CreateRedirectDomainData(domain: 'perplexity.ai'));
-
-    $this->get(route('atrium.cortex.redirect-domains.index'))
-        ->assertOk()
-        ->assertSeeInOrder(['https://cursor.com', 'https://chatgpt.com', 'https://perplexity.ai'])
-        ->assertSee('Acme agent')
-        ->assertSee('data-testid="redirect-domain-config"', false)
-        ->assertSee('data-testid="redirect-domain-global"', false)
-        ->assertSee('data-testid="redirect-domain-owned"', false);
-
-    $this->get(route('atrium.cortex.redirect-domains.index', ['source' => 'config']))
-        ->assertOk()
-        ->assertSee('https://cursor.com')
-        ->assertDontSee('https://chatgpt.com')
-        ->assertDontSee('https://perplexity.ai');
-
-    $this->get(route('atrium.cortex.redirect-domains.index', ['source' => 'global']))
-        ->assertSee('https://perplexity.ai')
-        ->assertDontSee('https://cursor.com')
-        ->assertDontSee('https://chatgpt.com');
-
-    $this->get(route('atrium.cortex.redirect-domains.index', ['source' => 'owned']))
-        ->assertSee('https://chatgpt.com')
-        ->assertDontSee('https://perplexity.ai');
-
-    $this->post(route('atrium.cortex.redirect-domains.store'), ['domain' => 'claude.ai'])
-        ->assertRedirect(route('atrium.cortex.redirect-domains.index'));
-
-    $domain = RedirectDomainModel::query()->where('domain', 'https://claude.ai')->sole();
-    expect($domain->owner_type)->toBeNull();
-
-    $this->delete(route('atrium.cortex.redirect-domains.destroy', $domain->id))
-        ->assertRedirect(route('atrium.cortex.redirect-domains.index'));
-
-    expect(RedirectDomainModel::query()->where('domain', 'https://claude.ai')->exists())->toBeFalse();
 });

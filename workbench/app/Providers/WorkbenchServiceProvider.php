@@ -4,7 +4,6 @@ namespace Workbench\App\Providers;
 
 use Illuminate\Contracts\Http\Kernel as HttpKernel;
 use Illuminate\Foundation\Http\Kernel;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Workbench\App\Ai\Agents\CatalogAgent;
 use Workbench\App\Ai\Agents\RefundAgent;
@@ -34,17 +33,9 @@ class WorkbenchServiceProvider extends ServiceProvider
     {
         config([
             'auth.providers.users.model' => User::class,
-            // refactor-circus/pennantplus's layered store: users who follow a feature's
-            // global value store nothing, as in a real application.
-            'pennant.default' => 'pennantplus',
-            'pennant.stores.pennantplus' => [
-                'driver' => 'pennantplus',
-                'connection' => null,
-                'table' => 'features',
-            ],
 
             // Offered when configuring a virtual agent. Nothing calls them
-            // unless an agent is run from the dashboard.
+            // unless an agent is run through the API or MCP server.
             'cortex.providers' => [
                 'anthropic' => ['claude-sonnet-5-5', 'claude-opus-5-5', 'claude-haiku-4-5'],
                 'openai' => ['gpt-5', 'gpt-5-mini'],
@@ -94,8 +85,5 @@ class WorkbenchServiceProvider extends ServiceProvider
                 $kernel->appendMiddlewareToGroup('web', SignInWorkbenchUser::class);
             }
         });
-
-        // A real application defines a real gate; the demo user may see it all.
-        Gate::define('viewAtrium', fn ($user = null): bool => true);
     }
 }

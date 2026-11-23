@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Mcp\Tools\UpdateConcreteAgentToolsTool;
@@ -54,15 +53,7 @@ it('rejects toolset overrides over HTTP and MCP but allows clearing', function (
     expect(ConcreteAgentOverrideModel::query()->value('tools'))->toBeNull();
 });
 
-it('shows the toolset as locked on the dashboard', function (): void {
-    ValidateCsrfToken::except(['*']);
-    app()->detectEnvironment(fn (): string => 'local');
-
-    $this->get(route('atrium.cortex.concrete-agents.show', 'locked-echo'))
-        ->assertOk()
-        ->assertSee(__('cortex::cortex.locked'))
-        ->assertDontSee('data-testid="save-tools"', false);
-
+it('reports the toolset as not overridable over the json api', function (): void {
     $this->getJson(route('cortex.concrete-agents.show', 'locked-echo'))
         ->assertJsonPath('data.tools_overridable', false);
 });

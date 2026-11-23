@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * Cortex knows no other suite package by name: which screens its
- * redirect-domain UI goes on is config (`cortex.atrium.redirect_domains.screens`),
- * so no file under src/ names Roster, comments included.
+ * Cortex knows no other suite package by name: a redirect domain's owner is
+ * any model, given by `owner_type` and `owner_id`, so no file under src/
+ * names Roster, comments included.
  */
 it('names roster nowhere in its source', function (): void {
     $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(dirname(__DIR__, 2).'/src', FilesystemIterator::SKIP_DOTS));

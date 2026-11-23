@@ -21,12 +21,11 @@ arch('the package source declares strict types')
     ->expect('RefactorCircus\Cortex')
     ->toUseStrictTypes();
 
-// Atrium is suggested, not required: only src/Atrium names its classes, and
-// CortexServiceProvider reaches that layer behind a class_exists() guard.
-arch('only the Atrium layer uses Atrium')
+// Cortex ships its JSON API and MCP server only: the dashboard is Atrium v2's,
+// built on the API, and the OpenAPI export is a workbench concern.
+arch('the package uses no Atrium, PennantPlus or Scramble class')
     ->expect('RefactorCircus\Cortex')
-    ->not->toUse('RefactorCircus\Atrium')
-    ->ignoring('RefactorCircus\Cortex\Atrium');
+    ->not->toUse(['RefactorCircus\Atrium', 'RefactorCircus\PennantPlus', 'Dedoc']);
 
 arch('actions are final classes')
     ->expect(Arch::domainNamespaces('RefactorCircus\Cortex', CORTEX_DOMAINS, 'Actions'))

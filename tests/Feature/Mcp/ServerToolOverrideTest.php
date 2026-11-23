@@ -6,7 +6,6 @@ use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Facades\Cache;
 use Laravel\Mcp\Facades\Mcp;
 use Laravel\Mcp\Server\Transport\FakeTransporter;
-use RefactorCircus\Atrium\Domains\Screens\Services\ScreenExtensions;
 use RefactorCircus\Cortex\CortexServiceProvider;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\UpdateConcreteServerToolsAction;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Concerns\HasCortexOverrides;
@@ -251,9 +250,6 @@ describe('servers that are not overridable (AC 12)', function (): void {
         writeOverriddenTools('cortex', ['list-tools-tool']);
 
         config()->set('cortex.mcp.web.enabled', true);
-        // Booting again registers Cortex's screen extensions again, which
-        // Atrium refuses as duplicates in testing.
-        app(ScreenExtensions::class)->flush();
         (new CortexServiceProvider(app()))->boot();
 
         $route = (string) config('cortex.mcp.web.route');

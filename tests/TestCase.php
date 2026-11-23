@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace RefactorCircus\Cortex\Tests;
 
-use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\View;
 use Laravel\Ai\AiServiceProvider;
 use Laravel\Mcp\Server\McpServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
-use RefactorCircus\Atrium\AtriumServiceProvider;
 use RefactorCircus\Cortex\CortexServiceProvider;
-use Workbench\App\Http\Controllers\TestHostScreenController;
 use Workbench\App\Models\Organization;
 use Workbench\App\Models\User;
 use Workbench\App\Policies\OrganizationPolicy;
@@ -43,7 +39,6 @@ abstract class TestCase extends Orchestra
         return [
             AiServiceProvider::class,
             McpServiceProvider::class,
-            AtriumServiceProvider::class,
             CortexServiceProvider::class,
         ];
     }
@@ -61,24 +56,9 @@ abstract class TestCase extends Orchestra
         $app['config']->set('cortex.cache.store', 'array');
     }
 
-    /**
-     * The workbench test host: another package's screen, which Cortex
-     * extends in its tests without depending on that package.
-     *
-     * @param  Router  $router
-     */
-    protected function defineRoutes($router): void
-    {
-        View::addNamespace('workbench', dirname(__DIR__).'/workbench/resources/views');
-
-        $router->middleware('web')
-            ->get('test-host/{key}/{id?}', TestHostScreenController::class)
-            ->name('test-host');
-    }
-
     protected function defineDatabaseMigrations(): void
     {
-        // The users table, for the workbench User the test host shows.
+        // The users table, for the workbench User that owns redirect domains.
         $this->loadLaravelMigrations();
         $this->loadMigrationsFrom(dirname(__DIR__).'/database/migrations');
         $this->loadMigrationsFrom(dirname(__DIR__).'/workbench/database/migrations');

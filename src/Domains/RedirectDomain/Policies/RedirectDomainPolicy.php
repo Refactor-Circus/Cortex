@@ -21,8 +21,8 @@ use RefactorCircus\Cortex\Support\Policies\Policy;
  * manage, so `create` and `delete` ask the owner's own policy: a signed-in
  * user who may `update` the owner may add or remove its domains. Guests are
  * refused, and so is everyone for a domain whose owner row no longer exists.
- * The Atrium screens, the JSON API and the MCP tools all ask this policy, so
- * the rule holds on each of them. `viewAny` still allows everyone.
+ * The JSON API and the MCP tools both ask this policy, so the rule holds on
+ * each of them. `viewAny` still allows everyone.
  *
  * Point `RedirectDomainModel` at your own class in `cortex.policies` to
  * decide differently; this one is then not asked at all.

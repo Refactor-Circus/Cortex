@@ -5,11 +5,7 @@ declare(strict_types=1);
 namespace RefactorCircus\Cortex;
 
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Support\Facades\Blade;
 use Laravel\Mcp\Request as McpRequest;
-use RefactorCircus\Cortex\Atrium\CortexPlugin;
-use RefactorCircus\Cortex\Atrium\ScreenAccess;
-use RefactorCircus\Cortex\Atrium\ScreenRegistrations;
 use RefactorCircus\Cortex\Domains\DomainServiceProvider;
 use RefactorCircus\Cortex\Mcp\CortexServer;
 use RefactorCircus\Keystone\Packages\Package;
@@ -90,21 +86,6 @@ class CortexServiceProvider extends PackageServiceProvider
     }
 
     /**
-     * Put the redirect-domain UI on other packages' screens, as
-     * `cortex.atrium.redirect_domains.screens` lists them. Behind the same
-     * guard as registerAtriumPlugin(): Atrium is suggested, not required, so
-     * its class is named only as a string, and the dashboard UI must be on.
-     */
-    private function registerAtriumScreens(): void
-    {
-        if (! class_exists('RefactorCircus\\Atrium\\Atrium') || $this->config()->get('cortex.ui.enabled') !== true) {
-            return;
-        }
-
-        ScreenRegistrations::register();
-    }
-
-    /**
      * Bootstrap any application services.
      */
     public function boot(): void
@@ -118,22 +99,12 @@ class CortexServiceProvider extends PackageServiceProvider
         // Missing records on Cortex's routes answer a plain "Not found.", as its MCP tools do.
         $this->registerNotFoundResponses();
 
-        // Before the Atrium registrations, whose labels are translated.
+        // The redirect-domain validation message.
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'cortex');
-
-        $this->registerAtriumPlugin(CortexPlugin::class);
-
-        $this->registerAtriumScreens();
 
         $this->registerMcpServer();
 
         $this->loadHistoryRoutes();
-
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'cortex');
-
-        // @cortexCan('update', $agent) ... @endcortexCan: the screens' own
-        // policy check, so a control shows only when its action is allowed.
-        Blade::if('cortexCan', ScreenAccess::allows(...));
 
         if (! $this->app->runningInConsole()) {
             return;
@@ -142,10 +113,6 @@ class CortexServiceProvider extends PackageServiceProvider
         $this->publishes([
             __DIR__.'/../config/cortex.php' => config_path('cortex.php'),
         ], ['cortex', 'cortex-config']);
-
-        $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/cortex'),
-        ], ['cortex', 'cortex-views']);
 
         $this->publishes([
             __DIR__.'/../lang' => $this->app->langPath('vendor/cortex'),

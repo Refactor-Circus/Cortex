@@ -15,7 +15,6 @@ it('returns the same instance from the container', function () {
 it('merges the package config', function () {
     expect(config('cortex.routes.prefix'))->toBe('cortex')
         ->and(config('cortex.routes.middleware'))->toBe(['api'])
-        ->and(config('cortex.ui.enabled'))->toBeTrue()
         ->and(config('cortex.mcp.web.enabled'))->toBeFalse()
         ->and(config('cortex.mcp.local.enabled'))->toBeFalse()
         ->and(config('cortex.tools'))->toBe([])
@@ -23,10 +22,5 @@ it('merges the package config', function () {
 });
 
 it('loads the package translations', function () {
-    expect(trans('cortex::cortex.virtual_agents'))->toBe('Virtual agents');
-});
-
-it('loads the package views', function () {
-    expect(view()->exists('cortex::ui.concrete-agents.index'))->toBeTrue()
-        ->and(view()->exists('cortex::ui.virtual-agents.form'))->toBeTrue();
+    expect(trans('cortex::cortex.redirect_domain_invalid'))->toBe('Enter a host or an http(s) URL, such as claude.ai or https://claude.ai.');
 });

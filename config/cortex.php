@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use RefactorCircus\Cortex\Atrium\Features\CortexSupportFeature;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Models\ConcreteAgentOverrideVersionModel;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Policies\ConcreteAgentOverridePolicy;
@@ -117,84 +116,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Dashboard UI
-    |--------------------------------------------------------------------------
-    |
-    | Cortex renders its dashboard through Atrium, which owns the path,
-    | middleware and authorization gate. Set this to false to keep the JSON
-    | API without adding Cortex to the dashboard.
-    |
-    */
-
-    'ui' => [
-
-        /*
-        | Whether Cortex registers itself with the Atrium dashboard. The JSON
-        | API is unaffected by this switch.
-        */
-
-        'enabled' => true,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Atrium
-    |--------------------------------------------------------------------------
-    |
-    | features: Features that must all be on for Cortex to appear in Atrium
-    |           at all - its navigation, search, settings and pages (which
-    |           answer 404 otherwise). Atrium asks its feature resolver, so
-    |           Pennant (through refactor-circus/pennantplus) or any other flag system
-    |           decides.
-    |
-    |           CortexSupportFeature is on until its global value is set, and
-    |           only its global value counts. Swap in a subclass to change
-    |           that, or your own feature names. Feature classes that do not
-    |           exist (without refactor-circus/pennantplus) are skipped, so nothing is
-    |           checked until Pennant is installed. Empty always shows Cortex.
-    |
-    | Individual pages and controls are still shown per the policies above.
-    |
-    | redirect_domains.screens: Other packages' Atrium screens that show an
-    |           owner's OAuth redirect domains, keyed by screen key. The
-    |           screen's record is the owner. A value of `tab` adds the
-    |           `cortex.mcp` tab (opened with ?tab=cortex.mcp); any other
-    |           value names the slot (`before`, `after`, `aside`,
-    |           `header.actions`, ...) that gets the `cortex.redirect-domains`
-    |           section. A screen nobody declares shows nothing. Set it to []
-    |           to put the UI on no screen; a published config without this
-    |           key gets the defaults below.
-    |
-    |           The tab and the section show only while stored domains are on
-    |           (`redirect_domains.enabled` below), the record is saved, Cortex
-    |           is on in Atrium (the features above) and the viewer passes
-    |           `viewAny` with the owner in the RedirectDomainModel policy.
-    |           The add form and remove buttons follow `create` and `delete`,
-    |           which the bundled policy grants only to signed-in users who may
-    |           `update` the owner, by the owner's own policy.
-    |
-    |           A malformed entry (a value that is not a non-empty string, or a
-    |           screen key or slot Atrium rejects) throws at boot in the local
-    |           and testing environments; elsewhere it is reported once and
-    |           skipped, and the other entries still register.
-    |
-    */
-
-    'atrium' => [
-        'features' => [
-            CortexSupportFeature::class,
-        ],
-
-        'redirect_domains' => [
-            'screens' => [
-                'roster.organization' => 'tab',
-                'roster.user' => 'aside',
-            ],
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | MCP Servers
     |--------------------------------------------------------------------------
     |
@@ -257,8 +178,8 @@ return [
     | registration (Mcp::oauthRoutes()), which only accepts redirect URIs on
     | the origins in `mcp.redirect_domains`. While this is enabled, Cortex
     | also accepts every origin stored in its redirect domains table, managed
-    | from the dashboard, the JSON API ({prefix}/redirect-domains) and the MCP
-    | tools, so a new client needs no deploy. A domain may belong to an owner
+    | through the JSON API ({prefix}/redirect-domains) and the MCP tools, so a
+    | new client needs no deploy. A domain may belong to an owner
     | (Roster adds them per organization and per user) or to none.
     |
     | Registration is anonymous: any client may register on any allowed
@@ -280,14 +201,14 @@ return [
     | Auditing
     |--------------------------------------------------------------------------
     |
-    | Cortex keeps no audit log of its own. With refactor-circus/keen
-    | installed, Keen records every change Cortex makes, and Cortex shows the
-    | history on its Atrium pages, its `GET /cortex/history` route and its
-    | history MCP tool. Without Keen none of that exists.
+    | Cortex keeps no audit log of its own. With the suite's audit package
+    | installed, every change Cortex makes is recorded, and Cortex shows the
+    | history on its `GET /cortex/history` route and its history MCP tool.
+    | Without it none of that exists.
     |
     | enabled: Set to false to keep Cortex out of the audit log even while
-    |          Keen is installed: Keen records nothing of Cortex's, and Cortex
-    |          offers no history.
+    |          the audit package is installed: nothing of Cortex's is
+    |          recorded, and Cortex offers no history.
     |
     */
 
@@ -365,7 +286,7 @@ return [
     | Tool Tags
     |--------------------------------------------------------------------------
     |
-    | Tags group tools on the dashboard and in the agent tool pickers. A tool
+    | Tags group tools; the tools API and MCP tool filter by one. A tool
     | gets the tags given when it is registered (the `tags` of an array
     | entry above, or register($name, $class, $tags)) plus one per matching
     | namespace pattern below, where `{tag}` stands for one namespace

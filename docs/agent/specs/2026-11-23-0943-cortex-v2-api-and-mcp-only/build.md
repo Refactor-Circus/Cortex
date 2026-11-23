@@ -147,3 +147,58 @@ MCP tools for the new endpoints, AC 6.
 - The earlier commit already held every task of this group, so no group 4 code changed on retry.
 - `tests/Feature/Mcp/ServerContextPinTest.php` failed in this worktree, and the failure is not caused by this group. `composer.lock` is not tracked, and `laravel/mcp: ^1.0.1` resolved to v1.2.1 here; the main checkout has v1.1.2. v1.2.1 adds an optional promoted `?HeaderBag $headers = null` as the last `ServerContext` constructor parameter, so the vendor pin (D-025, D-051) no longer matched. `ServerContextRebuilder` copies every promoted constructor parameter by name, so it already carries `headers` over. The rebuild tests in the same file pass on v1.2.1. The pin now accepts the nine required parameters, optionally followed by `headers`; every parameter must still be promoted, and only `headers` may be optional. It holds on v1.1.2 and v1.2.1. This file is outside the group's list.
 - Checked here: `ServerContextPinTest`, `AgentDirectoryToolsTest` and `OutputSchemaTest` pass, and `pint --test` passes on the edited file. `tests/Feature/Mcp` and `tests/Unit` had only the pin failure before the fix. The full suite is left to the gate.
+
+## Group 5
+
+Remove the Atrium UI, AC 7 to 12.
+
+### Files
+
+- Deleted: `src/Atrium/`, `resources/views/`, `tests/Feature/Ui/`, `tests/WithoutAtrium/`, `tests/Modes/PennantPlus/`, `tests/PennantPlusTestCase.php`, `tests/Fixtures/views/screen-probe.blade.php`, `tests/Feature/HistoryNavigationTest.php`, `tests/Feature/NavigationSectionTest.php`, `tests/Feature/NoHistoryUiTest.php`, `phpunit.without-atrium.xml`, `workbench/app/Http/Controllers/TestHostScreenController.php`, `workbench/resources/views/test-host.blade.php`.
+- `src/CortexServiceProvider.php`: drops `registerAtriumPlugin()`, `registerAtriumScreens()`, `loadViewsFrom()`, `Blade::if('cortexCan')` and the `cortex-views` publish. It keeps `loadTranslationsFrom()` and the `cortex-lang` publish (D-012).
+- `src/Domains/RedirectDomain/Policies/RedirectDomainPolicy.php`, `src/Domains/ConcreteServer/Policies/McpInstructionPolicy.php`: the docblocks no longer name Atrium screens or the tool editor.
+- `config/cortex.php`: the `ui` and `atrium` sections and the `CortexSupportFeature` import are removed. The Auditing banner no longer names Keen (D-011). The OAuth redirect domains and tool tags banners no longer mention the dashboard.
+- `lang/en/cortex.php`: only `redirect_domain_invalid` is left.
+- `composer.json`: Atrium and PennantPlus are removed from `require-dev`, `suggest`, `conflict` (now empty, so the key is gone) and `repositories`. `extra.atrium` and the `test:without-atrium` script (and its `test` entry) are removed too. Keen stays in `require-dev`.
+- `testbench.yaml`: drops the Atrium provider, `start: /atrium`, `atrium-assets` and the Pennant migrations path. That path only served PennantPlus's features table and named it in a comment.
+- `phpunit.xml.dist`: the WithoutAtrium comment is removed. `.github/workflows/tests.yml`: the `without-atrium` job is removed.
+- `workbench/app/Providers/WorkbenchServiceProvider.php`: drops the `viewAtrium` gate and the PennantPlus `pennant.*` store config.
+- `tests/TestCase.php`: drops `AtriumServiceProvider`, the test-host route and the `workbench` view namespace. `tests/Pest.php` drops `ResetsScreenExtensions`, the PennantPlus and WithoutAtrium bindings.
+
+### Tests
+
+- `tests/Feature/NoAtriumTest.php` (new) covers:
+  - no `atrium` or `pennantplus` text (case-insensitive) in `src/`, `config/`, `lang/`, `workbench/` (minus its git-ignored `storage/` and `.env*`), `.github/workflows/`, `composer.json`, `testbench.yaml` or `phpunit.xml.dist`
+  - each deleted path of AC 8 is absent
+  - no route named `atrium.*`, while `cortex.search.index` is registered
+  - `config('cortex.ui')` and `config('cortex.atrium')` are null
+  - no `cortexCan` or `endcortexCan` Blade directive
+  - `cortex-views` is not a publish group, while `cortex-config` and `cortex-lang` are
+  - every `lang/en/cortex.php` key is referenced from `src/` as `cortex::cortex.{key}`
+- `tests/Feature/ComposerTest.php` (rewritten for AC 11) covers:
+  - Keystone is the only `refactor-circus/*` package in `require`
+  - neither Atrium nor PennantPlus is in `require`, `require-dev`, `suggest`, `conflict`, `replace` or `provide`
+  - no Atrium or PennantPlus repository
+  - no `extra.atrium`, and neither name anywhere in the manifest
+  - no `test:without-atrium` script, and `test` keeps `@test:unit` but no `@test:without-atrium`
+  - no `without-atrium` text in the CI workflow
+  - no Roster
+- `tests/ArchTest.php`: `RefactorCircus\Cortex` uses no `RefactorCircus\Atrium`, `RefactorCircus\PennantPlus` or `Dedoc`. This replaces the old "only the Atrium layer uses Atrium" rule.
+- Mixed files, keeping only the cases that do not need Atrium:
+  - `LockedToolsTest`: the dashboard case is now an API-only check of `data.tools_overridable`.
+  - `PerformanceTest`: the redirect-domain UI paging, dashboard virtual-agent list and `CortexPlugin` search cases are removed. One-query override lookup for search is covered by `SearchAgentsActionsTest` (Group 1).
+  - `RedirectDomainsTest`: the dashboard case is removed. The JSON API owner-filter case (AC 7) stays unchanged.
+  - `ToolTagsTest`: the `dashboard` describe block is removed.
+  - `McpRegistrationTest`, `ServerToolOverrideTest`: the `ScreenExtensions::flush()` resets are removed.
+  - `ExampleTest`: the `cortex.ui.enabled` and views assertions are removed, and the translation check uses `redirect_domain_invalid`.
+  - `DocsTest`: the README "Redirect domains on other screens" checks, the Atrium conflict helper and checks, the "no longer says Cortex requires Atrium" check and the v0.1.0 Atrium upgrade-note checks are removed. Group 7 adds the v2 docs checks. `markdownSection()` is kept for them.
+  - `NoRosterReferenceTest`: the comment no longer names `cortex.atrium.*`.
+- Checked here: `composer analyse` (PHPStan, whole package) and `composer lint:check` (Pint) pass, and `php -l` passes on the new test files. `vendor/bin/pest` is left to the gate, as instructed.
+
+### Deviations
+
+- Two files outside the group's list were touched:
+  - `tests/Fixtures/OrphanedSupportFeature.php` was deleted. It was the fixture for the removed `CortexSupportFeature` and was used only by the deleted `tests/Feature/Ui` tests.
+  - `tests/Feature/ToolOnlyRowTest.php`: its docblock no longer says the "Atrium screen is covered with the editor", since that test is gone.
+- `composer.lock` and `vendor/` are not tracked and were not updated, so Atrium and PennantPlus are still installed in this worktree's `vendor/`. Nothing registers or references them: `TestCase` lists its providers explicitly, and the arch and text tests prove the source names neither. `composer validate` warns that the lock is out of date. A `composer update` (or `composer local:update`) drops them.
+- `testbench.yaml` has no `workbench.start` now, so `composer serve` opens `/`. Group 6 can point it at the Scramble docs page if it wants.
