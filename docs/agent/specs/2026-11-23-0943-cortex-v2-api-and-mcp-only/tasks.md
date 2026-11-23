@@ -37,10 +37,10 @@ depends on: 3
 files: src/Domains/VirtualAgent/Mcp/Tools/SearchAgentsTool.php, src/Domains/VirtualAgent/Mcp/Tools/ListRunnableAgentsTool.php, src/Domains/VirtualAgent/Mcp/Tools/ShowSettingsSummaryTool.php, src/Domains/VirtualAgent/Mcp/Requests/SearchAgentsMcpRequest.php, src/Domains/VirtualAgent/Mcp/Requests/ListRunnableAgentsMcpRequest.php, src/Domains/VirtualAgent/Mcp/Requests/ShowSettingsSummaryMcpRequest.php, src/Mcp/CortexServer.php, tests/Feature/Mcp/AgentDirectoryToolsTest.php
 criteria: 6
 
-- [ ] 4.1 Write tests with `mcpTool()`: each tool's structured content equals the HTTP payload of `cortex.search.index`, `cortex.runnable-agents.index`, `cortex.settings-summary.show`; list tools also for `data: []`; search refuses a missing `q`; refusal when `viewAny` denied on both models; tools listed in `CortexServer::TOOLS` (OutputSchemaTest covers the declarations)
-- [ ] 4.2 Add the three McpRequests (on `Mcp\Request`, same actions and `SearchAgentsData::rules()`/`fromValidated`, answering `AgentReferenceResource::collection(...)->toStructuredResponse()` / `(new SettingsSummaryResource(...))->toStructuredResponse()`)
-- [ ] 4.3 Add the three tools on Keystone's `Mcp\Tool` with described schemas and `outputSchema()` (`data` alone for the unpaginated lists), and list them in `CortexServer::TOOLS`
-- [ ] 4.4 Run vendor/bin/pest; all green
+- [x] 4.1 Write tests with `mcpTool()`: each tool's structured content equals the HTTP payload of `cortex.search.index`, `cortex.runnable-agents.index`, `cortex.settings-summary.show`; list tools also for `data: []`; search refuses a missing `q`; refusal when `viewAny` denied on both models; tools listed in `CortexServer::TOOLS` (OutputSchemaTest covers the declarations)
+- [x] 4.2 Add the three McpRequests (on `Mcp\Request`, same actions and `SearchAgentsData::rules()`/`fromValidated`, answering `AgentReferenceResource::collection(...)->toStructuredResponse()` / `(new SettingsSummaryResource(...))->toStructuredResponse()`)
+- [x] 4.3 Add the three tools on Keystone's `Mcp\Tool` with described schemas and `outputSchema()` (`data` alone for the unpaginated lists), and list them in `CortexServer::TOOLS`
+- [x] 4.4 Run vendor/bin/pest; all green
 
 ## Group 5: Remove the Atrium UI
 depends on: 4

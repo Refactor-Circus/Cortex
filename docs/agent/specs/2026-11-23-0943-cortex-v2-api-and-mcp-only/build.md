@@ -112,3 +112,32 @@ Settings summary endpoint: `GET {prefix}/settings-summary` (`cortex.settings-sum
 ### Retry check
 
 - The earlier commit already held every task of this group, so no code changed on retry. Re-checked: the two new test files, `EventsTest`, `ArchTest`, `tests/Feature/Http`, `OutputSchemaTest`, `DocsTest`, `ToolsMigrationTest` and the without-Atrium suite pass. `phpstan analyse` (whole package), `pint --test` and `--type-coverage --min=100` pass too. The full parallel suite is left to the gate.
+
+## Group 4
+
+MCP tools for the new endpoints, AC 6.
+
+### Files
+
+- `src/Domains/VirtualAgent/Mcp/Requests/SearchAgentsMcpRequest.php`: `authorize()` allows `viewAny` on `VirtualAgentModel` or `ConcreteAgentOverrideModel`. `rules()` is `SearchAgentsData::rules()`. `handle()` runs `SearchAgentsAction` with `SearchAgentsData::fromValidated($validated)` and the caller (`$this->user()`), and answers `AgentReferenceResource::collection(...)->toStructuredResponse()`.
+- `src/Domains/VirtualAgent/Mcp/Requests/ListRunnableAgentsMcpRequest.php`: the same `viewAny` precondition. `handle()` runs `ListRunnableAgentsAction` with the caller and answers `AgentReferenceResource::collection(...)->toStructuredResponse()`.
+- `src/Domains/VirtualAgent/Mcp/Requests/ShowSettingsSummaryMcpRequest.php`: no `authorize()` override (D-005). It answers `(new SettingsSummaryResource(ShowSettingsSummaryAction::execute()))->toStructuredResponse()`.
+- `src/Domains/VirtualAgent/Mcp/Tools/SearchAgentsTool.php` (`search-agents-tool`): a shell tool on Keystone's `Mcp\Tool`. `schema()` has a described, required `q`. `outputSchema()` is `data` alone, an array of `AgentReferenceResource::schema()` objects.
+- `src/Domains/VirtualAgent/Mcp/Tools/ListRunnableAgentsTool.php` (`list-runnable-agents-tool`): an empty input schema; `outputSchema()` is `data` alone.
+- `src/Domains/VirtualAgent/Mcp/Tools/ShowSettingsSummaryTool.php` (`show-settings-summary-tool`): an empty input schema; `outputSchema()` is `SettingsSummaryResource::structuredSchema()`.
+- `src/Mcp/CortexServer.php`: the three tools are listed in `TOOLS`, in a new "Agent directory and settings" block after the virtual agent version tools.
+
+### Tests
+
+- `tests/Feature/Mcp/AgentDirectoryToolsTest.php` (every call goes through `mcpTool()`, which also checks the answer against the output schema) covers:
+  - the three tools are in `CortexServer::TOOLS`, with the names `search-agents-tool`, `list-runnable-agents-tool` and `show-settings-summary-tool`
+  - parity of `search-agents-tool` with `cortex.search.index`, for results and for `data: []`
+  - search refused without `q` and with `q` over 255 characters
+  - parity of `list-runnable-agents-tool` with `cortex.runnable-agents.index`: the full list, `data: []` when nothing is runnable, and per-kind `run` filtering for a signed-in user
+  - `Unauthorized.` from search and runnable agents when `viewAny` is denied on both models, for a guest and for a signed-in user
+  - parity of `show-settings-summary-tool` with `cortex.settings-summary.show`, with providers configured and with none
+- Not run here: the gate runs `vendor/bin/pest` after the build. `pint --test` passes on the changed files, and `phpstan analyse` passes on `src/Domains/VirtualAgent/Mcp` and `src/Mcp/CortexServer.php`.
+
+### Deviations
+
+- `tests/Feature/Mcp/OutputSchemaTest.php` is outside this group's file list. It pins the number of tools that answer with structured content at 27. The three new tools all do, so the count is now 30. The test's own assertion (every such tool declares `outputSchema()`) is unchanged.
