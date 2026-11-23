@@ -202,3 +202,9 @@ Remove the Atrium UI, AC 7 to 12.
   - `tests/Feature/ToolOnlyRowTest.php`: its docblock no longer says the "Atrium screen is covered with the editor", since that test is gone.
 - `composer.lock` and `vendor/` are not tracked and were not updated, so Atrium and PennantPlus are still installed in this worktree's `vendor/`. Nothing registers or references them: `TestCase` lists its providers explicitly, and the arch and text tests prove the source names neither. `composer validate` warns that the lock is out of date. A `composer update` (or `composer local:update`) drops them.
 - `testbench.yaml` has no `workbench.start` now, so `composer serve` opens `/`. Group 6 can point it at the Scramble docs page if it wants.
+
+### Retry check
+
+- The earlier commit already held every task of this group, so no code changed on retry.
+- A search of `src/`, `config/`, `lang/`, `workbench/`, `tests/`, `composer.json`, `testbench.yaml`, `phpunit.xml.dist` and `.github/` found no leftover `ui.enabled`, `cortex::ui`, `SupportFeature`, `ScreenExtensions`, `cortex-views`, `viewAtrium`, `test-host` or `cortexCan`. The only files naming Atrium are the three tests that assert its absence and `.github/CONTRIBUTING.md`, which Group 7 updates.
+- Re-checked here: every test file this group touched passes (`NoAtriumTest`, `ComposerTest`, `ArchTest`, `DocsTest`, `ExampleTest`, `LockedToolsTest`, `PerformanceTest`, `RedirectDomainsTest`, `ToolTagsTest`, `NoRosterReferenceTest`, `McpRegistrationTest`, `ServerToolOverrideTest`, `ToolOnlyRowTest`), and so does `tests/Feature/Compat`: 186 tests in all. `composer analyse` also passes. The full suite is left to the gate.
