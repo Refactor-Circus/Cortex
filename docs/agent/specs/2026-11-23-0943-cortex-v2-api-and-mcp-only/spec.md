@@ -86,6 +86,6 @@ Docs
 - Scramble's inference: controllers return `$request->persist()` as `JsonResponse`, and rules come from `XData::rules()`, so some request and response schemas may be loose. The ACs require routes, methods and paths, not complete schemas; tightening them (Scramble attributes or extensions in the workbench) is follow-up work.
 - Scramble support for Laravel 13 / PHP 8.5 must be confirmed when the dependency is added; pick the newest stable that installs.
 - Export determinism: the staleness test fails if Scramble output depends on environment (app URL, ordering). The workbench config pins those values.
-- npm cannot install a git dependency from a subfolder; Atrium's layer needs pnpm's `#path:/client` or another way to consume `client/`. Recorded for the Atrium spec (D-010).
+- npm cannot install a git dependency from a subfolder; Atrium's layer needs pnpm's `#path:/client` or another way to consume `client/`. Recorded for the Atrium spec (D-010). Moot since D-016: Cortex's own Atrium module imports `client/src` by path.
 - Breaking: hosts using the dashboard, `cortex::ui.*` views, published `cortex-views` or `CortexSupportFeature` lose them; a published config with `ui`/`atrium` keys is ignored harmlessly.
 - Order: this spec waits for the Keystone hook removal; it no longer calls `registerAtriumPlugin()`, so it builds against Keystone either before or after that change.

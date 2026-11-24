@@ -56,7 +56,7 @@
 
 ## D-010: How is the client packaged?
 - Choice: TypeScript source only (`exports`/`types` → `src/index.ts`), no build, not published to npm, version `2.0.0`. Atrium consumes it from the v2 tag; how (pnpm subfolder git dependency or otherwise) is the Atrium spec's call.
-- Rationale: Fewest moving parts; Nuxt compiles TS source. npm cannot install a subfolder of a git repo, which is noted as a risk.
+- Rationale: Fewest moving parts; the consumer's Vite build compiles TS source (since D-016 that is Cortex's own Atrium module in `atrium/`, which imports `client/src` by path). npm cannot install a subfolder of a git repo, which is noted as a risk.
 - Date: 2026-11-23
 - Raised by: write-spec; default chosen because the user asked to proceed without stopping
 
