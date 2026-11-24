@@ -57,7 +57,7 @@ var O = { class: "flex flex-col gap-4" }, k = { class: "font-medium" }, A = ["da
 						y(D, null, {
 							header: E(() => [_("h3", k, w(T(N)("cortex.redirect_domains.add")), 1)]),
 							default: E(() => [y(C, {
-								class: "flex flex-wrap items-end gap-3",
+								class: "flex flex-wrap items-start gap-3",
 								"data-testid": "cortex-add-domain-form",
 								onSubmit: G
 							}, {
@@ -85,6 +85,7 @@ var O = { class: "flex flex-col gap-4" }, k = { class: "font-medium" }, A = ["da
 									icon: "i-lucide-plus",
 									label: T(N)("cortex.redirect_domains.add"),
 									loading: T(F),
+									class: "mt-field-label",
 									"data-testid": "cortex-add-domain"
 								}, null, 8, ["label", "loading"])]),
 								_: 1

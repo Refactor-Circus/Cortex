@@ -58,8 +58,10 @@ async function remove(entry: CortexRedirectDomain): Promise<void> {
 <template>
   <UCard v-if="owner && client" :ui="{ body: 'space-y-3' }" data-testid="hooks-redirect-domains">
     <template #header>
-      <h3 class="font-medium" data-testid="hooks-redirect-domains-title">{{ t('hooks.redirect_domains.title') }}</h3>
-      <p class="mt-1 text-sm text-muted" data-testid="hooks-redirect-domains-description">{{ t('hooks.redirect_domains.description') }}</p>
+      <div class="min-w-0">
+        <h3 class="font-medium" data-testid="hooks-redirect-domains-title">{{ t('hooks.redirect_domains.title') }}</h3>
+        <p class="mt-1 text-sm text-muted" data-testid="hooks-redirect-domains-description">{{ t('hooks.redirect_domains.description') }}</p>
+      </div>
     </template>
 
     <AtriumNoAccess v-if="status === 403" compact />
@@ -94,11 +96,11 @@ async function remove(entry: CortexRedirectDomain): Promise<void> {
         </li>
       </ul>
 
-      <UForm class="flex flex-wrap items-end gap-2" data-testid="hooks-add-redirect-domain-form" @submit="add">
+      <UForm class="flex flex-wrap items-start gap-2" data-testid="hooks-add-redirect-domain-form" @submit="add">
         <UFormField :label="t('hooks.redirect_domains.domain')" :error="action.error('domain')" class="min-w-48 flex-1" required>
           <UInput v-model="domain" placeholder="https://claude.ai" class="w-full" data-testid="hooks-redirect-domain" />
         </UFormField>
-        <UButton type="submit" icon="i-lucide-plus" :label="t('hooks.redirect_domains.add')" :loading="busy" data-testid="hooks-add-redirect-domain" />
+        <UButton type="submit" icon="i-lucide-plus" :label="t('hooks.redirect_domains.add')" :loading="busy" class="mt-field-label" data-testid="hooks-add-redirect-domain" />
       </UForm>
     </template>
   </UCard>

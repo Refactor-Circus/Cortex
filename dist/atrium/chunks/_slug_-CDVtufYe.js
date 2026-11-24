@@ -3,7 +3,7 @@ import { t as r } from "./CortexActionError-BnFnixGr.js";
 import { t as i } from "./CortexAgentForm-B-zGtOx9.js";
 import { t as a } from "./CortexLoad-Bz-c2t3K.js";
 import { t as o } from "./CortexPage-CtJD4yvP.js";
-import { t as s } from "./CortexVersions-K-zu41Hh.js";
+import { t as s } from "./CortexVersions-lcO7WNsD.js";
 import { UButton as c } from "@refactor-circus/atrium/ui";
 import { computed as l, createBlock as u, createElementVNode as d, createVNode as f, defineComponent as p, openBlock as m, unref as h, withCtx as g } from "vue";
 import { useI18n as _ } from "vue-i18n";

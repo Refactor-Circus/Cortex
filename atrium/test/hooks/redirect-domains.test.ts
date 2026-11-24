@@ -55,6 +55,29 @@ describe('the Cortex redirect-domains hook', () => {
     expect(wrapper.find('[data-testid="hooks-redirect-domains"] [data-testid="hooks-add-redirect-domain-form"]').exists()).toBe(true)
   })
 
+  it('stacks the title above the description in one block of the card header', async () => {
+    mockPackageApi('cortex', { 'GET /redirect-domains': { data: [owned] } as never })
+
+    const wrapper = await mountHook()
+    const title = wrapper.find('[data-testid="hooks-redirect-domains-title"]').element
+    const description = wrapper.find('[data-testid="hooks-redirect-domains-description"]').element
+
+    // The card header lays its children in a row; the title and the
+    // description share one wrapper, so they stack instead of running together.
+    expect(title.parentElement).toBe(description.parentElement)
+    expect(title.parentElement!.tagName).toBe('DIV')
+    expect(title.nextElementSibling).toBe(description)
+  })
+
+  it('lines the add button up with the domain input, not the field bottom', async () => {
+    mockPackageApi('cortex', { 'GET /redirect-domains': { data: [] } as never })
+
+    const wrapper = await mountHook()
+
+    expect(wrapper.find('[data-testid="hooks-add-redirect-domain-form"]').classes()).toContain('items-start')
+    expect(wrapper.find('[data-testid="hooks-add-redirect-domain"]').classes()).toContain('mt-field-label')
+  })
+
   it('sends a numeric record key as the owner id', async () => {
     const api = mockPackageApi('cortex', { 'GET /redirect-domains': { data: [] } as never })
 

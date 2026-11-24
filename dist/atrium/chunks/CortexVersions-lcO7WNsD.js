@@ -8,13 +8,13 @@ import { useI18n as E } from "vue-i18n";
 var D = {
 	class: "flex flex-col gap-5",
 	"data-testid": "cortex-versions"
-}, O = { class: "flex flex-wrap items-center gap-2" }, k = { class: "font-medium" }, A = {
+}, O = { class: "min-w-0" }, k = { class: "flex flex-wrap items-center gap-2" }, A = { class: "font-medium" }, ee = {
 	key: 0,
 	class: "mt-1 text-sm text-muted"
-}, j = {
+}, te = {
 	class: "overflow-x-auto whitespace-pre-wrap rounded-md bg-elevated p-3 text-xs",
 	"data-testid": "cortex-live"
-}, ee = { class: "font-medium" }, M = {
+}, j = { class: "font-medium" }, M = {
 	key: 0,
 	class: "text-sm text-muted"
 }, N = {
@@ -51,16 +51,16 @@ var D = {
 		async function $(e) {
 			e && (W("changed"), await Q());
 		}
-		async function te() {
+		async function ne() {
 			await $(await K.run(() => U.api.store({
 				content: X.value,
 				publish: Z.value
 			})));
 		}
-		async function ne(e) {
+		async function re(e) {
 			await $(await K.run(() => U.api.publish(e)));
 		}
-		async function re() {
+		async function ie() {
 			let e = U.api.destroy;
 			e && window.confirm(G("cortex.versions.confirm_remove")) && await $(await K.run(() => e()));
 		}
@@ -72,7 +72,7 @@ var D = {
 					message: C(K).message.value
 				}, null, 8, ["forbidden", "message"]),
 				h(x, null, {
-					header: T(() => [m("div", O, [m("h3", k, S(g.liveTitle), 1), g.override ? (v(), p(u, { key: 0 }, [g.published === null ? (v(), d(y, {
+					header: T(() => [m("div", O, [m("div", k, [m("h3", A, S(g.liveTitle), 1), g.override ? (v(), p(u, { key: 0 }, [g.published === null ? (v(), d(y, {
 						key: 1,
 						color: "neutral",
 						variant: "subtle",
@@ -84,15 +84,15 @@ var D = {
 						variant: "subtle",
 						label: C(G)("cortex.versions.overridden", { version: g.published }),
 						"data-status": "overridden"
-					}, null, 8, ["label"]))], 64)) : f("", !0)]), g.override ? (v(), p("p", A, S(g.published === null ? C(G)("cortex.versions.no_override_hint") : C(G)("cortex.versions.override_hint")), 1)) : f("", !0)]),
-					default: T(() => [m("pre", j, S(g.live ?? ""), 1)]),
+					}, null, 8, ["label"]))], 64)) : f("", !0)]), g.override ? (v(), p("p", ee, S(g.published === null ? C(G)("cortex.versions.no_override_hint") : C(G)("cortex.versions.override_hint")), 1)) : f("", !0)])]),
+					default: T(() => [m("pre", te, S(g.live ?? ""), 1)]),
 					_: 1
 				}),
 				C(J) ? f("", !0) : (v(), d(x, {
 					key: 0,
 					"data-testid": "cortex-versions-card"
 				}, {
-					header: T(() => [m("h3", ee, S(C(G)("cortex.versions.title")), 1)]),
+					header: T(() => [m("h3", j, S(C(G)("cortex.versions.title")), 1)]),
 					default: T(() => [C(q).length === 0 ? (v(), p("p", M, S(C(G)("cortex.versions.none")), 1)) : (v(), p("ul", N, [(v(!0), p(u, null, b(C(q), (e) => (v(), p("li", {
 						key: e.version,
 						class: "py-2",
@@ -130,7 +130,7 @@ var D = {
 							label: C(G)("cortex.versions.publish"),
 							loading: C(K).busy.value,
 							"data-testid": `cortex-publish-${e.version}`,
-							onClick: (t) => ne(e.version)
+							onClick: (t) => re(e.version)
 						}, null, 8, [
 							"label",
 							"loading",
@@ -144,7 +144,7 @@ var D = {
 					header: T(() => [m("h3", B, S(C(G)("cortex.versions.new")), 1)]),
 					default: T(() => [h(W, {
 						class: "flex flex-col gap-4",
-						onSubmit: te
+						onSubmit: ne
 					}, {
 						default: T(() => [
 							h(H, {
@@ -185,7 +185,7 @@ var D = {
 					icon: "i-lucide-trash",
 					label: C(G)("cortex.versions.remove"),
 					"data-testid": "cortex-remove-override",
-					onClick: re
+					onClick: ie
 				}, null, 8, ["label"])])) : f("", !0)
 			]);
 		};

@@ -84,16 +84,16 @@ function H(e, t) {
 	} : null;
 }
 // src/components/hooks/CortexRedirectDomains.vue?vue&type=script&setup=true&lang.ts
-var U = {
+var U = { class: "min-w-0" }, W = {
 	class: "font-medium",
 	"data-testid": "hooks-redirect-domains-title"
-}, W = {
+}, G = {
 	class: "mt-1 text-sm text-muted",
 	"data-testid": "hooks-redirect-domains-description"
-}, G = {
+}, K = {
 	key: 1,
 	class: "divide-y divide-default text-sm"
-}, K = ["data-testid"], q = { class: "truncate text-xs" }, J = /* @__PURE__ */ w({
+}, q = ["data-testid"], J = { class: "truncate text-xs" }, Y = /* @__PURE__ */ w({
 	__name: "CortexRedirectDomains",
 	props: {
 		data: {},
@@ -122,7 +122,7 @@ var U = {
 				ui: { body: "space-y-3" },
 				"data-testid": "hooks-redirect-domains"
 			}, {
-				header: j(() => [S("h3", U, k(A(s)("hooks.redirect_domains.title")), 1), S("p", W, k(A(s)("hooks.redirect_domains.description")), 1)]),
+				header: j(() => [S("div", U, [S("h3", W, k(A(s)("hooks.redirect_domains.title")), 1), S("p", G, k(A(s)("hooks.redirect_domains.description")), 1)])]),
 				default: j(() => [A(I) === 403 ? (E(), y(n, {
 					key: 0,
 					compact: ""
@@ -149,11 +149,11 @@ var U = {
 						ui: { root: "py-6" },
 						role: "status",
 						"data-testid": "hooks-redirect-domains-empty"
-					}, null, 8, ["title"])) : (E(), x("ul", G, [(E(!0), x(_, null, O(A(R), (e) => (E(), x("li", {
+					}, null, 8, ["title"])) : (E(), x("ul", K, [(E(!0), x(_, null, O(A(R), (e) => (E(), x("li", {
 						key: e.id,
 						class: "flex items-center justify-between gap-2 py-2",
 						"data-testid": `hooks-redirect-domain-${e.id}`
-					}, [S("code", q, k(e.domain), 1), C(D, {
+					}, [S("code", J, k(e.domain), 1), C(D, {
 						size: "xs",
 						color: "neutral",
 						variant: "ghost",
@@ -167,9 +167,9 @@ var U = {
 						"loading",
 						"data-testid",
 						"onClick"
-					])], 8, K))), 128))])),
+					])], 8, q))), 128))])),
 					C(L, {
-						class: "flex flex-wrap items-end gap-2",
+						class: "flex flex-wrap items-start gap-2",
 						"data-testid": "hooks-add-redirect-domain-form",
 						onSubmit: z
 					}, {
@@ -192,6 +192,7 @@ var U = {
 							icon: "i-lucide-plus",
 							label: A(s)("hooks.redirect_domains.add"),
 							loading: A(l),
+							class: "mt-field-label",
 							"data-testid": "hooks-add-redirect-domain"
 						}, null, 8, ["label", "loading"])]),
 						_: 1
@@ -201,7 +202,7 @@ var U = {
 			})) : b("", !0);
 		};
 	}
-}), Y = { cortex: {
+}), X = { cortex: {
 	actions: "Actions",
 	edit: "Edit",
 	delete: "Delete",
@@ -326,7 +327,7 @@ var U = {
 		virtual_agent: "Virtual agent",
 		concrete_agent: "Concrete agent"
 	}
-} }, X = { hooks: { redirect_domains: {
+} }, re = { hooks: { redirect_domains: {
 	title: "Redirect domains",
 	description: "The OAuth redirect domains this record's MCP clients may use.",
 	empty: "No redirect domains yet.",
@@ -334,11 +335,11 @@ var U = {
 	add: "Add domain",
 	remove: "Remove",
 	load_failed: "The redirect domains could not be loaded."
-} } }, re = [
+} } }, ie = [
 	{
 		path: "/cortex/concrete-agents/:agent",
 		name: "cortex-concrete-agents-agent",
-		component: () => import("./chunks/_agent_-CMC_XlDl.js")
+		component: () => import("./chunks/_agent_-CUF22OMl.js")
 	},
 	{
 		path: "/cortex/concrete-agents",
@@ -348,7 +349,7 @@ var U = {
 	{
 		path: "/cortex/redirect-domains",
 		name: "cortex-redirect-domains",
-		component: () => import("./chunks/redirect-domains-B2uktsMr.js")
+		component: () => import("./chunks/redirect-domains-BPxJtPf_.js")
 	},
 	{
 		path: "/cortex/run",
@@ -358,7 +359,7 @@ var U = {
 	{
 		path: "/cortex/servers/:server/instructions",
 		name: "cortex-servers-server-instructions",
-		component: () => import("./chunks/instructions-DzTOyDbr.js")
+		component: () => import("./chunks/instructions-CLVndibP.js")
 	},
 	{
 		path: "/cortex/servers",
@@ -368,7 +369,7 @@ var U = {
 	{
 		path: "/cortex/tools/:tool/description",
 		name: "cortex-tools-tool-description",
-		component: () => import("./chunks/description-BKH0H77G.js")
+		component: () => import("./chunks/description-C-zcxTVJ.js")
 	},
 	{
 		path: "/cortex/tools",
@@ -378,7 +379,7 @@ var U = {
 	{
 		path: "/cortex/virtual-agents/:slug",
 		name: "cortex-virtual-agents-slug",
-		component: () => import("./chunks/_slug_-Dc41BXEc.js")
+		component: () => import("./chunks/_slug_-CDVtufYe.js")
 	},
 	{
 		path: "/cortex/virtual-agents/create",
@@ -419,16 +420,16 @@ async function $(e, { limit: t }) {
 		}
 	})) : [];
 }
-var ie = o({
+var ae = o({
 	key: "cortex",
-	routes: re,
+	routes: ie,
 	screens: Z,
 	extensions: {
-		"cortex.mcp": J,
-		"cortex.redirect-domains": J
+		"cortex.mcp": Y,
+		"cortex.redirect-domains": Y
 	},
 	settingsPanels: { cortex: z },
 	searchSources: { cortex: $ },
-	messages: { en: c(Y, X) }
+	messages: { en: c(X, re) }
 });
-export { Q as cortexAgentPath, ie as default, Z as screens, $ as searchCortex };
+export { Q as cortexAgentPath, ae as default, Z as screens, $ as searchCortex };

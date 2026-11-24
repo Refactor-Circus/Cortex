@@ -1,7 +1,7 @@
 import { a as e, t } from "./cortex-Bp7gHDgF.js";
 import { t as n } from "./CortexLoad-Bz-c2t3K.js";
 import { t as r } from "./CortexPage-CtJD4yvP.js";
-import { t as i } from "./CortexVersions-K-zu41Hh.js";
+import { t as i } from "./CortexVersions-lcO7WNsD.js";
 import { computed as a, createBlock as o, createVNode as s, defineComponent as c, openBlock as l, unref as u, withCtx as d } from "vue";
 import { useI18n as f } from "vue-i18n";
 import { useRoute as p } from "vue-router";

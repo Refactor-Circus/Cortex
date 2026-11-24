@@ -54,11 +54,11 @@ async function remove(entry: CortexRedirectDomain): Promise<void> {
           <template #header>
             <h3 class="font-medium">{{ t('cortex.redirect_domains.add') }}</h3>
           </template>
-          <UForm class="flex flex-wrap items-end gap-3" data-testid="cortex-add-domain-form" @submit="add">
+          <UForm class="flex flex-wrap items-start gap-3" data-testid="cortex-add-domain-form" @submit="add">
             <UFormField :label="t('cortex.redirect_domains.domain')" :hint="t('cortex.redirect_domains.domain_hint')" :error="action.error('domain')" class="w-80" required>
               <UInput v-model="domain" placeholder="https://claude.ai" class="w-full" data-testid="cortex-domain" />
             </UFormField>
-            <UButton type="submit" icon="i-lucide-plus" :label="t('cortex.redirect_domains.add')" :loading="busy" data-testid="cortex-add-domain" />
+            <UButton type="submit" icon="i-lucide-plus" :label="t('cortex.redirect_domains.add')" :loading="busy" class="mt-field-label" data-testid="cortex-add-domain" />
           </UForm>
         </UCard>
 

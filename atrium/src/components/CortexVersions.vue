@@ -80,16 +80,18 @@ void loadVersions()
 
     <UCard>
       <template #header>
-        <div class="flex flex-wrap items-center gap-2">
-          <h3 class="font-medium">{{ liveTitle }}</h3>
-          <template v-if="override">
-            <UBadge v-if="published !== null" color="success" variant="subtle" :label="t('cortex.versions.overridden', { version: published })" data-status="overridden" />
-            <UBadge v-else color="neutral" variant="subtle" :label="t('cortex.versions.from_code')" data-status="from_code" />
-          </template>
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <h3 class="font-medium">{{ liveTitle }}</h3>
+            <template v-if="override">
+              <UBadge v-if="published !== null" color="success" variant="subtle" :label="t('cortex.versions.overridden', { version: published })" data-status="overridden" />
+              <UBadge v-else color="neutral" variant="subtle" :label="t('cortex.versions.from_code')" data-status="from_code" />
+            </template>
+          </div>
+          <p v-if="override" class="mt-1 text-sm text-muted">
+            {{ published !== null ? t('cortex.versions.override_hint') : t('cortex.versions.no_override_hint') }}
+          </p>
         </div>
-        <p v-if="override" class="mt-1 text-sm text-muted">
-          {{ published !== null ? t('cortex.versions.override_hint') : t('cortex.versions.no_override_hint') }}
-        </p>
       </template>
       <pre class="overflow-x-auto whitespace-pre-wrap rounded-md bg-elevated p-3 text-xs" data-testid="cortex-live">{{ live ?? '' }}</pre>
     </UCard>
