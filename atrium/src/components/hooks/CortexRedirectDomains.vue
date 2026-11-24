@@ -10,6 +10,9 @@ import { ownerOf } from './hooks'
  * `cortex.redirect-domains.index?owner_type=&owner_id=`, adds a domain for
  * that owner (`store`) and removes one (`destroy`), reloading after each.
  *
+ * It renders as a titled card, like the other modules' sections on the same
+ * screens.
+ *
  * Without a record (or an `owner_type`) it renders nothing; a 403 shows the
  * no-access state, a 422 the field errors.
  */
@@ -53,13 +56,16 @@ async function remove(entry: CortexRedirectDomain): Promise<void> {
 </script>
 
 <template>
-  <div v-if="owner && client" class="space-y-3" data-testid="hooks-redirect-domains">
+  <UCard v-if="owner && client" :ui="{ body: 'space-y-3' }" data-testid="hooks-redirect-domains">
+    <template #header>
+      <h3 class="font-medium" data-testid="hooks-redirect-domains-title">{{ t('hooks.redirect_domains.title') }}</h3>
+      <p class="mt-1 text-sm text-muted" data-testid="hooks-redirect-domains-description">{{ t('hooks.redirect_domains.description') }}</p>
+    </template>
+
     <AtriumNoAccess v-if="status === 403" compact />
     <UAlert v-else-if="failed" color="error" variant="subtle" :title="t('hooks.redirect_domains.load_failed')" data-testid="hooks-redirect-domains-failed" />
     <USkeleton v-else-if="pending" class="h-16" />
     <template v-else>
-      <p class="text-sm text-muted">{{ t('hooks.redirect_domains.description') }}</p>
-
       <CortexActionError :forbidden="action.forbidden.value" :message="action.message.value" />
 
       <UEmpty
@@ -95,5 +101,5 @@ async function remove(entry: CortexRedirectDomain): Promise<void> {
         <UButton type="submit" icon="i-lucide-plus" :label="t('hooks.redirect_domains.add')" :loading="busy" data-testid="hooks-add-redirect-domain" />
       </UForm>
     </template>
-  </div>
+  </UCard>
 </template>

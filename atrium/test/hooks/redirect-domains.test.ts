@@ -45,6 +45,16 @@ describe('the Cortex redirect-domains hook', () => {
     expect(wrapper.find(`[data-testid="hooks-redirect-domain-${owned.id}"]`).text()).toContain('https://acme.test')
   })
 
+  it('renders as a card titled "Redirect domains", with its description', async () => {
+    mockPackageApi('cortex', { 'GET /redirect-domains': { data: [owned] } as never })
+
+    const wrapper = await mountHook()
+
+    expect(wrapper.find('[data-testid="hooks-redirect-domains-title"]').text()).toBe('Redirect domains')
+    expect(wrapper.find('[data-testid="hooks-redirect-domains-description"]').text()).toBe("The OAuth redirect domains this record's MCP clients may use.")
+    expect(wrapper.find('[data-testid="hooks-redirect-domains"] [data-testid="hooks-add-redirect-domain-form"]').exists()).toBe(true)
+  })
+
   it('sends a numeric record key as the owner id', async () => {
     const api = mockPackageApi('cortex', { 'GET /redirect-domains': { data: [] } as never })
 

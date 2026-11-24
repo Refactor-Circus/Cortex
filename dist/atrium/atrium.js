@@ -2,15 +2,15 @@ import { a as e, i as t, t as n } from "./chunks/cortex-Bp7gHDgF.js";
 import { t as r } from "./chunks/CortexLoad-Bz-c2t3K.js";
 import { t as i } from "./chunks/CortexActionError-BnFnixGr.js";
 import { AtriumNoAccess as a, defineAtriumModule as o, integrationData as s, mergeAtriumMessages as c, useAtriumI18n as l, useAtriumIntegration as u } from "@refactor-circus/atrium";
-import { UAlert as d, UBadge as f, UButton as ee, UCard as p, UEmpty as m, UForm as h, UFormField as g, UInput as _, USkeleton as te } from "@refactor-circus/atrium/ui";
-import { Fragment as v, computed as y, createBlock as b, createCommentVNode as x, createElementBlock as S, createElementVNode as C, createVNode as w, defineComponent as T, isRef as ne, openBlock as E, ref as D, renderList as O, toDisplayString as k, unref as A, withCtx as j } from "vue";
+import { UAlert as ee, UBadge as d, UButton as te, UCard as f, UEmpty as ne, UForm as p, UFormField as m, UInput as h, USkeleton as g } from "@refactor-circus/atrium/ui";
+import { Fragment as _, computed as v, createBlock as y, createCommentVNode as b, createElementBlock as x, createElementVNode as S, createVNode as C, defineComponent as w, isRef as T, openBlock as E, ref as D, renderList as O, toDisplayString as k, unref as A, withCtx as j } from "vue";
 import { useI18n as M } from "vue-i18n";
 // src/components/CortexSettingsPanel.vue?vue&type=script&setup=true&lang.ts
-var N = { "data-testid": "cortex-settings-panel" }, P = { class: "flex flex-col gap-4" }, F = { class: "grid gap-4 sm:grid-cols-2 lg:grid-cols-4" }, I = { class: "text-sm text-muted" }, L = { class: "text-2xl font-semibold" }, R = { class: "font-medium" }, z = /* @__PURE__ */ T({
+var N = { "data-testid": "cortex-settings-panel" }, P = { class: "flex flex-col gap-4" }, F = { class: "grid gap-4 sm:grid-cols-2 lg:grid-cols-4" }, I = { class: "text-sm text-muted" }, L = { class: "text-2xl font-semibold" }, R = { class: "font-medium" }, z = /* @__PURE__ */ w({
 	__name: "CortexSettingsPanel",
 	props: { data: {} },
 	setup(t) {
-		let { t: i } = M(), { data: a, pending: o, failed: s, status: c } = e(async (e) => n(await e.GET("/settings-summary")).data), l = y(() => a.value ? [
+		let { t: i } = M(), { data: a, pending: o, failed: s, status: c } = e(async (e) => n(await e.GET("/settings-summary")).data), l = v(() => a.value ? [
 			{
 				key: "providers",
 				label: i("cortex.settings.providers"),
@@ -33,21 +33,21 @@ var N = { "data-testid": "cortex-settings-panel" }, P = { class: "flex flex-col 
 			}
 		] : []);
 		return (e, t) => {
-			let n = p, u = f;
-			return E(), S("div", N, [w(r, {
+			let n = f, u = d;
+			return E(), x("div", N, [C(r, {
 				ready: !A(o) && A(a) !== null,
 				failed: A(s),
 				status: A(c)
 			}, {
-				default: j(() => [C("div", P, [C("div", F, [(E(!0), S(v, null, O(A(l), (e) => (E(), b(n, {
+				default: j(() => [S("div", P, [S("div", F, [(E(!0), x(_, null, O(A(l), (e) => (E(), y(n, {
 					key: e.key,
 					"data-testid": `cortex-stat-${e.key}`
 				}, {
-					default: j(() => [C("p", I, k(e.label), 1), C("p", L, k(e.value), 1)]),
+					default: j(() => [S("p", I, k(e.label), 1), S("p", L, k(e.value), 1)]),
 					_: 2
-				}, 1032, ["data-testid"]))), 128))]), w(n, null, {
-					header: j(() => [C("h3", R, k(A(i)("cortex.settings.cache")), 1)]),
-					default: j(() => [w(u, {
+				}, 1032, ["data-testid"]))), 128))]), C(n, null, {
+					header: j(() => [S("h3", R, k(A(i)("cortex.settings.cache")), 1)]),
+					default: j(() => [C(u, {
 						color: A(a)?.cache_enabled ? "success" : "neutral",
 						variant: "subtle",
 						label: A(a)?.cache_enabled ? A(i)("cortex.settings.enabled") : A(i)("cortex.settings.disabled"),
@@ -85,111 +85,120 @@ function H(e, t) {
 }
 // src/components/hooks/CortexRedirectDomains.vue?vue&type=script&setup=true&lang.ts
 var U = {
-	key: 0,
-	class: "space-y-3",
-	"data-testid": "hooks-redirect-domains"
-}, W = { class: "text-sm text-muted" }, G = {
+	class: "font-medium",
+	"data-testid": "hooks-redirect-domains-title"
+}, W = {
+	class: "mt-1 text-sm text-muted",
+	"data-testid": "hooks-redirect-domains-description"
+}, G = {
 	key: 1,
 	class: "divide-y divide-default text-sm"
-}, K = ["data-testid"], q = { class: "truncate text-xs" }, J = /* @__PURE__ */ T({
+}, K = ["data-testid"], q = { class: "truncate text-xs" }, J = /* @__PURE__ */ w({
 	__name: "CortexRedirectDomains",
 	props: {
 		data: {},
 		record: {}
 	},
 	setup(r) {
-		let o = r, { t: s } = M(), c = t(), l = c.busy, u = y(() => H(o.data, o.record)), f = D(""), { client: p, data: T, pending: N, failed: P, status: F, reload: I } = e(async (e) => u.value ? n(await e.GET("/redirect-domains", { params: { query: {
+		let o = r, { t: s } = M(), c = t(), l = c.busy, u = v(() => H(o.data, o.record)), d = D(""), { client: w, data: N, pending: P, failed: F, status: I, reload: L } = e(async (e) => u.value ? n(await e.GET("/redirect-domains", { params: { query: {
 			owner_type: u.value.type,
 			owner_id: u.value.id
-		} } })).data : []), L = y(() => T.value ?? []);
-		async function R() {
+		} } })).data : []), R = v(() => N.value ?? []);
+		async function z() {
 			let e = u.value;
-			p && e && await c.run(async () => n(await p.POST("/redirect-domains", { body: {
-				domain: f.value,
+			w && e && await c.run(async () => n(await w.POST("/redirect-domains", { body: {
+				domain: d.value,
 				owner_type: e.type,
 				owner_id: e.id
-			} }))) && (f.value = "", await I());
+			} }))) && (d.value = "", await L());
 		}
-		async function z(e) {
-			p && await c.run(async () => n(await p.DELETE("/redirect-domains/{domain}", { params: { path: { domain: e.id } } }))) && await I();
+		async function B(e) {
+			w && await c.run(async () => n(await w.DELETE("/redirect-domains/{domain}", { params: { path: { domain: e.id } } }))) && await L();
 		}
 		return (e, t) => {
-			let n = a, r = d, o = te, y = m, T = ee, D = _, M = g, I = h;
-			return A(u) && A(p) ? (E(), S("div", U, [A(F) === 403 ? (E(), b(n, {
+			let n = a, r = ee, o = g, v = ne, D = te, M = h, N = m, L = p, V = f;
+			return A(u) && A(w) ? (E(), y(V, {
 				key: 0,
-				compact: ""
-			})) : A(P) ? (E(), b(r, {
-				key: 1,
-				color: "error",
-				variant: "subtle",
-				title: A(s)("hooks.redirect_domains.load_failed"),
-				"data-testid": "hooks-redirect-domains-failed"
-			}, null, 8, ["title"])) : A(N) ? (E(), b(o, {
-				key: 2,
-				class: "h-16"
-			})) : (E(), S(v, { key: 3 }, [
-				C("p", W, k(A(s)("hooks.redirect_domains.description")), 1),
-				w(i, {
-					forbidden: A(c).forbidden.value,
-					message: A(c).message.value
-				}, null, 8, ["forbidden", "message"]),
-				A(L).length === 0 ? (E(), b(y, {
+				ui: { body: "space-y-3" },
+				"data-testid": "hooks-redirect-domains"
+			}, {
+				header: j(() => [S("h3", U, k(A(s)("hooks.redirect_domains.title")), 1), S("p", W, k(A(s)("hooks.redirect_domains.description")), 1)]),
+				default: j(() => [A(I) === 403 ? (E(), y(n, {
 					key: 0,
-					icon: "i-lucide-globe",
-					title: A(s)("hooks.redirect_domains.empty"),
-					size: "xs",
-					variant: "naked",
-					ui: { root: "py-6" },
-					role: "status",
-					"data-testid": "hooks-redirect-domains-empty"
-				}, null, 8, ["title"])) : (E(), S("ul", G, [(E(!0), S(v, null, O(A(L), (e) => (E(), S("li", {
-					key: e.id,
-					class: "flex items-center justify-between gap-2 py-2",
-					"data-testid": `hooks-redirect-domain-${e.id}`
-				}, [C("code", q, k(e.domain), 1), w(T, {
-					size: "xs",
-					color: "neutral",
-					variant: "ghost",
-					icon: "i-lucide-trash",
-					label: A(s)("hooks.redirect_domains.remove"),
-					loading: A(l),
-					"data-testid": `hooks-remove-redirect-domain-${e.id}`,
-					onClick: (t) => z(e)
-				}, null, 8, [
-					"label",
-					"loading",
-					"data-testid",
-					"onClick"
-				])], 8, K))), 128))])),
-				w(I, {
-					class: "flex flex-wrap items-end gap-2",
-					"data-testid": "hooks-add-redirect-domain-form",
-					onSubmit: R
-				}, {
-					default: j(() => [w(M, {
-						label: A(s)("hooks.redirect_domains.domain"),
-						error: A(c).error("domain"),
-						class: "min-w-48 flex-1",
-						required: ""
-					}, {
-						default: j(() => [w(D, {
-							modelValue: A(f),
-							"onUpdate:modelValue": t[0] ||= (e) => ne(f) ? f.value = e : null,
-							placeholder: "https://claude.ai",
-							class: "w-full",
-							"data-testid": "hooks-redirect-domain"
-						}, null, 8, ["modelValue"])]),
-						_: 1
-					}, 8, ["label", "error"]), w(T, {
-						type: "submit",
-						icon: "i-lucide-plus",
-						label: A(s)("hooks.redirect_domains.add"),
+					compact: ""
+				})) : A(F) ? (E(), y(r, {
+					key: 1,
+					color: "error",
+					variant: "subtle",
+					title: A(s)("hooks.redirect_domains.load_failed"),
+					"data-testid": "hooks-redirect-domains-failed"
+				}, null, 8, ["title"])) : A(P) ? (E(), y(o, {
+					key: 2,
+					class: "h-16"
+				})) : (E(), x(_, { key: 3 }, [
+					C(i, {
+						forbidden: A(c).forbidden.value,
+						message: A(c).message.value
+					}, null, 8, ["forbidden", "message"]),
+					A(R).length === 0 ? (E(), y(v, {
+						key: 0,
+						icon: "i-lucide-globe",
+						title: A(s)("hooks.redirect_domains.empty"),
+						size: "xs",
+						variant: "naked",
+						ui: { root: "py-6" },
+						role: "status",
+						"data-testid": "hooks-redirect-domains-empty"
+					}, null, 8, ["title"])) : (E(), x("ul", G, [(E(!0), x(_, null, O(A(R), (e) => (E(), x("li", {
+						key: e.id,
+						class: "flex items-center justify-between gap-2 py-2",
+						"data-testid": `hooks-redirect-domain-${e.id}`
+					}, [S("code", q, k(e.domain), 1), C(D, {
+						size: "xs",
+						color: "neutral",
+						variant: "ghost",
+						icon: "i-lucide-trash",
+						label: A(s)("hooks.redirect_domains.remove"),
 						loading: A(l),
-						"data-testid": "hooks-add-redirect-domain"
-					}, null, 8, ["label", "loading"])]),
-					_: 1
-				})
-			], 64))])) : x("", !0);
+						"data-testid": `hooks-remove-redirect-domain-${e.id}`,
+						onClick: (t) => B(e)
+					}, null, 8, [
+						"label",
+						"loading",
+						"data-testid",
+						"onClick"
+					])], 8, K))), 128))])),
+					C(L, {
+						class: "flex flex-wrap items-end gap-2",
+						"data-testid": "hooks-add-redirect-domain-form",
+						onSubmit: z
+					}, {
+						default: j(() => [C(N, {
+							label: A(s)("hooks.redirect_domains.domain"),
+							error: A(c).error("domain"),
+							class: "min-w-48 flex-1",
+							required: ""
+						}, {
+							default: j(() => [C(M, {
+								modelValue: A(d),
+								"onUpdate:modelValue": t[0] ||= (e) => T(d) ? d.value = e : null,
+								placeholder: "https://claude.ai",
+								class: "w-full",
+								"data-testid": "hooks-redirect-domain"
+							}, null, 8, ["modelValue"])]),
+							_: 1
+						}, 8, ["label", "error"]), C(D, {
+							type: "submit",
+							icon: "i-lucide-plus",
+							label: A(s)("hooks.redirect_domains.add"),
+							loading: A(l),
+							"data-testid": "hooks-add-redirect-domain"
+						}, null, 8, ["label", "loading"])]),
+						_: 1
+					})
+				], 64))]),
+				_: 1
+			})) : b("", !0);
 		};
 	}
 }), Y = { cortex: {
@@ -318,6 +327,7 @@ var U = {
 		concrete_agent: "Concrete agent"
 	}
 } }, X = { hooks: { redirect_domains: {
+	title: "Redirect domains",
 	description: "The OAuth redirect domains this record's MCP clients may use.",
 	empty: "No redirect domains yet.",
 	domain: "Domain",
