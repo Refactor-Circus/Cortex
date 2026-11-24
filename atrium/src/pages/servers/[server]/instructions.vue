@@ -128,10 +128,7 @@ async function restoreTools(): Promise<void> {
 
             <CortexToolPicker v-model="selected" :tools="pickerTools" id-prefix="cortex-server-tool-" />
 
-            <label class="flex cursor-pointer items-center gap-2 text-sm">
-              <input v-model="confirmEmpty" type="checkbox" class="accent-(--ui-error)" data-testid="cortex-confirm-empty">
-              {{ t('cortex.servers.confirm_empty') }}
-            </label>
+            <UCheckbox v-model="confirmEmpty" color="error" :label="t('cortex.servers.confirm_empty')" data-testid="cortex-confirm-empty" />
 
             <div class="flex items-center gap-2">
               <UButton icon="i-lucide-check" :label="t('cortex.tools.save')" :loading="tools.busy.value" data-testid="cortex-save-tools" @click="saveTools" />

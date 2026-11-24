@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TableColumn } from '@nuxt/ui'
 import { cortexData, useCortexLoad, type CortexList, type CortexTool } from '../../components/cortex'
 import CortexLoad from '../../components/CortexLoad.vue'
 import CortexPage from '../../components/CortexPage.vue'
@@ -29,6 +30,13 @@ const tags = computed(() => [...new Set(data.value?.tags ?? (data.value?.tools ?
 const tools = computed(() => (data.value?.tools ?? [])
   .filter(tool => search.value === '' || tool.name.toLowerCase().includes(search.value.toLowerCase())))
 
+const columns = computed<TableColumn<CortexTool>[]>(() => [
+  { accessorKey: 'name', header: t('cortex.agent.name') },
+  { accessorKey: 'description', header: t('cortex.tools.description') },
+  { id: 'tags', header: t('cortex.tools.tags') },
+  { id: 'actions', header: t('cortex.actions'), meta: { class: { th: 'text-right', td: 'text-right' } } }
+])
+
 function choose(option: string | null): void {
   void router.push({ query: { ...route.query, tag: option ?? undefined } })
 }
@@ -53,39 +61,35 @@ function choose(option: string | null): void {
           <UInput v-model="search" class="ml-auto" icon="i-lucide-search" :placeholder="t('cortex.tools.search')" data-testid="cortex-tool-search" />
         </div>
 
-        <p v-if="tools.length === 0" class="atrium-empty" data-testid="cortex-empty">{{ t('cortex.tools.empty') }}</p>
+        <UEmpty
+          v-if="tools.length === 0"
+          icon="i-lucide-wrench"
+          :title="t('cortex.tools.empty')"
+          variant="naked"
+          role="status"
+          data-testid="cortex-empty"
+        />
 
-        <table v-else class="w-full text-sm" data-testid="cortex-tools">
-          <thead class="text-left text-muted">
-            <tr>
-              <th class="py-2">{{ t('cortex.agent.name') }}</th>
-              <th class="py-2">{{ t('cortex.tools.description') }}</th>
-              <th class="py-2">{{ t('cortex.tools.tags') }}</th>
-              <th class="py-2 text-right">{{ t('cortex.actions') }}</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-default">
-            <tr v-for="tool in tools" :key="tool.name" :data-testid="`cortex-tool-${tool.name}`">
-              <td class="py-2"><code class="text-xs">{{ tool.name }}</code></td>
-              <td class="py-2">{{ tool.description }}</td>
-              <td class="py-2">
-                <div class="flex flex-wrap gap-1">
-                  <UBadge v-for="toolTag in tool.tags" :key="toolTag" color="neutral" variant="subtle" size="sm" :label="toolTag" />
-                </div>
-              </td>
-              <td class="py-2 text-right">
-                <UButton
-                  size="xs"
-                  variant="outline"
-                  icon="i-lucide-file-text"
-                  :to="`/cortex/tools/${tool.name}/description`"
-                  :label="t('cortex.tools.edit_description')"
-                  :data-testid="`cortex-describe-${tool.name}`"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <UTable v-else :data="tools" :columns="columns" data-testid="cortex-tools">
+          <template #name-cell="{ row }">
+            <code class="text-xs" :data-testid="`cortex-tool-${row.original.name}`">{{ row.original.name }}</code>
+          </template>
+          <template #tags-cell="{ row }">
+            <div class="flex flex-wrap gap-1">
+              <UBadge v-for="toolTag in row.original.tags" :key="toolTag" color="neutral" variant="subtle" size="sm" :label="toolTag" />
+            </div>
+          </template>
+          <template #actions-cell="{ row }">
+            <UButton
+              size="xs"
+              variant="outline"
+              icon="i-lucide-file-text"
+              :to="`/cortex/tools/${row.original.name}/description`"
+              :label="t('cortex.tools.edit_description')"
+              :data-testid="`cortex-describe-${row.original.name}`"
+            />
+          </template>
+        </UTable>
       </div>
     </CortexLoad>
   </CortexPage>

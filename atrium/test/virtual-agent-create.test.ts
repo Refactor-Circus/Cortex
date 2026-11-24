@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from '../src/pages/virtual-agents/create.vue'
 import { settle } from '@refactor-circus/atrium/testing'
 import { mockPackageApi, reply, resetPackageApis } from '@refactor-circus/atrium/testing'
-import { concreteAgent, cortexCalls, mountCortexPage, screensApi, tools, virtualAgent } from './support'
+import { choose, concreteAgent, cortexCalls, mountCortexPage, screensApi, selectProps, tools, virtualAgent } from './support'
 import { clearAtriumData, mockAtriumApi, useRouter } from '@refactor-circus/atrium/testing'
 
 /*
@@ -29,10 +29,10 @@ async function fill(wrapper: Awaited<ReturnType<typeof mountCortexPage>>): Promi
   await wrapper.find('[data-testid="cortex-agent-name"]').setValue('Refunds')
   await wrapper.find('[data-testid="cortex-agent-slug"]').setValue('refunds')
   await wrapper.find('[data-testid="cortex-agent-instructions"]').setValue('You refund orders.')
-  await wrapper.find('[data-testid="cortex-agent-provider"]').setValue('openai')
+  await choose(wrapper, 'cortex-agent-provider', 'openai')
   await wrapper.find('[data-testid="cortex-agent-temperature"]').setValue('0.5')
-  await wrapper.find('[data-testid="cortex-agent-tool-create-ticket"]').setValue(true)
-  await wrapper.find('[data-testid="cortex-concrete-sub-agent-support-triage"]').setValue(true)
+  await wrapper.find('[data-testid="cortex-agent-tool-create-ticket"]').trigger('click')
+  await wrapper.find('[data-testid="cortex-concrete-sub-agent-support-triage"]').trigger('click')
 }
 
 describe('cortex.virtual-agent-create', () => {
@@ -98,6 +98,21 @@ describe('cortex.virtual-agent-create', () => {
 
     expect(wrapper.text()).toContain('The slug has already been taken.')
     expect(useRouter().currentRoute.value.path).toBe('/cortex/virtual-agents/create')
+  })
+
+  it('sends the provider\'s default as no provider', async () => {
+    mockPackageApi('cortex', { ...options(), 'POST /virtual-agents': { data: { ...virtualAgent, name: 'Refunds', slug: 'refunds' } } })
+
+    const wrapper = await mountCortexPage(Page, '/cortex/virtual-agents/create')
+    await fill(wrapper)
+    expect(selectProps(wrapper, 'cortex-agent-model').modelValue).toBe('gpt-5')
+    expect(selectProps(wrapper, 'cortex-agent-provider').modelValue).toBe('openai')
+    await choose(wrapper, 'cortex-agent-provider', '@default')
+    await choose(wrapper, 'cortex-agent-model', '@default')
+    await wrapper.find('[data-testid="cortex-agent-form"]').trigger('submit')
+    await settle()
+
+    expect(cortexCalls('POST', '/virtual-agents')[0]?.body).toMatchObject({ provider: null, model: null })
   })
 
   it('shows a 403 as no access', async () => {

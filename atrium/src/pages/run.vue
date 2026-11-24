@@ -23,6 +23,8 @@ function option(agent: CortexAgentReference): string {
   return `${agent.type === 'concrete_agent' ? 'concrete' : 'virtual'}:${agent.key}`
 }
 
+const agentItems = computed(() => agents.value.map(agent => ({ label: agent.name, value: option(agent) })))
+
 const selected = ref(typeof route.query.agent === 'string' ? route.query.agent : '')
 const input = ref('')
 const result = shallowRef<CortexAgentRun | null>(null)
@@ -59,17 +61,27 @@ async function run(): Promise<void> {
   <CortexPage :title="t('cortex.run.title')" screen-key="cortex.run">
     <CortexLoad :ready="!pending" :failed="failed" :status="status">
       <div class="flex max-w-2xl flex-col gap-5">
-        <p v-if="agents.length === 0" class="text-sm text-muted" data-testid="cortex-no-runnable-agents">{{ t('cortex.run.none') }}</p>
+        <UEmpty
+          v-if="agents.length === 0"
+          icon="i-lucide-bot"
+          :title="t('cortex.run.none')"
+          variant="naked"
+          role="status"
+          data-testid="cortex-no-runnable-agents"
+        />
 
         <UCard v-else>
-          <form class="flex flex-col gap-4" data-testid="cortex-run-form" @submit.prevent="run">
+          <UForm class="flex flex-col gap-4" data-testid="cortex-run-form" @submit="run">
             <CortexActionError :forbidden="action.forbidden.value" :message="action.message.value" />
 
             <UFormField :label="t('cortex.run.agent')" :error="action.error('agent')" required>
-              <select v-model="selected" class="w-full rounded-md border border-default bg-default px-2.5 py-1.5 text-sm" data-testid="cortex-run-agent-select">
-                <option value="" disabled>{{ t('cortex.run.select_agent') }}</option>
-                <option v-for="agent in agents" :key="option(agent)" :value="option(agent)">{{ agent.name }}</option>
-              </select>
+              <USelect
+                v-model="selected"
+                :items="agentItems"
+                :placeholder="t('cortex.run.select_agent')"
+                class="w-full"
+                data-testid="cortex-run-agent-select"
+              />
             </UFormField>
 
             <UFormField :label="t('cortex.run.input')" :error="action.error('input')" required>
@@ -79,7 +91,7 @@ async function run(): Promise<void> {
             <div>
               <UButton type="submit" icon="i-lucide-play" :label="t('cortex.run.run')" :loading="action.busy.value" :disabled="selected === ''" data-testid="cortex-run" />
             </div>
-          </form>
+          </UForm>
         </UCard>
 
         <UCard v-if="result" data-testid="cortex-run-result">
@@ -89,14 +101,12 @@ async function run(): Promise<void> {
           <pre class="overflow-x-auto whitespace-pre-wrap rounded-md bg-elevated p-3 text-xs" data-testid="cortex-run-text">{{ result.text }}</pre>
           <div v-if="usage.length" class="mt-4">
             <h4 class="mb-2 text-sm font-semibold">{{ t('cortex.run.usage') }}</h4>
-            <table class="w-full text-sm" data-testid="cortex-run-usage">
-              <tbody class="divide-y divide-default">
-                <tr v-for="row in usage" :key="row.key">
-                  <td class="py-1">{{ row.key }}</td>
-                  <td class="py-1 text-right tabular-nums">{{ row.value }}</td>
-                </tr>
-              </tbody>
-            </table>
+            <dl class="divide-y divide-default text-sm" data-testid="cortex-run-usage">
+              <div v-for="row in usage" :key="row.key" class="flex justify-between gap-4 py-1">
+                <dt>{{ row.key }}</dt>
+                <dd class="tabular-nums">{{ row.value }}</dd>
+              </div>
+            </dl>
           </div>
         </UCard>
       </div>

@@ -76,6 +76,40 @@ const models = computed(() => [...new Set([
 const pickerTools = computed(() => tools.value.map(tool => ({ name: tool.name, label: tool.name, tags: tool.tags })))
 const subAgentOptions = computed(() => agents.value.filter(option => option.slug !== props.agent?.slug))
 
+/** The select's value for "the provider's default" (a select item may not be ''). */
+const DEFAULT = '@default'
+
+function choices(values: string[]) {
+  return [{ label: t('cortex.agent.provider_default'), value: DEFAULT }, ...values.map(value => ({ label: value, value }))]
+}
+
+/** `form.provider` and `form.model` through the selects, '' as DEFAULT. */
+const provider = computed({
+  get: () => form.provider === '' ? DEFAULT : form.provider,
+  set: (value: string) => {
+    form.provider = value === DEFAULT ? '' : value
+    syncModel()
+  }
+})
+
+const model = computed({
+  get: () => form.model === '' ? DEFAULT : form.model,
+  set: (value: string) => {
+    form.model = value === DEFAULT ? '' : value
+  }
+})
+
+/** Checks or unchecks `value` in the list `list`. */
+function toggle(list: string[], value: string, checked: boolean | 'indeterminate'): void {
+  const index = list.indexOf(value)
+
+  if (checked === true && index === -1) {
+    list.push(value)
+  } else if (checked !== true && index !== -1) {
+    list.splice(index, 1)
+  }
+}
+
 /** Choosing a provider moves to its default model, unless a model is already picked. */
 function syncModel(): void {
   const preferred = providers.value.find(provider => provider.name === form.provider)?.default_model
@@ -153,7 +187,7 @@ void loadOptions()
 
 <template>
   <UCard>
-    <form class="flex flex-col gap-4" data-testid="cortex-agent-form" @submit.prevent="save">
+    <UForm class="flex flex-col gap-4" data-testid="cortex-agent-form" @submit="save">
       <CortexActionError :forbidden="action.forbidden.value" :message="action.message.value" />
 
       <UFormField :label="t('cortex.agent.name')" :error="action.error('name')" required>
@@ -174,17 +208,11 @@ void loadOptions()
 
       <div class="grid gap-4 sm:grid-cols-2">
         <UFormField :label="t('cortex.agent.provider')" :error="action.error('provider')">
-          <select v-model="form.provider" class="w-full rounded-md border border-default bg-default px-2.5 py-1.5 text-sm" data-testid="cortex-agent-provider" @change="syncModel">
-            <option value="">{{ t('cortex.agent.provider_default') }}</option>
-            <option v-for="name in providerNames" :key="name" :value="name">{{ name }}</option>
-          </select>
+          <USelect v-model="provider" :items="choices(providerNames)" class="w-full" data-testid="cortex-agent-provider" />
         </UFormField>
 
         <UFormField :label="t('cortex.agent.model')" :error="action.error('model')">
-          <select v-model="form.model" class="w-full rounded-md border border-default bg-default px-2.5 py-1.5 text-sm" data-testid="cortex-agent-model">
-            <option value="">{{ t('cortex.agent.provider_default') }}</option>
-            <option v-for="model in models" :key="model" :value="model">{{ model }}</option>
-          </select>
+          <USelect v-model="model" :items="choices(models)" class="w-full" data-testid="cortex-agent-model" />
         </UFormField>
       </div>
 
@@ -212,19 +240,27 @@ void loadOptions()
 
       <UFormField v-if="subAgentOptions.length" :label="t('cortex.agent.sub_agents')" :error="action.error('sub_agents')">
         <div class="flex flex-col gap-2">
-          <label v-for="option in subAgentOptions" :key="option.slug" class="flex items-center gap-2 text-sm">
-            <input v-model="form.sub_agents" type="checkbox" class="accent-(--ui-primary)" :value="option.slug" :data-testid="`cortex-sub-agent-${option.slug}`">
-            {{ option.name }}
-          </label>
+          <UCheckbox
+            v-for="option in subAgentOptions"
+            :key="option.slug"
+            :model-value="form.sub_agents.includes(option.slug)"
+            :label="option.name"
+            :data-testid="`cortex-sub-agent-${option.slug}`"
+            @update:model-value="toggle(form.sub_agents, option.slug, $event)"
+          />
         </div>
       </UFormField>
 
       <UFormField v-if="concreteAgents.length" :label="t('cortex.agent.concrete_sub_agents')" :error="action.error('concrete_sub_agents')">
         <div class="flex flex-col gap-2">
-          <label v-for="option in concreteAgents" :key="option.name" class="flex items-center gap-2 text-sm">
-            <input v-model="form.concrete_sub_agents" type="checkbox" class="accent-(--ui-primary)" :value="option.name" :data-testid="`cortex-concrete-sub-agent-${option.name}`">
-            {{ option.name }}
-          </label>
+          <UCheckbox
+            v-for="option in concreteAgents"
+            :key="option.name"
+            :model-value="form.concrete_sub_agents.includes(option.name)"
+            :label="option.name"
+            :data-testid="`cortex-concrete-sub-agent-${option.name}`"
+            @update:model-value="toggle(form.concrete_sub_agents, option.name, $event)"
+          />
         </div>
       </UFormField>
 
@@ -232,6 +268,6 @@ void loadOptions()
         <UButton type="submit" icon="i-lucide-check" :label="t('cortex.agent.save')" :loading="action.busy.value" data-testid="cortex-save-agent" />
         <UButton to="/cortex/virtual-agents" color="neutral" variant="ghost" :label="t('cortex.agent.cancel')" />
       </div>
-    </form>
+    </UForm>
   </UCard>
 </template>

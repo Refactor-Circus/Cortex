@@ -62,9 +62,16 @@ async function remove(entry: CortexRedirectDomain): Promise<void> {
 
       <CortexActionError :forbidden="action.forbidden.value" :message="action.message.value" />
 
-      <p v-if="domains.length === 0" class="atrium-empty" data-testid="hooks-redirect-domains-empty">
-        {{ t('hooks.redirect_domains.empty') }}
-      </p>
+      <UEmpty
+        v-if="domains.length === 0"
+        icon="i-lucide-globe"
+        :title="t('hooks.redirect_domains.empty')"
+        size="xs"
+        variant="naked"
+        :ui="{ root: 'py-6' }"
+        role="status"
+        data-testid="hooks-redirect-domains-empty"
+      />
       <ul v-else class="divide-y divide-default text-sm">
         <li v-for="entry in domains" :key="entry.id" class="flex items-center justify-between gap-2 py-2" :data-testid="`hooks-redirect-domain-${entry.id}`">
           <code class="truncate text-xs">{{ entry.domain }}</code>
@@ -81,12 +88,12 @@ async function remove(entry: CortexRedirectDomain): Promise<void> {
         </li>
       </ul>
 
-      <form class="flex flex-wrap items-end gap-2" data-testid="hooks-add-redirect-domain-form" @submit.prevent="add">
+      <UForm class="flex flex-wrap items-end gap-2" data-testid="hooks-add-redirect-domain-form" @submit="add">
         <UFormField :label="t('hooks.redirect_domains.domain')" :error="action.error('domain')" class="min-w-48 flex-1" required>
           <UInput v-model="domain" placeholder="https://claude.ai" class="w-full" data-testid="hooks-redirect-domain" />
         </UFormField>
         <UButton type="submit" icon="i-lucide-plus" :label="t('hooks.redirect_domains.add')" :loading="busy" data-testid="hooks-add-redirect-domain" />
-      </form>
+      </UForm>
     </template>
   </div>
 </template>

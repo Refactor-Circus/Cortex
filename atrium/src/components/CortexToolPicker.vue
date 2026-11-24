@@ -26,16 +26,20 @@ function shows(tool: CortexPickerTool): boolean {
 }
 
 const visible = computed(() => props.tools.filter(shows))
+
+/** Checks or unchecks `name`, appending a newly checked tool. */
+function toggle(name: string, checked: boolean | 'indeterminate'): void {
+  selected.value = checked === true
+    ? [...selected.value.filter(entry => entry !== name), name]
+    : selected.value.filter(entry => entry !== name)
+}
 </script>
 
 <template>
   <div class="flex flex-col gap-3" data-testid="cortex-tool-picker">
     <div class="flex flex-wrap items-center gap-3">
       <UInput v-model="search" icon="i-lucide-search" :placeholder="t('cortex.tools.search')" data-testid="cortex-tool-search" />
-      <label class="flex cursor-pointer items-center gap-2 text-sm">
-        <input v-model="selectedOnly" type="checkbox" class="accent-(--ui-primary)" data-testid="cortex-selected-only">
-        {{ t('cortex.tools.selected_only') }}
-      </label>
+      <USwitch v-model="selectedOnly" :label="t('cortex.tools.selected_only')" data-testid="cortex-selected-only" />
       <span class="ml-auto text-xs text-muted" data-testid="cortex-selected-count">{{ t('cortex.tools.selected', { count: selected.length }) }}</span>
     </div>
 
@@ -54,17 +58,15 @@ const visible = computed(() => props.tools.filter(shows))
     </div>
 
     <div class="flex max-h-80 flex-col gap-2 overflow-y-auto">
-      <label v-for="tool in visible" :key="tool.name" class="flex flex-wrap items-center gap-2 text-sm">
-        <input
-          v-model="selected"
-          type="checkbox"
-          class="accent-(--ui-primary)"
-          :value="tool.name"
+      <div v-for="tool in visible" :key="tool.name" class="flex flex-wrap items-center gap-2">
+        <UCheckbox
+          :model-value="selected.includes(tool.name)"
+          :label="tool.label"
           :data-testid="`${idPrefix ?? 'cortex-tool-'}${tool.name}`"
-        >
-        <span>{{ tool.label }}</span>
+          @update:model-value="toggle(tool.name, $event)"
+        />
         <UBadge v-for="toolTag in tool.tags" :key="toolTag" color="neutral" variant="subtle" size="sm" :label="toolTag" />
-      </label>
+      </div>
     </div>
   </div>
 </template>

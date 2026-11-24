@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from '../src/pages/concrete-agents/index.vue'
 import { mockPackageApi, reply, resetPackageApis } from '@refactor-circus/atrium/testing'
-import { concreteAgent, cortexCalls, mountCortexPage, screensApi } from './support'
+import { concreteAgent, cortexCalls, mountCortexPage, rowOf, screensApi } from './support'
 import { clearAtriumData, mockAtriumApi } from '@refactor-circus/atrium/testing'
 
 /*
@@ -32,8 +32,8 @@ describe('cortex.concrete-agents', () => {
 
     expect(cortexCalls('GET', '/concrete-agents')).toHaveLength(1)
     expect(api).toHaveBeenCalledWith('/screens/cortex.concrete-agents', { query: { record: undefined, tab: undefined } })
-    expect(wrapper.find('[data-testid="cortex-agent-support-triage"] [data-status="from_code"]').exists()).toBe(true)
-    expect(wrapper.find('[data-testid="cortex-agent-refund-agent"] [data-status="overridden"]').text()).toContain('v3')
+    expect(rowOf(wrapper, '[data-testid="cortex-agent-support-triage"]').find('[data-status="from_code"]').exists()).toBe(true)
+    expect(rowOf(wrapper, '[data-testid="cortex-agent-refund-agent"]').find('[data-status="overridden"]').text()).toContain('v3')
     expect(wrapper.find('[data-testid="cortex-run-support-triage"]').attributes('href')).toBe('/cortex/run?agent=concrete:support-triage')
   })
 

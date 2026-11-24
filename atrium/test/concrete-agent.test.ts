@@ -69,7 +69,7 @@ describe('cortex.concrete-agent', () => {
 
     const wrapper = await mountCortexPage(Page, '/cortex/concrete-agents/support-triage')
     await wrapper.find('[data-testid="cortex-version-content"]').setValue('Draft')
-    await wrapper.find('[data-testid="cortex-version-publish"]').setValue(false)
+    await wrapper.find('[data-testid="cortex-version-publish"]').trigger('click')
     await wrapper.find('[data-testid="cortex-new-version"] form').trigger('submit')
     await settle()
 
@@ -128,7 +128,7 @@ describe('cortex.concrete-agent', () => {
     mockPackageApi('cortex', routes(concreteAgent, { 'PUT /concrete-agents/{agent}/tools': { data: override } }))
 
     const wrapper = await mountCortexPage(Page, '/cortex/concrete-agents/support-triage')
-    await wrapper.find('[data-testid="cortex-agent-tool-create-ticket"]').setValue(true)
+    await wrapper.find('[data-testid="cortex-agent-tool-create-ticket"]').trigger('click')
     await wrapper.find('[data-testid="cortex-save-tools"]').trigger('click')
     await settle()
 

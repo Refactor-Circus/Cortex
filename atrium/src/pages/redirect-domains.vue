@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TableColumn } from '@nuxt/ui'
 import { cortexData, useCortexAction, useCortexLoad, type CortexList, type CortexRedirectDomain } from '../components/cortex'
 import CortexActionError from '../components/CortexActionError.vue'
 import CortexLoad from '../components/CortexLoad.vue'
@@ -21,6 +22,13 @@ const { client, data, pending, failed, status, reload } = useCortexLoad(async co
   cortexData<CortexList<CortexRedirectDomain>>(await cortex.GET('/redirect-domains')).data)
 
 const domains = computed(() => data.value ?? [])
+
+const columns = computed<TableColumn<CortexRedirectDomain>[]>(() => [
+  { accessorKey: 'domain', header: t('cortex.redirect_domains.domain') },
+  { id: 'source', header: t('cortex.redirect_domains.source') },
+  { id: 'created', header: t('cortex.redirect_domains.created') },
+  { id: 'actions', header: t('cortex.actions'), meta: { class: { th: 'text-right', td: 'text-right' } } }
+])
 
 async function add(): Promise<void> {
   if (client && await action.run(async () => cortexData(await client.POST('/redirect-domains', { body: { domain: domain.value } })))) {
@@ -46,47 +54,46 @@ async function remove(entry: CortexRedirectDomain): Promise<void> {
           <template #header>
             <h3 class="font-medium">{{ t('cortex.redirect_domains.add') }}</h3>
           </template>
-          <form class="flex flex-wrap items-end gap-3" data-testid="cortex-add-domain-form" @submit.prevent="add">
+          <UForm class="flex flex-wrap items-end gap-3" data-testid="cortex-add-domain-form" @submit="add">
             <UFormField :label="t('cortex.redirect_domains.domain')" :hint="t('cortex.redirect_domains.domain_hint')" :error="action.error('domain')" class="w-80" required>
               <UInput v-model="domain" placeholder="https://claude.ai" class="w-full" data-testid="cortex-domain" />
             </UFormField>
             <UButton type="submit" icon="i-lucide-plus" :label="t('cortex.redirect_domains.add')" :loading="busy" data-testid="cortex-add-domain" />
-          </form>
+          </UForm>
         </UCard>
 
-        <p v-if="domains.length === 0" class="atrium-empty" data-testid="cortex-empty">{{ t('cortex.redirect_domains.empty') }}</p>
+        <UEmpty
+          v-if="domains.length === 0"
+          icon="i-lucide-globe"
+          :title="t('cortex.redirect_domains.empty')"
+          variant="naked"
+          role="status"
+          data-testid="cortex-empty"
+        />
 
-        <table v-else class="w-full text-sm" data-testid="cortex-redirect-domains">
-          <thead class="text-left text-muted">
-            <tr>
-              <th class="py-2">{{ t('cortex.redirect_domains.domain') }}</th>
-              <th class="py-2">{{ t('cortex.redirect_domains.source') }}</th>
-              <th class="py-2">{{ t('cortex.redirect_domains.created') }}</th>
-              <th class="py-2 text-right">{{ t('cortex.actions') }}</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-default">
-            <tr v-for="entry in domains" :key="entry.id" :data-testid="`cortex-domain-${entry.id}`">
-              <td class="py-2"><code class="text-xs">{{ entry.domain }}</code></td>
-              <td class="py-2">
-                <span v-if="entry.owner_type">{{ entry.owner_id }} <span class="text-xs text-muted">{{ entry.owner_type }}</span></span>
-                <UBadge v-else color="neutral" variant="subtle" :label="t('cortex.redirect_domains.global')" />
-              </td>
-              <td class="py-2">{{ entry.created_at ?? '—' }}</td>
-              <td class="py-2 text-right">
-                <UButton
-                  size="xs"
-                  color="neutral"
-                  variant="ghost"
-                  icon="i-lucide-trash"
-                  :label="t('cortex.redirect_domains.remove')"
-                  :data-testid="`cortex-remove-domain-${entry.id}`"
-                  @click="remove(entry)"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <UTable v-else :data="domains" :columns="columns" data-testid="cortex-redirect-domains">
+          <template #domain-cell="{ row }">
+            <code class="text-xs" :data-testid="`cortex-domain-${row.original.id}`">{{ row.original.domain }}</code>
+          </template>
+          <template #source-cell="{ row }">
+            <span v-if="row.original.owner_type">{{ row.original.owner_id }} <span class="text-xs text-muted">{{ row.original.owner_type }}</span></span>
+            <UBadge v-else color="neutral" variant="subtle" :label="t('cortex.redirect_domains.global')" />
+          </template>
+          <template #created-cell="{ row }">
+            {{ row.original.created_at ?? '—' }}
+          </template>
+          <template #actions-cell="{ row }">
+            <UButton
+              size="xs"
+              color="neutral"
+              variant="ghost"
+              icon="i-lucide-trash"
+              :label="t('cortex.redirect_domains.remove')"
+              :data-testid="`cortex-remove-domain-${row.original.id}`"
+              @click="remove(row.original)"
+            />
+          </template>
+        </UTable>
       </div>
     </CortexLoad>
   </CortexPage>

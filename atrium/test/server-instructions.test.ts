@@ -101,7 +101,7 @@ describe('cortex.server-instructions', () => {
     mockPackageApi('cortex', routes({ 'PUT /servers/{server}/tools': { data: instruction } }))
 
     const wrapper = await mountCortexPage(Page, '/cortex/servers/support/instructions')
-    await wrapper.find('[data-testid="cortex-server-tool-create-ticket"]').setValue(true)
+    await wrapper.find('[data-testid="cortex-server-tool-create-ticket"]').trigger('click')
     await wrapper.find('[data-testid="cortex-save-tools"]').trigger('click')
     await settle()
 
@@ -114,14 +114,14 @@ describe('cortex.server-instructions', () => {
     mockPackageApi('cortex', routes({ 'PUT /servers/{server}/tools': { data: instruction } }))
 
     const wrapper = await mountCortexPage(Page, '/cortex/servers/support/instructions')
-    await wrapper.find('[data-testid="cortex-server-tool-lookup-order"]').setValue(false)
+    await wrapper.find('[data-testid="cortex-server-tool-lookup-order"]').trigger('click')
     await wrapper.find('[data-testid="cortex-save-tools"]').trigger('click')
     await settle()
 
     expect(cortexCalls('PUT', '/servers/{server}/tools')).toEqual([])
     expect(wrapper.find('[data-testid="cortex-confirm-empty-needed"]').exists()).toBe(true)
 
-    await wrapper.find('[data-testid="cortex-confirm-empty"]').setValue(true)
+    await wrapper.find('[data-testid="cortex-confirm-empty"]').trigger('click')
     await wrapper.find('[data-testid="cortex-save-tools"]').trigger('click')
     await settle()
 

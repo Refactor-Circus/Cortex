@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from '../src/pages/run.vue'
 import { settle } from '@refactor-circus/atrium/testing'
 import { mockPackageApi, reply, resetPackageApis, type PackageRoutes } from '@refactor-circus/atrium/testing'
-import { cortexCalls, mountCortexPage, runnableAgents, screensApi } from './support'
+import { choose, cortexCalls, mountCortexPage, runnableAgents, screensApi, selectProps } from './support'
 import { clearAtriumData, mockAtriumApi } from '@refactor-circus/atrium/testing'
 
 /*
@@ -23,7 +23,7 @@ function routes(overrides: PackageRoutes<'cortex'> = {}): PackageRoutes<'cortex'
 }
 
 async function runWith(wrapper: Awaited<ReturnType<typeof mountCortexPage>>, agent: string, input: string): Promise<void> {
-  await wrapper.find('[data-testid="cortex-run-agent-select"]').setValue(agent)
+  await choose(wrapper, 'cortex-run-agent-select', agent)
   await wrapper.find('[data-testid="cortex-run-input"]').setValue(input)
   await wrapper.find('[data-testid="cortex-run-form"]').trigger('submit')
   await settle()
@@ -45,8 +45,9 @@ describe('cortex.run', () => {
 
     expect(cortexCalls('GET', '/runnable-agents')).toHaveLength(1)
     expect(api).toHaveBeenCalledWith('/screens/cortex.run', { query: { record: undefined, tab: undefined } })
-    expect(wrapper.findAll('[data-testid="cortex-run-agent-select"] option').map(option => option.attributes('value')))
-      .toEqual(['', 'virtual:triage', 'concrete:support-triage'])
+    expect(selectProps(wrapper, 'cortex-run-agent-select').items)
+      .toEqual([{ label: 'Triage', value: 'virtual:triage' }, { label: 'support-triage', value: 'concrete:support-triage' }])
+    expect(selectProps(wrapper, 'cortex-run-agent-select').modelValue).toBe('')
   })
 
   it('preselects the agent of ?agent=', async () => {
@@ -54,7 +55,7 @@ describe('cortex.run', () => {
 
     const wrapper = await mountCortexPage(Page, '/cortex/run?agent=concrete:support-triage')
 
-    expect((wrapper.find('[data-testid="cortex-run-agent-select"]').element as HTMLSelectElement).value).toBe('concrete:support-triage')
+    expect(selectProps(wrapper, 'cortex-run-agent-select').modelValue).toBe('concrete:support-triage')
   })
 
   it('runs a virtual agent through virtual-agents.run and shows the response', async () => {

@@ -136,18 +136,15 @@ void loadVersions()
       <template #header>
         <h3 class="font-medium">{{ t('cortex.versions.new') }}</h3>
       </template>
-      <form class="flex flex-col gap-4" @submit.prevent="store">
+      <UForm class="flex flex-col gap-4" @submit="store">
         <UFormField :label="t('cortex.versions.content')" :error="action.error('content')" required>
           <UTextarea v-model="content" :rows="8" class="w-full font-mono" data-testid="cortex-version-content" />
         </UFormField>
-        <label class="flex cursor-pointer items-center gap-2 text-sm">
-          <input v-model="publish" type="checkbox" class="accent-(--ui-primary)" data-testid="cortex-version-publish">
-          {{ t('cortex.versions.publish_now') }}
-        </label>
+        <UCheckbox v-model="publish" :label="t('cortex.versions.publish_now')" data-testid="cortex-version-publish" />
         <div>
           <UButton type="submit" icon="i-lucide-file-plus" :label="t('cortex.versions.add')" :loading="action.busy.value" data-testid="cortex-add-version" />
         </div>
-      </form>
+      </UForm>
     </UCard>
 
     <div v-if="override && api.destroy && published !== null">

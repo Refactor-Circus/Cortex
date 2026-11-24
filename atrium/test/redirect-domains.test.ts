@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from '../src/pages/redirect-domains.vue'
 import { settle } from '@refactor-circus/atrium/testing'
 import { mockPackageApi, reply, resetPackageApis } from '@refactor-circus/atrium/testing'
-import { cortexCalls, mountCortexPage, redirectDomain, screensApi } from './support'
+import { cortexCalls, mountCortexPage, redirectDomain, rowOf, screensApi } from './support'
 import { clearAtriumData, mockAtriumApi } from '@refactor-circus/atrium/testing'
 
 /*
@@ -34,7 +34,7 @@ describe('cortex.redirect-domains', () => {
     expect(cortexCalls('GET', '/redirect-domains')[0]?.query).toEqual({})
     expect(api).toHaveBeenCalledWith('/screens/cortex.redirect-domains', { query: { record: undefined, tab: undefined } })
     expect(wrapper.find(`[data-testid="cortex-domain-${redirectDomain.id}"]`).text()).toContain('https://claude.ai')
-    expect(wrapper.find(`[data-testid="cortex-domain-${owned.id}"]`).text()).toContain('roster.organization')
+    expect(rowOf(wrapper, `[data-testid="cortex-domain-${owned.id}"]`).text()).toContain('roster.organization')
   })
 
   it('adds a domain through redirect-domains.store, then reloads', async () => {
