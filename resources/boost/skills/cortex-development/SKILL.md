@@ -54,7 +54,7 @@ Every API endpoint and MCP tool that touches a model is also checked through the
 
 ### 3. Add a UI with Atrium v2 (optional)
 
-Cortex is API and MCP only: no views, screens, Blade directives or assets. For screens, install Atrium v2 (`refactor-circus/atrium`), which manages virtual agents, concrete agents, runs, tools, MCP servers and owners' redirect domains by calling Cortex's JSON API through `@refactor-circus/cortex-client`. Configure its Cortex integration on Atrium's side (`atrium.integrations.cortex.*`, see Atrium's README), keep `cortex.routes.enabled` on, and make sure Atrium's users pass `cortex.routes.middleware`; every call is checked against `cortex.policies` like any other API call.
+Cortex's PHP is API and MCP only: no views, screens or Blade directives. For screens, install Atrium v2 (`refactor-circus/atrium`): Cortex ships its Atrium front-end module (JavaScript built to `dist/atrium/`, declared in `composer.json` `extra.atrium`), which Atrium's page loads and which manages virtual agents, concrete agents, runs, tools, MCP servers and owners' redirect domains by calling Cortex's JSON API through `@refactor-circus/cortex-client`. Configure its Cortex integration on Atrium's side (`atrium.integrations.cortex.*`, see Atrium's README), keep `cortex.routes.enabled` on, and make sure Atrium's users pass `cortex.routes.middleware`; every call is checked against `cortex.policies` like any other API call.
 
 ### 4. Register tools
 
@@ -187,6 +187,6 @@ Read before executing:
 - do not document package internals here; keep the skill focused on adoption in Laravel apps
 - do not edit prompt version content — versions are immutable; create a new version and publish it (concrete agent, tool description and server instruction override versions work the same way)
 - do not enable the MCP web transport or expose the routes without auth middleware
-- do not look for Cortex views, screens or UI config: Cortex v2 has none, and the UI is Atrium v2's
+- do not look for Cortex views, screens or UI config: Cortex v2's PHP has none; its screens are the Atrium module in `atrium/` (built to `dist/atrium/`), loaded by Atrium v2
 - do not attach tool class names to agents — attach the registered tool *names* from the registry
 - do not leave `updateTools` open to guests in production, and do not register Cortex's own management tools in the tool registry unless every client of the servers you override may manage Cortex

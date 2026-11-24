@@ -25,3 +25,20 @@ function mcpTool(string $tool, array $arguments = []): TestResponse
 {
     return McpTools::call(CortexServer::class, $tool, $arguments);
 }
+
+/**
+ * composer.json as text without its `extra.atrium` block: the only place
+ * the manifest may name Atrium is the declaration of Cortex's front-end
+ * module (atrium/, built to dist/atrium), which Atrium's page loads.
+ */
+function manifestWithoutAtriumModule(): string
+{
+    /** @var array<string, mixed> $manifest */
+    $manifest = json_decode((string) file_get_contents(dirname(__DIR__).'/composer.json'), true, flags: JSON_THROW_ON_ERROR);
+
+    if (is_array($manifest['extra'] ?? null)) {
+        unset($manifest['extra']['atrium']);
+    }
+
+    return (string) json_encode($manifest, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+}

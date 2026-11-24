@@ -40,12 +40,16 @@ it('adds no Atrium or PennantPlus repository', function (): void {
     expect(array_filter($urls, fn (string $url): bool => str_contains($url, 'atrium') || str_contains($url, 'pennantplus')))->toBe([]);
 });
 
-it('declares no Atrium plugin', function (): void {
-    expect(composerManifest()['extra'] ?? [])->not->toHaveKey('atrium');
+it('declares only its Atrium front-end module, as JS and CSS in dist/atrium', function (): void {
+    expect(composerManifest()['extra']['atrium'] ?? null)->toBe([
+        'key' => 'cortex',
+        'scripts' => ['dist/atrium/atrium.js'],
+        'styles' => ['dist/atrium/atrium.css'],
+    ]);
 });
 
-it('names neither Atrium nor PennantPlus anywhere in the manifest', function (): void {
-    $manifest = strtolower((string) file_get_contents(dirname(__DIR__, 2).'/composer.json'));
+it('names neither Atrium nor PennantPlus anywhere else in the manifest', function (): void {
+    $manifest = strtolower(manifestWithoutAtriumModule());
 
     expect($manifest)->not->toContain('atrium')
         ->and($manifest)->not->toContain('pennantplus');

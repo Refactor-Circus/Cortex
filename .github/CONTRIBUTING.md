@@ -28,7 +28,7 @@ composer install
 
 ## OpenAPI document and TypeScript client
 
-Cortex ships no UI; Atrium v2 builds its screens on the JSON API. The API is described by `openapi.json` at the package root, and `client/` holds the typed TypeScript client generated from it, `@refactor-circus/cortex-client`. When you add or change a route, regenerate both (this needs Node and npm):
+Cortex's PHP ships no UI. Its Atrium v2 front-end module lives in `atrium/` (Vue, built on the JSON API): after changing it run `pnpm -C atrium install`, `pnpm -C atrium typecheck`, `pnpm -C atrium test` and `pnpm -C atrium build`, and commit `dist/atrium/` (a test fails while the build is stale). The API is described by `openapi.json` at the package root, and `client/` holds the typed TypeScript client generated from it, `@refactor-circus/cortex-client`. When you add or change a route, regenerate both (this needs Node and npm):
 
 ```bash
 composer client:generate

@@ -7,13 +7,17 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 /*
- * Cortex v2 ships its JSON API and MCP server only (AC 8 to 12): the Atrium
- * screens moved to Atrium v2, which builds them on the API.
+ * Cortex v2's PHP is its JSON API and MCP server only (AC 8 to 12): no
+ * Atrium class, route, view or config. Its Atrium front end is a JS-only
+ * module (atrium/, built to dist/atrium) that Atrium's page loads from the
+ * `extra.atrium` block of composer.json; those, the ui workflow that builds
+ * it and the docs describing it are the only places that may name Atrium.
  */
 
 /**
  * The package files AC 9 covers: everything under the listed folders (minus
- * the workbench's git-ignored runtime files) and the listed root files.
+ * the workbench's git-ignored runtime files and the ui workflow, which builds
+ * the Atrium module) and the listed root files.
  *
  * @return list<string>
  */
@@ -37,6 +41,11 @@ function shippedFiles(): array
                 continue;
             }
 
+            // The ui workflow builds the Atrium module (atrium/ to dist/atrium).
+            if (str_ends_with($path, '/.github/workflows/ui.yml')) {
+                continue;
+            }
+
             $files[] = $path;
         }
     }
@@ -52,7 +61,10 @@ it('names neither Atrium nor PennantPlus in the package files', function (string
     $files = shippedFiles();
     $naming = array_values(array_filter(
         $files,
-        fn (string $path): bool => stripos((string) file_get_contents($path), $word) !== false,
+        fn (string $path): bool => stripos(
+            str_ends_with($path, '/composer.json') ? manifestWithoutAtriumModule() : (string) file_get_contents($path),
+            $word,
+        ) !== false,
     ));
 
     expect(count($files))->toBeGreaterThan(3)

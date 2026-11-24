@@ -89,3 +89,9 @@
 - Rationale: The user said "i'd like everything release as v2 to match". This supersedes any earlier choice to keep `^0.1` constraints or release Keystone as v0.2.0.
 - Date: 2026-11-23
 - Raised by: user
+
+## D-016: Cortex owns its Atrium front-end module
+- Choice: The Vue module staged in Atrium (`ui/modules/cortex`) moves into Cortex as `atrium/`, typed by the package's own `client/src/schema.d.ts`, built with the `@refactor-circus/atrium/vite` preset to `dist/atrium/` (committed, not export-ignored; `atrium/` is) and declared in `composer.json` `extra.atrium` (key `cortex`, script and stylesheet), which Atrium's Blade page injects. The SDK is a pinned dev dependency; Cortex still has no Atrium PHP and no Composer require/suggest of Atrium, so `NoAtriumTest` and `ComposerTest` are narrowed to allow only the `extra.atrium` block and the `ui` workflow, and `AtriumModuleTest` checks the built files and the build's source hash. A `ui` workflow type-checks, tests, builds and diffs `dist/atrium`.
+- Rationale: The user said "move the vue files for each module back into their respective modules. modules need to register their js. js should be injected into the blade file. modules are responsible for their own frontend and cjs clients from now on". It refines the spec's "API and MCP only" scope: that now holds for the PHP, while the package also ships the JS module.
+- Date: 2026-11-24
+- Raised by: user

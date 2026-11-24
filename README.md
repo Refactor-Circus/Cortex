@@ -41,7 +41,7 @@ Publish the config file to customize routes, MCP transports, and tools:
 php artisan vendor:publish --tag="cortex-config"
 ```
 
-Cortex ships no UI of its own. For screens, install [Atrium v2](#a-ui-with-atrium-v2), which manages Cortex through its JSON API.
+Cortex's PHP ships no UI. For screens, install [Atrium v2](#a-ui-with-atrium-v2): Cortex ships the Atrium front-end module that manages it through its JSON API.
 
 ## Configuration
 
@@ -101,7 +101,9 @@ Changing a concrete MCP server's tool list checks its own ability, `updateTools`
 
 ## A UI with Atrium v2
 
-Cortex is API and MCP only: it ships no views, screens or assets. [Atrium](https://github.com/refactor-circus/atrium) v2 is the optional UI. It manages virtual agents and their prompt versions, concrete agents and their overrides, runs, tools and MCP servers by calling Cortex's JSON API through [`@refactor-circus/cortex-client`](#typescript-client), and puts an owner's [redirect domains](#oauth-redirect-domains) on that owner's pages. Its Cortex integration is configured on Atrium's side, under `atrium.integrations.cortex.*`; see Atrium's README.
+Cortex's PHP is API and MCP only: it ships no views or screens. [Atrium](https://github.com/refactor-circus/atrium) v2 is the optional UI, and Cortex ships its Atrium front-end module: JavaScript only, built from `atrium/` to `dist/atrium/` and declared in `composer.json` under `extra.atrium`, so Atrium's page loads it once Atrium is installed (`php artisan atrium:discover`) and its Cortex integration is on. Hosts never run Node. The module manages virtual agents and their prompt versions, concrete agents and their overrides, runs, tools and MCP servers by calling Cortex's JSON API through [`@refactor-circus/cortex-client`](#typescript-client), and puts an owner's [redirect domains](#oauth-redirect-domains) on that owner's pages. Its Cortex integration is configured on Atrium's side, under `atrium.integrations.cortex.*`; see Atrium's README.
+
+Cortex maintainers rebuild the module after changing `atrium/` (needs Node and pnpm): `pnpm -C atrium install`, `pnpm -C atrium typecheck`, `pnpm -C atrium test`, `pnpm -C atrium build`, then commit `dist/atrium/`. A test fails while the committed build is older than its sources.
 
 Because Atrium v2 calls the same routes as any other client:
 

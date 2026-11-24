@@ -4,7 +4,7 @@
 
 ## [v2.0.0](https://github.com/Refactor-Circus/Cortex/compare/v0.1.0...v2.0.0)
 
-Cortex is now a JSON API and an MCP server only. Its Atrium screens leave the package: Atrium v2 rebuilds them on the JSON API, through the committed `openapi.json` and the generated TypeScript client in `client/`.
+Cortex's PHP is now a JSON API and an MCP server only. Its Blade-rendered Atrium screens leave the PHP: the package ships them as an Atrium v2 front-end module instead (`atrium/`, built to `dist/atrium/`), built on the JSON API through the committed `openapi.json` and the generated TypeScript client in `client/`.
 
 ### Upgrade notes
 
@@ -18,6 +18,7 @@ Cortex is now a JSON API and an MCP server only. Its Atrium screens leave the pa
 
 ### Added
 
+- **Ships its Atrium module.** Cortex's Atrium v2 screens (virtual and concrete agents, runs, tools, MCP servers, owners' redirect domains, settings panel, search and live counts) are a front-end module in the package: JavaScript and CSS built from `atrium/` to `dist/atrium/` and declared in `composer.json` under `extra.atrium`, which Atrium's page loads. No PHP of Atrium's and no Composer dependency on it; hosts run no Node.
 - **Agent search.** `GET /cortex/search?q=` (route `cortex.search.index`) and the `search-agents-tool` MCP tool answer up to 5 virtual agents whose name or slug contains `q`, then up to 5 registered concrete agents whose name contains it, each as `{type, key, name}` (`type` is `virtual_agent` or `concrete_agent`). The caller needs `viewAny` on either agent model; each half is searched only under its own `viewAny`, and each result is kept only when the caller may `view` it.
 - **Runnable agents.** `GET /cortex/runnable-agents` (route `cortex.runnable-agents.index`) and the `list-runnable-agents-tool` MCP tool list every virtual agent, then every registered concrete agent, that the caller may `run`, in the same `{type, key, name}` shape and unpaginated. The caller needs `viewAny` on either agent model.
 - **Settings summary.** `GET /cortex/settings-summary` (route `cortex.settings-summary.show`) and the `show-settings-summary-tool` MCP tool answer the curated providers (`cortex.providers`) with their models, the numbers of registered tools, concrete agents and MCP servers, and whether the publication cache is on. Like `GET /cortex/providers`, it asks no policy.
