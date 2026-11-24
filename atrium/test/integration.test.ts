@@ -1,9 +1,8 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { screens } from '../src/atrium'
-import fixture from '@refactor-circus/atrium/fixtures/integrations/cortex.json'
-import { missingI18nKeys } from '@refactor-circus/atrium/testing'
+import cortex, { screens } from '../src/atrium'
+import { expectIntegrationManifest, missingI18nKeys } from '@refactor-circus/atrium/testing'
 import { useRouter } from '@refactor-circus/atrium/testing'
 
 // Read through a variable: Vite rewrites `new URL('…', import.meta.url)`
@@ -11,12 +10,29 @@ import { useRouter } from '@refactor-circus/atrium/testing'
 const here = import.meta.url
 
 /*
- * The Cortex integration as a whole (AC 49, 53, 55): every screen the PHP
- * integration declares (`fixtures/integrations/cortex.json`, written by
- * `CortexIntegrationTest`) has a layer page at its declared path, `src/atrium.ts`
- * maps each to that page's route, and every `t()` key the Cortex pages and
+ * The Cortex integration as a whole (AC 49, 53, 55; D-090): the manifest
+ * (`src/integration.json`) is valid as Atrium checks it, every screen it
+ * declares has a layer page at its declared path, `src/atrium.ts` maps each to
+ * that page's route, every hook tab and section it declares is registered in
+ * the module's `extensions`, and every `t()` key the Cortex pages and
  * components use exists in `cortex.en.json`.
  */
+
+const manifest = expectIntegrationManifest('src/integration.json', 'cortex')
+const fixture = { ...manifest, screens: manifest.screens ?? [], search_sources: manifest.search_sources ?? [] }
+
+/** Every tab and section key the manifest's hooks declare. */
+function hookKeys(): string[] {
+  return (manifest.hooks ?? []).flatMap(hook => [
+    ...Object.keys((hook.tabs ?? {}) as Record<string, unknown>),
+    ...Object.keys((hook.sections ?? {}) as Record<string, unknown>)
+  ])
+}
+
+/** Every widget component key the manifest declares (`component`, else `key`). */
+function widgetKeys(): string[] {
+  return (manifest.widgets ?? []).map(widget => String(widget.component ?? widget.key))
+}
 
 /** Each screen's page file, under `src/pages/`. */
 const PAGES: Record<string, string> = {
@@ -64,7 +80,26 @@ describe('the cortex integration', () => {
     expect(declared(route!.path)).toBe(path)
   })
 
-  it('maps no screen the PHP integration does not declare', () => {
+  it('declares a valid manifest for the cortex key', () => {
+    expect(manifest.version).toBe(1)
+    expect(manifest.key).toBe('cortex')
+  })
+
+  it('registers every hook tab and section the manifest declares', () => {
+    expect(hookKeys().sort()).toEqual(['cortex.mcp', 'cortex.redirect-domains'])
+
+    for (const key of hookKeys()) {
+      expect(cortex.extensions?.[key], key).toBeDefined()
+    }
+  })
+
+  it('registers every widget the manifest declares', () => {
+    for (const key of widgetKeys()) {
+      expect(cortex.widgets?.[key], key).toBeDefined()
+    }
+  })
+
+  it('maps no screen the manifest does not declare', () => {
     expect(Object.keys(screens).sort()).toEqual(fixture.screens.map(screen => screen.key).sort())
   })
 
@@ -76,7 +111,7 @@ describe('the cortex integration', () => {
 
   it('declares the cortex panel and search source with static data', () => {
     expect(fixture.settings?.key).toBe('cortex')
-    expect(fixture.settings?.data).toEqual({})
+    expect(fixture.settings).not.toHaveProperty('data')
     expect(fixture.search_sources.map(source => source.key)).toEqual(['cortex'])
   })
 

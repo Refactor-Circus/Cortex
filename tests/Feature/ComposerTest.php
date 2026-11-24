@@ -40,9 +40,10 @@ it('adds no Atrium or PennantPlus repository', function (): void {
     expect(array_filter($urls, fn (string $url): bool => str_contains($url, 'atrium') || str_contains($url, 'pennantplus')))->toBe([]);
 });
 
-it('declares only its Atrium front-end module, as JS and CSS in dist/atrium', function (): void {
+it('declares only its Atrium front-end module, as JS, CSS and an integration manifest in dist/atrium', function (): void {
     expect(composerManifest()['extra']['atrium'] ?? null)->toBe([
         'key' => 'cortex',
+        'integration' => 'dist/atrium/integration.json',
         'scripts' => ['dist/atrium/atrium.js'],
         'styles' => ['dist/atrium/atrium.css'],
     ]);

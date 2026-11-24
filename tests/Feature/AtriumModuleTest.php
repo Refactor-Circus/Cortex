@@ -10,6 +10,8 @@ declare(strict_types=1);
  * from; this recomputes it the way the SDK's preset does (`hashInputs()` in
  * @refactor-circus/atrium/vite), so a source changed without a rebuild fails
  * here with no Node needed. The ui workflow also rebuilds and diffs.
+ * `extra.atrium.integration` points at the built integration manifest
+ * (atrium/src/integration.json, validated and copied by the preset).
  */
 
 function atriumModulePath(string $path = ''): string
@@ -82,6 +84,21 @@ it('declares built files that exist', function (string $section): void {
             ->and(is_file(atriumModulePath($file)))->toBeTrue("{$file} is missing: run `pnpm -C atrium build` and commit dist/atrium.");
     }
 })->with(['scripts', 'styles']);
+
+it('declares its Atrium integration in a built manifest for the cortex key', function (): void {
+    /** @var array{extra: array{atrium: array{integration: string}}} $composer */
+    $composer = json_decode((string) file_get_contents(atriumModulePath('composer.json')), true, flags: JSON_THROW_ON_ERROR);
+    $path = $composer['extra']['atrium']['integration'];
+
+    expect($path)->toBe('dist/atrium/integration.json')
+        ->and(is_file(atriumModulePath($path)))->toBeTrue("{$path} is missing: run `pnpm -C atrium build` and commit dist/atrium.");
+
+    /** @var array{key: string, version: int} $manifest */
+    $manifest = json_decode((string) file_get_contents(atriumModulePath($path)), true, flags: JSON_THROW_ON_ERROR);
+
+    expect($manifest['key'])->toBe('cortex')
+        ->and($manifest['version'])->toBe(1);
+});
 
 it('was built for the cortex key and shared API 1.0 from the atrium folder', function (): void {
     $info = atriumBuildInfo();

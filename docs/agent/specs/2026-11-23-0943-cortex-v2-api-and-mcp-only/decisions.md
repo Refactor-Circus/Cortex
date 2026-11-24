@@ -95,3 +95,9 @@
 - Rationale: The user said "move the vue files for each module back into their respective modules. modules need to register their js. js should be injected into the blade file. modules are responsible for their own frontend and cjs clients from now on". It refines the spec's "API and MCP only" scope: that now holds for the PHP, while the package also ships the JS module.
 - Date: 2026-11-24
 - Raised by: user
+
+## D-017: Cortex declares its Atrium integration in a manifest
+- Choice: Cortex's Atrium integration declaration (the `cortex.atrium` feature, navigation, settings panel, search source, the eleven screens and the redirect-domains hook with its `cortex.mcp` tab and `cortex.redirect-domains` section) moves out of Atrium into Cortex as a static JSON manifest, `atrium/src/integration.json`, per Atrium's D-090 (commit 009b5bc). The SDK pin moves to that commit; the preset validates the manifest and writes `dist/atrium/integration.json`, which `composer.json` names as `extra.atrium.integration`. `atrium/test/integration.test.ts` validates the manifest with `expectIntegrationManifest()` and checks its screens against the `screens` map and its hook tabs/sections and widgets against the module's registrations (it replaces the SDK's former `fixtures/integrations/cortex.json`); `AtriumModuleTest` checks the built manifest's key and version. Still no Atrium PHP and no Composer dependency on Atrium. The hook's placement is read from `atrium.integrations.cortex.redirect_domains.screens`, Atrium's config, so Cortex's config gains no key.
+- Rationale: The user asked to "move the php declarations": each package owns its Atrium integration declaration, and Atrium's side (D-090) reads it as JSON so packages need no Atrium PHP.
+- Date: 2026-11-24
+- Raised by: user
