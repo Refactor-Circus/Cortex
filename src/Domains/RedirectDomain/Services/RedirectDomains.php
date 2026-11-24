@@ -64,8 +64,13 @@ final class RedirectDomains
     }
 
     /**
-     * The owner a request names by morph alias (or class) and key, or null
-     * when it names none. Anything that is not a model is not found.
+     * The owner a request names by morph alias (or class) and identifier, or
+     * null when it names none. Anything that is not a model is not found.
+     *
+     * The identifier is the owner's route key, as the screens that show an
+     * owner pass it (an organization's slug), or else its key: the owner is
+     * a record Cortex does not own, referenced as the stored-identifiers
+     * standard says, and stored by its key (D-018).
      */
     public function owner(?string $type, int|string|null $id): ?Model
     {
@@ -79,7 +84,12 @@ final class RedirectDomains
             throw (new ModelNotFoundException)->setModel(Model::class, [$type]);
         }
 
-        return $class::query()->findOrFail($id);
+        $model = new $class;
+        $owner = $model->getRouteKeyName() === $model->getKeyName() || $id === null
+            ? null
+            : $class::query()->where($model->qualifyColumn($model->getRouteKeyName()), $id)->first();
+
+        return $owner ?? $class::query()->findOrFail($id);
     }
 
     /**

@@ -101,3 +101,9 @@
 - Rationale: The user asked to "move the php declarations": each package owns its Atrium integration declaration, and Atrium's side (D-090) reads it as JSON so packages need no Atrium PHP.
 - Date: 2026-11-24
 - Raised by: user
+
+## D-018: How does the redirect domains hook name its owner?
+- Choice: `owner_type` is a morph alias or model class, as before; Atrium's `$screen` `subject_type` now sends the morph type the host stores the screen's record as (Atrium D-092, from Roster's `subject_model`), so the manifest is unchanged. `owner_id` is the owner's route key, as the screen passes it (an organization's slug), falling back to its key: `RedirectDomains::owner()` looks the route key up when it is not the key column, then `findOrFail()`s the key, so stored domains and existing callers keep working. Domains are still stored under the owner's key. The MCP tools describe `owner_id` so. Cortex still names no other package. The workbench `Organization` stands in strictly, as a host's: no morph alias, a ULID key, a slug route key; `RedirectDomainOwnerTest` covers the API and MCP by route key, by key, and refuses a screen name such as `roster.organization`.
+- Rationale: On a real host the `cortex.mcp` tab and `cortex.redirect-domains` section 404'd: the hook sent `owner_type=roster.organization` (no host aliases it) and the organization's slug (looked up as the primary key). The stored-identifiers standard has records a package does not own referenced by route key; the tests' owner had an integer key, no slug and the class as its type, so neither mismatch could show.
+- Date: 2026-11-24
+- Raised by: user (bugs found in a real host); choices made by the implementing agent without a user available
