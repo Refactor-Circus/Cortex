@@ -1,0 +1,13 @@
+diff --git a/dist/unplugin.mjs b/dist/unplugin.mjs
+index 5e0771b5ffa95a69dea5cf30c71615494fb35e00..e444d95dcce99b613da121da89f300aec3c3a4e4 100644
+--- a/dist/unplugin.mjs
++++ b/dist/unplugin.mjs
+@@ -152,7 +152,7 @@ function ComponentImportPlugin(options, meta) {
+   const pluginOptions = defu(options.components, {
+     dts: options.dts ?? true,
+     exclude: [
+-      /[\\/]node_modules[\\/](?!\.pnpm|@nuxt\/ui|@compodium\/examples)/,
++      /[\\/]node_modules[\\/](?!\.pnpm|@nuxt\/ui|@compodium\/examples|@refactor-circus\/atrium)/,
+       /[\\/]\.git[\\/]/,
+       /[\\/]\.nuxt[\\/]/
+     ],

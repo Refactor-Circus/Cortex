@@ -1,0 +1,11 @@
+onlyBuiltDependencies:
+  - esbuild
+  - vue-demi
+
+# Temporary, tests only: Nuxt UI's component resolver skips every file under
+# node_modules except its own, so the Atrium SDK's components (installed from
+# GitHub, not a workspace link as in Atrium's repository) render their
+# <Atrium*>/<U*> children unresolved under Vitest. The patch lets the SDK's
+# sources through; drop it once the SDK handles this itself.
+patchedDependencies:
+  '@nuxt/ui@4.1.0': patches/@nuxt__ui@4.1.0.patch
