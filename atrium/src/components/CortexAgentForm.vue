@@ -82,7 +82,7 @@ function choices(values: string[]) {
 }
 
 /** Choosing a provider ('' for its default) may move to its default model. */
-function chooseProvider(value: string | number | boolean | null): void {
+function chooseProvider(value: unknown): void {
   form.provider = typeof value === 'string' ? value : ''
   syncModel()
 }
