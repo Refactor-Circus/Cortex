@@ -343,7 +343,7 @@ var U = {
 	{
 		path: "/cortex/run",
 		name: "cortex-run",
-		component: () => import("./chunks/run-CQXkPdyd.js")
+		component: () => import("./chunks/run-BZmdUWjV.js")
 	},
 	{
 		path: "/cortex/servers/:server/instructions",
@@ -368,12 +368,12 @@ var U = {
 	{
 		path: "/cortex/virtual-agents/:slug",
 		name: "cortex-virtual-agents-slug",
-		component: () => import("./chunks/_slug_-CMZa17sZ.js")
+		component: () => import("./chunks/_slug_-Dc41BXEc.js")
 	},
 	{
 		path: "/cortex/virtual-agents/create",
 		name: "cortex-virtual-agents-create",
-		component: () => import("./chunks/create-DvYttabM.js")
+		component: () => import("./chunks/create-CuCqENrP.js")
 	},
 	{
 		path: "/cortex/virtual-agents",

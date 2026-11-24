@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from '../src/pages/run.vue'
 import { settle } from '@refactor-circus/atrium/testing'
 import { mockPackageApi, reply, resetPackageApis, type PackageRoutes } from '@refactor-circus/atrium/testing'
-import { choose, cortexCalls, mountCortexPage, runnableAgents, screensApi, selectProps } from './support'
+import { cortexCalls, mountCortexPage, runnableAgents, screensApi } from './support'
+import { chooseOption, selectItems, selectValue } from '@refactor-circus/atrium/testing'
 import { clearAtriumData, mockAtriumApi } from '@refactor-circus/atrium/testing'
 
 /*
@@ -23,7 +24,7 @@ function routes(overrides: PackageRoutes<'cortex'> = {}): PackageRoutes<'cortex'
 }
 
 async function runWith(wrapper: Awaited<ReturnType<typeof mountCortexPage>>, agent: string, input: string): Promise<void> {
-  await choose(wrapper, 'cortex-run-agent-select', agent)
+  await chooseOption(wrapper, 'cortex-run-agent-select', agent)
   await wrapper.find('[data-testid="cortex-run-input"]').setValue(input)
   await wrapper.find('[data-testid="cortex-run-form"]').trigger('submit')
   await settle()
@@ -45,9 +46,9 @@ describe('cortex.run', () => {
 
     expect(cortexCalls('GET', '/runnable-agents')).toHaveLength(1)
     expect(api).toHaveBeenCalledWith('/screens/cortex.run', { query: { record: undefined, tab: undefined } })
-    expect(selectProps(wrapper, 'cortex-run-agent-select').items)
+    expect(selectItems(wrapper, 'cortex-run-agent-select'))
       .toEqual([{ label: 'Triage', value: 'virtual:triage' }, { label: 'support-triage', value: 'concrete:support-triage' }])
-    expect(selectProps(wrapper, 'cortex-run-agent-select').modelValue).toBe('')
+    expect(selectValue(wrapper, 'cortex-run-agent-select')).toBe('')
   })
 
   it('preselects the agent of ?agent=', async () => {
@@ -55,7 +56,7 @@ describe('cortex.run', () => {
 
     const wrapper = await mountCortexPage(Page, '/cortex/run?agent=concrete:support-triage')
 
-    expect(selectProps(wrapper, 'cortex-run-agent-select').modelValue).toBe('concrete:support-triage')
+    expect(selectValue(wrapper, 'cortex-run-agent-select')).toBe('concrete:support-triage')
   })
 
   it('runs a virtual agent through virtual-agents.run and shows the response', async () => {

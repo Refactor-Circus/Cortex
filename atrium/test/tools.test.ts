@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from '../src/pages/tools/index.vue'
 import { settle } from '@refactor-circus/atrium/testing'
 import { mockPackageApi, reply, resetPackageApis } from '@refactor-circus/atrium/testing'
-import { cortexCalls, mountCortexPage, rowOf, screensApi, tools } from './support'
+import { cortexCalls, mountCortexPage, screensApi, tools } from './support'
+import { tableRow } from '@refactor-circus/atrium/testing'
 import { clearAtriumData, mockAtriumApi, useRouter } from '@refactor-circus/atrium/testing'
 
 /*
@@ -34,7 +35,7 @@ describe('cortex.tools', () => {
 
     expect(cortexCalls('GET', '/tools')[0]?.query).toEqual({})
     expect(api).toHaveBeenCalledWith('/screens/cortex.tools', { query: { record: undefined, tab: undefined } })
-    expect(rowOf(wrapper, '[data-testid="cortex-tool-lookup-order"]').text()).toContain('Finds an order')
+    expect(tableRow(wrapper, 'cortex-tool-lookup-order').text()).toContain('Finds an order')
     expect(wrapper.find('[data-testid="cortex-describe-lookup-order"]').attributes('href')).toBe('/cortex/tools/lookup-order/description')
     expect(wrapper.find('[data-testid="cortex-tag-orders"]').exists()).toBe(true)
   })

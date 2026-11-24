@@ -76,28 +76,16 @@ const models = computed(() => [...new Set([
 const pickerTools = computed(() => tools.value.map(tool => ({ name: tool.name, label: tool.name, tags: tool.tags })))
 const subAgentOptions = computed(() => agents.value.filter(option => option.slug !== props.agent?.slug))
 
-/** The select's value for "the provider's default" (a select item may not be ''). */
-const DEFAULT = '@default'
-
+/** A select's items; the blank item, "the provider's default", is `<AtriumSelect blank>`'s. */
 function choices(values: string[]) {
-  return [{ label: t('cortex.agent.provider_default'), value: DEFAULT }, ...values.map(value => ({ label: value, value }))]
+  return values.map(value => ({ label: value, value }))
 }
 
-/** `form.provider` and `form.model` through the selects, '' as DEFAULT. */
-const provider = computed({
-  get: () => form.provider === '' ? DEFAULT : form.provider,
-  set: (value: string) => {
-    form.provider = value === DEFAULT ? '' : value
-    syncModel()
-  }
-})
-
-const model = computed({
-  get: () => form.model === '' ? DEFAULT : form.model,
-  set: (value: string) => {
-    form.model = value === DEFAULT ? '' : value
-  }
-})
+/** Choosing a provider ('' for its default) may move to its default model. */
+function chooseProvider(value: string | number | boolean | null): void {
+  form.provider = typeof value === 'string' ? value : ''
+  syncModel()
+}
 
 /** Checks or unchecks `value` in the list `list`. */
 function toggle(list: string[], value: string, checked: boolean | 'indeterminate'): void {
@@ -208,11 +196,11 @@ void loadOptions()
 
       <div class="grid gap-4 sm:grid-cols-2">
         <UFormField :label="t('cortex.agent.provider')" :error="action.error('provider')">
-          <USelect v-model="provider" :items="choices(providerNames)" class="w-full" data-testid="cortex-agent-provider" />
+          <AtriumSelect :model-value="form.provider" :items="choices(providerNames)" :blank="t('cortex.agent.provider_default')" class="w-full" data-testid="cortex-agent-provider" @update:model-value="chooseProvider" />
         </UFormField>
 
         <UFormField :label="t('cortex.agent.model')" :error="action.error('model')">
-          <USelect v-model="model" :items="choices(models)" class="w-full" data-testid="cortex-agent-model" />
+          <AtriumSelect v-model="form.model" :items="choices(models)" :blank="t('cortex.agent.provider_default')" class="w-full" data-testid="cortex-agent-model" />
         </UFormField>
       </div>
 

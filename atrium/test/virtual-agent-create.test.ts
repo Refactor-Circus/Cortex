@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from '../src/pages/virtual-agents/create.vue'
 import { settle } from '@refactor-circus/atrium/testing'
 import { mockPackageApi, reply, resetPackageApis } from '@refactor-circus/atrium/testing'
-import { choose, concreteAgent, cortexCalls, mountCortexPage, screensApi, selectProps, tools, virtualAgent } from './support'
+import { concreteAgent, cortexCalls, mountCortexPage, screensApi, tools, virtualAgent } from './support'
+import { chooseOption, selectValue, selectValues } from '@refactor-circus/atrium/testing'
 import { clearAtriumData, mockAtriumApi, useRouter } from '@refactor-circus/atrium/testing'
 
 /*
@@ -29,7 +30,7 @@ async function fill(wrapper: Awaited<ReturnType<typeof mountCortexPage>>): Promi
   await wrapper.find('[data-testid="cortex-agent-name"]').setValue('Refunds')
   await wrapper.find('[data-testid="cortex-agent-slug"]').setValue('refunds')
   await wrapper.find('[data-testid="cortex-agent-instructions"]').setValue('You refund orders.')
-  await choose(wrapper, 'cortex-agent-provider', 'openai')
+  await chooseOption(wrapper, 'cortex-agent-provider', 'openai')
   await wrapper.find('[data-testid="cortex-agent-temperature"]').setValue('0.5')
   await wrapper.find('[data-testid="cortex-agent-tool-create-ticket"]').trigger('click')
   await wrapper.find('[data-testid="cortex-concrete-sub-agent-support-triage"]').trigger('click')
@@ -105,10 +106,12 @@ describe('cortex.virtual-agent-create', () => {
 
     const wrapper = await mountCortexPage(Page, '/cortex/virtual-agents/create')
     await fill(wrapper)
-    expect(selectProps(wrapper, 'cortex-agent-model').modelValue).toBe('gpt-5')
-    expect(selectProps(wrapper, 'cortex-agent-provider').modelValue).toBe('openai')
-    await choose(wrapper, 'cortex-agent-provider', '@default')
-    await choose(wrapper, 'cortex-agent-model', '@default')
+    expect(selectValue(wrapper, 'cortex-agent-model')).toBe('gpt-5')
+    expect(selectValue(wrapper, 'cortex-agent-provider')).toBe('openai')
+    expect(selectValues(wrapper, 'cortex-agent-provider')).toEqual(['', 'openai'])
+    await chooseOption(wrapper, 'cortex-agent-provider', '')
+    await chooseOption(wrapper, 'cortex-agent-model', '')
+    expect(selectValue(wrapper, 'cortex-agent-provider')).toBe('')
     await wrapper.find('[data-testid="cortex-agent-form"]').trigger('submit')
     await settle()
 

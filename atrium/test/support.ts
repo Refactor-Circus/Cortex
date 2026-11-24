@@ -1,6 +1,5 @@
 import { afterEach, vi } from 'vitest'
-import { enableAutoUnmount, type DOMWrapper, type VueWrapper } from '@vue/test-utils'
-import { USelect } from '@refactor-circus/atrium/ui'
+import { enableAutoUnmount } from '@vue/test-utils'
 import type { components } from '../../client/src/schema'
 import type {
   CortexConcreteAgent,
@@ -158,36 +157,4 @@ export function cortexCalls(method: string, route: string): PackageCall[] {
 /** Answers every `window.confirm()` with `answer`. */
 export function confirmWith(answer: boolean) {
   return vi.spyOn(window, 'confirm').mockReturnValue(answer)
-}
-
-/** The table row holding `selector`: `<UTable>` rows carry no attributes of their own. */
-export function rowOf(wrapper: VueWrapper, selector: string): DOMWrapper<Element> {
-  const row = wrapper.findAll('tr').find(entry => entry.find(selector).exists())
-
-  if (!row) {
-    throw new Error(`No table row holds ${selector}`)
-  }
-
-  return row
-}
-
-/** The `<USelect>` whose trigger carries `data-testid="{testid}"`. */
-export function selectOf(wrapper: VueWrapper, testid: string) {
-  const select = wrapper.findAllComponents(USelect).find(entry => entry.find(`[data-testid="${testid}"]`).exists())
-
-  if (!select) {
-    throw new Error(`No select ${testid}`)
-  }
-
-  return select
-}
-
-/** The `<USelect>` `testid`'s items and value. */
-export function selectProps(wrapper: VueWrapper, testid: string): { items: unknown, modelValue: unknown } {
-  return selectOf(wrapper, testid).vm.$props as { items: unknown, modelValue: unknown }
-}
-
-/** Picks `value` in the `<USelect>` `testid`, as choosing its item does. */
-export async function choose(wrapper: VueWrapper, testid: string, value: string): Promise<void> {
-  await selectOf(wrapper, testid).setValue(value)
 }

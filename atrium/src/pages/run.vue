@@ -29,12 +29,12 @@ const selected = ref(typeof route.query.agent === 'string' ? route.query.agent :
 const input = ref('')
 const result = shallowRef<CortexAgentRun | null>(null)
 
-/** The usage as `key: value` rows; Cortex sends it as an object. */
+/** The usage as `<AtriumDetails>` items, one per key; Cortex sends it as an object. */
 const usage = computed(() => {
   const value = result.value?.usage as unknown
 
   return value && typeof value === 'object'
-    ? Object.entries(value as Record<string, unknown>).map(([key, entry]) => ({ key, value: typeof entry === 'object' ? JSON.stringify(entry) : String(entry) }))
+    ? Object.entries(value as Record<string, unknown>).map(([key, entry]) => ({ key, label: key, value: typeof entry === 'object' ? JSON.stringify(entry) : String(entry), mono: true }))
     : []
 })
 
@@ -101,12 +101,7 @@ async function run(): Promise<void> {
           <pre class="overflow-x-auto whitespace-pre-wrap rounded-md bg-elevated p-3 text-xs" data-testid="cortex-run-text">{{ result.text }}</pre>
           <div v-if="usage.length" class="mt-4">
             <h4 class="mb-2 text-sm font-semibold">{{ t('cortex.run.usage') }}</h4>
-            <dl class="divide-y divide-default text-sm" data-testid="cortex-run-usage">
-              <div v-for="row in usage" :key="row.key" class="flex justify-between gap-4 py-1">
-                <dt>{{ row.key }}</dt>
-                <dd class="tabular-nums">{{ row.value }}</dd>
-              </div>
-            </dl>
+            <AtriumDetails :items="usage" data-testid="cortex-run-usage" />
           </div>
         </UCard>
       </div>

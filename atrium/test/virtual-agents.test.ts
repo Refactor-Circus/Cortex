@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from '../src/pages/virtual-agents/index.vue'
 import { settle } from '@refactor-circus/atrium/testing'
 import { mockPackageApi, reply, resetPackageApis } from '@refactor-circus/atrium/testing'
-import { confirmWith, cortexCalls, mountCortexPage, rowOf, screensApi, virtualAgent } from './support'
+import { confirmWith, cortexCalls, mountCortexPage, screensApi, virtualAgent } from './support'
+import { tableRow } from '@refactor-circus/atrium/testing'
 import { clearAtriumData, mockAtriumApi } from '@refactor-circus/atrium/testing'
 
 /*
@@ -35,7 +36,7 @@ describe('cortex.virtual-agents', () => {
     expect(cortexCalls('GET', '/virtual-agents')[0]?.query).toEqual({ page: '1' })
     expect(api).toHaveBeenCalledWith('/screens/cortex.virtual-agents', { query: { record: undefined, tab: undefined } })
     expect(wrapper.find('[data-testid="cortex-agent-triage"]').text()).toContain('Triage')
-    expect(rowOf(wrapper, '[data-testid="cortex-agent-triage"]').text()).toContain('v2')
+    expect(tableRow(wrapper, 'cortex-agent-triage').text()).toContain('v2')
   })
 
   it('sends the page it is on', async () => {

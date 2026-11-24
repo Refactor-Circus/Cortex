@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn } from '@refactor-circus/atrium/ui'
 import { cortexData, useCortexLoad, type CortexList, type CortexServer } from '../../components/cortex'
 import CortexLoad from '../../components/CortexLoad.vue'
 import CortexPage from '../../components/CortexPage.vue'
