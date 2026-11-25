@@ -1,22 +1,18 @@
 laravel: '@testbench'
 
 providers:
-  - RefactorCircus\Atrium\AtriumServiceProvider
+  - Dedoc\Scramble\ScrambleServiceProvider
   - RefactorCircus\Cortex\CortexServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
 
 migrations:
   - workbench/database/migrations
   - database/migrations
-  # refactor-circus/pennantplus (dev dependency, auto-discovered) decides CortexSupportFeature
-  # through Pennant, whose features table lives here.
-  - vendor/laravel/pennant/database/migrations
 
 seeders:
   - Workbench\Database\Seeders\DatabaseSeeder
 
 workbench:
-  start: '/atrium'
   user: admin@example.com
   install: true
   health: false
@@ -34,7 +30,6 @@ workbench:
     - migrate-fresh
   assets:
     - laravel-assets
-    - atrium-assets
   sync:
     - from: storage
       to: workbench/storage

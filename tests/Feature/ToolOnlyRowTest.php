@@ -14,9 +14,8 @@ use RefactorCircus\Cortex\Tests\Fixtures\GroupedToolsServer;
  * Tool-only rows (AC 15): `tools` set, `published_version_id` null and no
  * versions. The update action creates them for a server without instructions,
  * and deleting the instructions of a row with tools leaves one behind. These
- * are the consumers AC 15 names (the Atrium screen is covered with the
- * editor): the server list, the instructions show, the version list and
- * publishing.
+ * are the consumers AC 15 names: the server list, the instructions show, the
+ * version list and publishing.
  */
 beforeEach(function (): void {
     Cache::store('array')->flush();

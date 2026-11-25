@@ -43,7 +43,6 @@ Cortex differs from the global standard here: `TestCase` (Testbench) is bound to
 ```php
 // tests/Pest.php
 uses(TestCase::class)->in('ArchTest.php', 'Feature', 'Unit'); // Unit tests may need Testbench
-uses(PennantPlusTestCase::class)->in('Modes/PennantPlus');
 uses(RenamedTablesTestCase::class)->in('Modes/RenamedTables');
 ```
 

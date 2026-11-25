@@ -4,27 +4,14 @@ declare(strict_types=1);
 
 use Laravel\Mcp\Server\Testing\TestResponse;
 use Laravel\Mcp\Server\Tool;
-use RefactorCircus\Atrium\Testing\ResetsScreenExtensions;
 use RefactorCircus\Cortex\Mcp\CortexServer;
-use RefactorCircus\Cortex\Tests\PennantPlusTestCase;
 use RefactorCircus\Cortex\Tests\RenamedTablesTestCase;
 use RefactorCircus\Cortex\Tests\TestCase;
-use RefactorCircus\Cortex\Tests\WithoutAtrium\WithoutAtriumTestCase;
 use RefactorCircus\Keystone\Testing\McpTools;
 
-// Every suite but WithoutAtrium also resets Atrium's screen extensions after
-// each test. The trait is named only when it exists: Pest loads this file for
-// the without-Atrium suite too, and the `without-atrium` CI job uninstalls it.
-$resets = trait_exists(ResetsScreenExtensions::class) ? [ResetsScreenExtensions::class] : [];
-
-// TestCase serves the workbench test host and registers the workbench owner policies.
-uses(TestCase::class, ...$resets)->in('ArchTest.php', 'Feature', 'Unit');
-uses(PennantPlusTestCase::class, ...$resets)->in('Modes/PennantPlus');
-uses(RenamedTablesTestCase::class, ...$resets)->in('Modes/RenamedTables');
-
-// Run only by phpunit.without-atrium.xml (`composer test:without-atrium`),
-// with Atrium's autoload prefix removed.
-uses(WithoutAtriumTestCase::class)->in('WithoutAtrium');
+// TestCase registers the workbench owner policies.
+uses(TestCase::class)->in('ArchTest.php', 'Feature', 'Unit');
+uses(RenamedTablesTestCase::class)->in('Modes/RenamedTables');
 
 /**
  * Call a catalog tool the way a client reaches it: every Cortex tool sits
@@ -37,4 +24,21 @@ uses(WithoutAtriumTestCase::class)->in('WithoutAtrium');
 function mcpTool(string $tool, array $arguments = []): TestResponse
 {
     return McpTools::call(CortexServer::class, $tool, $arguments);
+}
+
+/**
+ * composer.json as text without its `extra.atrium` block: the only place
+ * the manifest may name Atrium is the declaration of Cortex's front-end
+ * module (atrium/, built to dist/atrium), which Atrium's page loads.
+ */
+function manifestWithoutAtriumModule(): string
+{
+    /** @var array<string, mixed> $manifest */
+    $manifest = json_decode((string) file_get_contents(dirname(__DIR__).'/composer.json'), true, flags: JSON_THROW_ON_ERROR);
+
+    if (is_array($manifest['extra'] ?? null)) {
+        unset($manifest['extra']['atrium']);
+    }
+
+    return (string) json_encode($manifest, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 }

@@ -45,9 +45,8 @@ class McpInstructionPolicy extends Policy
     /**
      * Overriding or clearing the server's tool list (PUT and DELETE
      * `cortex/servers/{server}/tools`, the `update-server-tools` and
-     * `clear-server-tools` MCP tools, the Atrium tool editor). Checked on the
-     * server's override, or an unsaved one naming the server when it has
-     * none.
+     * `clear-server-tools` MCP tools). Checked on the server's override, or
+     * an unsaved one naming the server when it has none.
      *
      * The bundled default allows it for guests too. This is the trust
      * boundary for tools: no per-tool ability is checked, so whoever passes

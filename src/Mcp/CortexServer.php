@@ -32,10 +32,13 @@ use RefactorCircus\Cortex\Domains\Tool\Mcp\Tools\ListToolsTool;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentTool;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\CreateVirtualAgentVersionTool;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\DeleteVirtualAgentTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ListRunnableAgentsTool;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ListVirtualAgentsTool;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ListVirtualAgentVersionsTool;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\PublishVirtualAgentVersionTool;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\RunVirtualAgentTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\SearchAgentsTool;
+use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowSettingsSummaryTool;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentTool;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\ShowVirtualAgentVersionTool;
 use RefactorCircus\Cortex\Domains\VirtualAgent\Mcp\Tools\UpdateVirtualAgentTool;
@@ -66,6 +69,11 @@ final class CortexServer extends Server
         CreateVirtualAgentVersionTool::class,
         ShowVirtualAgentVersionTool::class,
         PublishVirtualAgentVersionTool::class,
+
+        // Agent directory and settings
+        SearchAgentsTool::class,
+        ListRunnableAgentsTool::class,
+        ShowSettingsSummaryTool::class,
 
         // Concrete agents
         ListConcreteAgentsTool::class,

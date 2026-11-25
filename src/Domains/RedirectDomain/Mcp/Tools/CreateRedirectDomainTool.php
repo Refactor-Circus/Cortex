@@ -25,7 +25,7 @@ final class CreateRedirectDomainTool extends Tool
         return [
             'domain' => $schema->string()->description('The origin, host or redirect URL, such as https://claude.ai.')->required(),
             'owner_type' => $schema->string()->description('The owner\'s morph alias or model class, such as an organization or user. Omit for every owner.'),
-            'owner_id' => $schema->string()->description('The owner\'s key. Required with owner_type.'),
+            'owner_id' => $schema->string()->description('The owner\'s route key (such as an organization\'s slug), or its key. Required with owner_type.'),
         ];
     }
 

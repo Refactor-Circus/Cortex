@@ -39,7 +39,7 @@ function pinnedListedNames(ServerContext $context): array
 it('pins the ServerContext constructor the rebuild passes, each parameter backed by its property', function (): void {
     $parameters = (new ReflectionMethod(ServerContext::class, '__construct'))->getParameters();
 
-    expect(array_map(fn (ReflectionParameter $parameter): string => $parameter->getName(), $parameters))->toBe([
+    $required = [
         'supportedProtocolVersions',
         'serverCapabilities',
         'implementation',
@@ -49,11 +49,16 @@ it('pins the ServerContext constructor the rebuild passes, each parameter backed
         'tools',
         'resources',
         'prompts',
-    ]);
+    ];
+
+    // laravel/mcp 1.2 appends an optional promoted `headers`; the rebuild
+    // copies it like every other promoted parameter.
+    expect(array_map(fn (ReflectionParameter $parameter): string => $parameter->getName(), $parameters))
+        ->toBeIn([$required, [...$required, 'headers']]);
 
     foreach ($parameters as $parameter) {
         expect($parameter->isPromoted())->toBeTrue("[{$parameter->getName()}] is no longer a promoted property.")
-            ->and($parameter->isOptional())->toBeFalse();
+            ->and($parameter->isOptional())->toBe(! in_array($parameter->getName(), $required, true));
     }
 });
 

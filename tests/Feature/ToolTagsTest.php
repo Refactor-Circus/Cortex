@@ -2,13 +2,9 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
-use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use RefactorCircus\Cortex\Domains\Tool\Exceptions\ToolNotFoundException;
 use RefactorCircus\Cortex\Domains\Tool\Mcp\Tools\ListToolsTool;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
-use RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentModel;
-use RefactorCircus\Cortex\Tests\Fixtures\EchoAgent;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoMcpTool;
 use RefactorCircus\Cortex\Tests\Fixtures\EchoTool;
 
@@ -77,55 +73,4 @@ it('filters the tools API and MCP tool by tag', function (): void {
     mcpTool(ListToolsTool::class, ['tag' => 'orders'])
         ->assertOk()
         ->assertStructuredContent(['data' => $http]);
-});
-
-describe('dashboard', function (): void {
-    beforeEach(function (): void {
-        ValidateCsrfToken::except(['*']);
-
-        app()->detectEnvironment(fn (): string => 'local');
-
-        app(ToolRegistry::class)->register('echo', EchoTool::class, ['orders']);
-        app(ToolRegistry::class)->register('echo-mcp', EchoMcpTool::class, ['catalog']);
-    });
-
-    it('shows tool tags and filters the tool list by one', function (): void {
-        $this->get(route('atrium.cortex.tools.index'))
-            ->assertOk()
-            ->assertSee('data-testid="tool-tags"', false)
-            ->assertSee(route('atrium.cortex.tools.index', ['tag' => 'catalog']), false)
-            ->assertSee('echo-mcp');
-
-        $this->get(route('atrium.cortex.tools.index', ['tag' => 'orders']))
-            ->assertOk()
-            ->assertSee(route('atrium.cortex.tools.description', 'echo'), false)
-            ->assertDontSee(route('atrium.cortex.tools.description', 'echo-mcp'), false);
-
-        $this->get(route('atrium.cortex.tools.index', ['tag' => 'nothing']))
-            ->assertOk()
-            ->assertSee(__('cortex::cortex.no_tools_tagged', ['tag' => 'nothing']));
-    });
-
-    it('offers tag filters in the virtual agent tool picker', function (): void {
-        VirtualAgentModel::factory()->published()->create(['slug' => 'helper', 'tools' => ['echo']]);
-
-        $this->get(route('atrium.cortex.virtual-agents.edit', 'helper'))
-            ->assertOk()
-            ->assertSee('data-testid="tool-picker"', false)
-            ->assertSee('data-tags="[&quot;catalog&quot;]"', false)
-            ->assertSee('value="echo"', false);
-
-        $this->get(route('atrium.cortex.virtual-agents.create'))
-            ->assertOk()
-            ->assertSee('data-testid="tool-picker"', false);
-    });
-
-    it('offers tag filters in the concrete agent tool picker', function (): void {
-        app(AgentRegistry::class)->register('echo-agent', EchoAgent::class);
-
-        $this->get(route('atrium.cortex.concrete-agents.show', 'echo-agent'))
-            ->assertOk()
-            ->assertSee('data-testid="tool-picker"', false)
-            ->assertSee('data-tags="[&quot;orders&quot;]"', false);
-    });
 });

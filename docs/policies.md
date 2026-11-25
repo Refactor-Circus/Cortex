@@ -61,32 +61,20 @@ Calls are checked as the authenticated user, or as a guest when nobody is signed
 
 Creating the first version of a tool description, server instruction or concrete agent override also creates the override. That call is checked against an unsaved override for that tool, server or agent, so your policy sees `$description->tool`, `$instruction->server` or `$override->agent` either way. Showing, running or setting the tools of a concrete agent with no override row is checked the same way.
 
-`GET /tools`, `GET /servers` and `GET /providers` and their MCP tools read the tool and server registries and the provider config. No model is involved, so they check no policy.
+`GET /tools`, `GET /servers`, `GET /providers` and `GET /settings-summary` and their MCP tools read the tool and server registries and the provider config. No model is involved, so they check no policy.
 
 An HTTP call that is refused returns `403`, or `401` when nobody is signed in. An MCP call that is refused returns the error `Unauthorized.`.
 
-## The dashboard
+## Agent search and runnable agents
 
-The Atrium pages ask the same questions, through `RefactorCircus\Cortex\Atrium\ScreenAccess`: each page and each action checks the ability and subject in the table above and answers `403` when refused, and each control on a page - a navigation item, button, form or card - is shown only when its action would be allowed. Views ask with the `@cortexCan` Blade conditional, which is the same check:
+`GET /search` (`search-agents-tool`) and `GET /runnable-agents` (`list-runnable-agents-tool`) span both kinds of agent, so they check in two steps:
 
-```blade
-@cortexCan('update', $agent)
-    ...
-@endcortexCan
+| Endpoint | MCP tool | Call allowed when | Each result kept when |
+| --- | --- | --- | --- |
+| `GET /search?q=` | `search-agents-tool` | `viewAny` on `VirtualAgentModel::class` or on `ConcreteAgentOverrideModel::class` | `view` on it; each kind is searched only under its own `viewAny` |
+| `GET /runnable-agents` | `list-runnable-agents-tool` | `viewAny` on `VirtualAgentModel::class` or on `ConcreteAgentOverrideModel::class` | `run` on it |
 
-@cortexCan('create', \RefactorCircus\Cortex\Domains\VirtualAgent\Models\VirtualAgentVersionModel::class, [$agent])
-    ...
-@endcortexCan
-```
-
-| Navigation item | Shown when |
-| --- | --- |
-| Virtual agents | `viewAny` on `VirtualAgentModel::class` |
-| Concrete agents | `viewAny` on `ConcreteAgentOverrideModel::class` |
-| Run agent | `viewAny` on either kind of agent; the page offers only the agents the user may `run`, and says so when there are none |
-| Tools, Servers | always, as `GET /tools` and `GET /servers` check no policy |
-
-A tool description or server instruction page with no override yet is checked against an unsaved override, as a concrete agent page is, so it opens before the first version exists. A virtual agent page shown to someone with `view` but not `update` is read-only.
+A concrete agent is checked against its saved override, or an unsaved one for its name when it has none. `GET /settings-summary` (`show-settings-summary-tool`) reads the registries and config only and checks no policy. A UI such as Atrium v2 asks these endpoints, so it offers only what the policies allow.
 
 ## Replacing a policy
 

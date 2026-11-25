@@ -1,0 +1,13 @@
+{
+  "key": "cortex",
+  "shared_api": "1.0",
+  "root": "../../atrium",
+  "inputs": [
+    "src",
+    "../client/src",
+    "package.json",
+    "vite.config.ts",
+    "pnpm-lock.yaml"
+  ],
+  "hash": "b5c736eed9a5c2f20f659069997d66bd82f7842d4b35b883cbbccd8a6454f92a"
+}

@@ -5,8 +5,9 @@ description: >
   virtual agents with versioned prompts, registered concrete (class-based)
   agents with overridable prompts and toolsets, a tool registry with
   versioned description overrides, and an MCP server registry with versioned
-  instruction overrides and tool list overrides, exposed through a REST API,
-  a prebuilt dashboard, and an MCP server.
+  instruction overrides and tool list overrides, exposed through a JSON API
+  (described by openapi.json and a typed TypeScript client) and an MCP
+  server, with Atrium v2 as the optional UI.
 license: MIT
 metadata:
   author: Jay Fletcher
@@ -30,7 +31,7 @@ php artisan vendor:publish --tag="cortex-migrations"
 php artisan migrate
 ```
 
-Publish config only when route prefix, middleware, the dashboard, MCP transports, or config-registered tools must change:
+Publish config only when route prefix, middleware, MCP transports, or config-registered tools must change:
 
 ```bash
 php artisan vendor:publish --tag="cortex-config"
@@ -38,7 +39,7 @@ php artisan vendor:publish --tag="cortex-config"
 
 ### 2. Secure the surface before enabling it
 
-The API routes, dashboard, and MCP server manage **and execute** agents. MCP transports are disabled by default and the routes ship on `api` middleware only. Always add auth middleware to the routes and the MCP web transport before production exposure. The dashboard is guarded by Atrium's `viewAtrium` gate (see step 3):
+The API routes and MCP server manage **and execute** agents. MCP transports are disabled by default and the routes ship on `api` middleware only. Always add auth middleware to the routes and the MCP web transport before production exposure; Atrium v2 (step 3) calls the same routes, so it passes the same middleware:
 
 ```php
 // config/cortex.php
@@ -51,28 +52,9 @@ The API routes, dashboard, and MCP server manage **and execute** agents. MCP tra
 
 Every API endpoint and MCP tool that touches a model is also checked through the Gate against `cortex.policies`, as the signed-in user or as a guest. Cortex records have no owner, so the bundled policies allow everything and the middleware stays the gate. To restrict something, extend the bundled policy (e.g. `RefactorCircus\Cortex\Domains\VirtualAgent\Policies\VirtualAgentPolicy`), override the ability (`update`, `delete`, `publish`, `run`, ...) and point the model at it in `cortex.policies`. Version policies defer to their virtual agent or override: `view` to read, `update` to add or publish. Type the user parameter as non-nullable to refuse guests.
 
-### 3. Enable the dashboard (optional)
+### 3. Add a UI with Atrium v2 (optional)
 
-Cortex renders a server-side Blade dashboard (virtual agents with prompt versions, concrete agents with overrides, run playground, tools, tool description overrides, MCP server instruction overrides) through the `refactor-circus/atrium` package, which it requires. The pages live under Atrium's path (`/atrium/cortex/...` by default) and use Atrium's middleware and gate, so they authenticate like the rest of the app. Publish Atrium's assets and define its gate:
-
-```bash
-php artisan vendor:publish --tag="atrium-assets"
-```
-
-```php
-// e.g. in AppServiceProvider::boot()
-Gate::define('viewAtrium', fn ($user) => $user->is_admin);
-```
-
-Without a `viewAtrium` gate Atrium allows the `local` environment only. Set `'ui' => ['enabled' => false]` to leave Cortex out of the dashboard; the JSON API keeps serving.
-
-The pages check the same policies as the API (`RefactorCircus\Cortex\Atrium\ScreenAccess`): each page and action answers 403 when refused, and each navigation item, button, form and card shows only when its action is allowed. In published or custom views, gate a control with `@cortexCan('ability', $subject, [$arguments])` ... `@endcortexCan`, asked exactly as the action asks. Actions are `<x-atrium::icon-button>`s and states are `<x-atrium::status-dot>`s coloured by `RefactorCircus\Cortex\Atrium\Badges::forStatus()`.
-
-Cortex ships no CSS: views use only `x-atrium::*` components (`search-input`, `chip` with `x-bind:aria-pressed`, `form.checkbox bare`, `flash :keys="['prompt', 'agent']"`) and Atrium's safelisted utilities, checked by `AtriumStyles::missingClasses()` / `inlineStyles()`.
-
-Every page declares itself as a standard Atrium screen through `RefactorCircus\Cortex\Atrium\Screens::declare()`, so packages can add tabs and sections with `Atrium::screens()->tab()` / `section()` from their provider's `boot()`. The keys are `cortex.virtual-agents`, `cortex.virtual-agent-create`, `cortex.virtual-agent`, `cortex.concrete-agents`, `cortex.concrete-agent`, `cortex.run`, `cortex.tools`, `cortex.tool-description`, `cortex.servers`, `cortex.server-instructions` and `cortex.redirect-domains`; each has the slots `header.actions`, `before` and `after`, plus `aside` (detail) or the row slot `row.actions` (list). A `permission()` on an extension is asked of `cortex.policies` against the record, the row, or else the screen's model class; the run page grants none. Cortex has no history UI of its own: an audit log such as refactor-circus/keen adds History to the screens.
-
-With `refactor-circus/pennantplus` installed, `RefactorCircus\Cortex\Atrium\Features\CortexSupportFeature` switches Cortex in Atrium on and off as a whole (global value only; pages 404 while off). Configure the list in `cortex.atrium.features`; feature classes that cannot load are skipped.
+Cortex's PHP is API and MCP only: no views, screens or Blade directives. For screens, install Atrium v2 (`refactor-circus/atrium`): Cortex ships its Atrium front-end module (JavaScript built to `dist/atrium/`, declared in `composer.json` `extra.atrium`), which Atrium's page loads and which manages virtual agents, concrete agents, runs, tools, MCP servers and owners' redirect domains by calling Cortex's JSON API through `@refactor-circus/cortex-client`. Configure its Cortex integration on Atrium's side (`atrium.integrations.cortex.*`, see Atrium's README), keep `cortex.routes.enabled` on, and make sure Atrium's users pass `cortex.routes.middleware`; every call is checked against `cortex.policies` like any other API call.
 
 ### 4. Register tools
 
@@ -90,9 +72,9 @@ use RefactorCircus\Cortex\Facades\Cortex;
 Cortex::tools()->register('search', \App\Ai\Tools\SearchTool::class);
 ```
 
-Tag tools to group them in the dashboard and agent tool pickers: `Cortex::tools()->register($name, $class, ['catalog'])`, a config entry `'lookup' => ['class' => LookupTool::class, 'tags' => ['catalog']]`, or namespace patterns under `cortex.tool_tags.namespaces` (default `App\\Domains\\{tag}\\` and `App\\Modules\\{tag}\\`, `{tag}` = one namespace segment, kebab-cased). Packages registering their own tools should tag them with the package name. Filter with `GET /cortex/tools?tag=` or the `list-tools-tool` `tag` argument.
+Tag tools to group them for tool lists and agent tool pickers: `Cortex::tools()->register($name, $class, ['catalog'])`, a config entry `'lookup' => ['class' => LookupTool::class, 'tags' => ['catalog']]`, or namespace patterns under `cortex.tool_tags.namespaces` (default `App\\Domains\\{tag}\\` and `App\\Modules\\{tag}\\`, `{tag}` = one namespace segment, kebab-cased). Packages registering their own tools should tag them with the package name. Filter with `GET /cortex/tools?tag=` or the `list-tools-tool` `tag` argument.
 
-To let a tool's description be overridden at runtime (versioned + published like agent prompts), extend `RefactorCircus\Cortex\Domains\Tool\Support\Tool` or use the `RefactorCircus\Cortex\Domains\Tool\Concerns\HasVersionedDescription` trait. Manage overrides from the dashboard or `/cortex/tools/{tool}/description` endpoints.
+To let a tool's description be overridden at runtime (versioned + published like agent prompts), extend `RefactorCircus\Cortex\Domains\Tool\Support\Tool` or use the `RefactorCircus\Cortex\Domains\Tool\Concerns\HasVersionedDescription` trait. Manage overrides through the `/cortex/tools/{tool}/description` endpoints.
 
 MCP server *instructions* work the same way. Cortex's own server is always registered as `cortex`; register app servers under `cortex.mcp.servers` config (string keys name them; unkeyed entries derive the name from `#[Name]` or the class basename) or at runtime with `Cortex::servers()->register('support', \App\Mcp\SupportServer::class)`. For published overrides to be served to MCP clients, the server must extend `RefactorCircus\Cortex\Domains\ConcreteServer\Support\Server` or use the `RefactorCircus\Cortex\Domains\ConcreteServer\Concerns\HasCortexOverrides` trait. The old `Domains\McpServer\Support\Server` and `Concerns\HasVersionedInstructions` names still load as deprecated aliases (removed next major); write new code against `Domains\ConcreteServer`.
 
@@ -132,6 +114,9 @@ Register under `cortex.agents` config (string keys name them; unkeyed entries us
 - `GET|POST /cortex/concrete-agents/{agent}/versions`, `POST .../versions/{version}/publish` — prompt override versions.
 - `PUT /cortex/concrete-agents/{agent}/tools` `{tools: [...] | null}` — set or clear the toolset override; `DELETE /cortex/concrete-agents/{agent}/override` removes both overrides.
 - `POST /cortex/concrete-agents/{agent}/run` `{input}` — execute; returns `{text, usage}`.
+- `GET /cortex/search?q=` (route `cortex.search.index`, MCP `search-agents-tool`) — up to 5 virtual agents (name or slug contains `q`) then up to 5 concrete agents (name contains `q`, case-insensitive), as `{type: virtual_agent|concrete_agent, key, name}`; `key` is the slug or registered name. Needs `viewAny` on either agent model; each result is kept only when the caller may `view` it.
+- `GET /cortex/runnable-agents` (route `cortex.runnable-agents.index`, MCP `list-runnable-agents-tool`) — every virtual then concrete agent the caller may `run`, same item shape, unpaginated.
+- `GET /cortex/settings-summary` (route `cortex.settings-summary.show`, MCP `show-settings-summary-tool`) — `{providers: [{name, models}], tool_count, agent_count, server_count, cache_enabled}`; asks no policy, like `GET /cortex/providers`.
 - `GET /cortex/providers` — providers with models and default model. Curate via `cortex.providers` config (authoritative when non-empty); otherwise every text-capable laravel/ai provider is offered.
 - `GET /cortex/tools` — registered tools with JSON schemas.
 - `GET|DELETE /cortex/tools/{tool}/description`, `GET|POST .../description/versions`, `POST .../versions/{version}/publish` — versioned tool description overrides.
@@ -140,7 +125,9 @@ Register under `cortex.agents` config (string keys name them; unkeyed entries us
 - `PUT|DELETE /cortex/servers/{server}/tools` — set (`{tools: [...]}`) or clear a server's tool override; needs `updateTools`.
 - `GET /cortex/history` — Cortex's audit history, newest first (route `cortex.history.index`, from refactor-circus/keystone); answers 404 until an audit log such as refactor-circus/keen is installed.
 
-The MCP server (`RefactorCircus\Cortex\Mcp\CortexServer`) exposes the virtual agent, concrete agent, tool-list, server-instruction, server-tool and redirect-domain operations as 31 MCP tools, including `update-server-tools-tool`, `clear-server-tools-tool` and `list-cortex-history-tool` (offered only while an audit log is installed and `cortex.audit.enabled` is on); the provider and tool-description endpoints are HTTP-only. Structured answers match the JSON API: the record under `data` (lists add `meta` when paginated), and every such tool declares an `outputSchema()`. A guest the policies refuse gets 401 over HTTP, a signed-in user 403; missing records answer `{"message": "Not found."}`.
+The MCP server (`RefactorCircus\Cortex\Mcp\CortexServer`) exposes the virtual agent, concrete agent, tool-list, server-instruction, server-tool and redirect-domain operations as 34 MCP tools, including `search-agents-tool`, `list-runnable-agents-tool`, `show-settings-summary-tool`, `update-server-tools-tool`, `clear-server-tools-tool` and `list-cortex-history-tool` (offered only while an audit log is installed and `cortex.audit.enabled` is on); the provider and tool-description endpoints are HTTP-only. Structured answers match the JSON API: the record under `data` (lists add `meta` when paginated), and every such tool declares an `outputSchema()`. A guest the policies refuse gets 401 over HTTP, a signed-in user 403; missing records answer `{"message": "Not found."}`.
+
+For a JavaScript or TypeScript front end, use the committed `openapi.json` (every `cortex.*` route, paths relative to `cortex.routes.prefix`) or the typed client in the package's `client/` folder, `@refactor-circus/cortex-client` (TypeScript source, not on npm): `createCortexClient({ baseUrl: 'https://app.test/cortex', headers, fetch, credentials })` returns an openapi-fetch `Client<paths>`, e.g. `client.GET('/search', { params: { query: { q } } })`. Cortex maintainers regenerate both with `composer client:generate` (needs Node); tests fail while either is stale.
 
 From code, call the Actions with their typed input (`RefactorCircus\Keystone\Data\Data` classes in each domain's `Data` namespace), never arrays: `app(CreateVirtualAgentAction::class)->execute(new CreateVirtualAgentData(name: 'Support', slug: 'support-agent', instructions: '...'))`, or `CreateVirtualAgentData::from($input)` to validate untrusted input first. `UpdateVirtualAgentData` changes only the fields given. Cortex stands on `refactor-circus/keystone`: its event contracts live in `RefactorCircus\Keystone\Contracts`.
 
@@ -183,10 +170,11 @@ Always fake — unfaked runs require a configured AI provider.
 
 Read before executing:
 
-- `config/cortex.php` — routes, dashboard switch, MCP transports, cache, providers, tools, concrete agents, policies, tables (`cortex.tables`: rename before migrating; read through `RefactorCircus\Cortex\Support\Tables::name()`, never literal `cortex_*` names)
+- `config/cortex.php` — routes, MCP transports, cache, providers, tools, concrete agents, policies, tables (`cortex.tables`: rename before migrating; read through `RefactorCircus\Cortex\Support\Tables::name()`, never literal `cortex_*` names)
 - `docs/policies.md` — which ability each endpoint and MCP tool checks
 - `docs/events.md` — every action with its start and finish events
 - `README.md` — full route table and payload examples
+- `openapi.json` — the machine-readable API description the TypeScript client is generated from
 
 ## Examples
 
@@ -198,6 +186,7 @@ Read before executing:
 
 - do not document package internals here; keep the skill focused on adoption in Laravel apps
 - do not edit prompt version content — versions are immutable; create a new version and publish it (concrete agent, tool description and server instruction override versions work the same way)
-- do not enable the MCP web transport or expose the routes without auth middleware, or ship the dashboard without a `viewAtrium` gate
+- do not enable the MCP web transport or expose the routes without auth middleware
+- do not look for Cortex views, screens or UI config: Cortex v2's PHP has none; its screens are the Atrium module in `atrium/` (built to `dist/atrium/`), loaded by Atrium v2
 - do not attach tool class names to agents — attach the registered tool *names* from the registry
 - do not leave `updateTools` open to guests in production, and do not register Cortex's own management tools in the tool registry unless every client of the servers you override may manage Cortex

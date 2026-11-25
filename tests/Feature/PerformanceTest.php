@@ -5,16 +5,12 @@ declare(strict_types=1);
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Grammars\SQLiteGrammar;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Validation\ValidationException;
-use RefactorCircus\Cortex\Atrium\CortexPlugin;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Actions\CreateConcreteAgentVersionAction;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Data\CreateConcreteAgentVersionData;
 use RefactorCircus\Cortex\Domains\ConcreteAgent\Services\AgentRegistry;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Actions\CreateMcpInstructionVersionAction;
 use RefactorCircus\Cortex\Domains\ConcreteServer\Data\CreateMcpInstructionVersionData;
-use RefactorCircus\Cortex\Domains\RedirectDomain\Events\RedirectDomainsListingActionEvent;
-use RefactorCircus\Cortex\Domains\RedirectDomain\Models\RedirectDomainModel;
 use RefactorCircus\Cortex\Domains\Tool\Actions\CreateToolDescriptionVersionAction;
 use RefactorCircus\Cortex\Domains\Tool\Data\CreateToolDescriptionVersionData;
 use RefactorCircus\Cortex\Domains\Tool\Services\ToolRegistry;
@@ -191,52 +187,6 @@ it('lists tool names and tags without building any tool', function () {
         ->and($made)->toBe(0);
 });
 
-it('pages stored redirect domains with their owners in a fixed number of queries', function () {
-    app()->detectEnvironment(fn (): string => 'local');
-
-    $owned = function (int $count): void {
-        foreach (VirtualAgentModel::factory()->count($count)->create() as $owner) {
-            RedirectDomainModel::factory()->create(['owner_type' => $owner->getMorphClass(), 'owner_id' => $owner->getKey()]);
-        }
-    };
-
-    $owned(3);
-    $few = count(statements(fn () => $this->get(route('atrium.cortex.redirect-domains.index'))->assertOk()));
-
-    $owned(40);
-    $many = count(statements(fn () => $this->get(route('atrium.cortex.redirect-domains.index'))->assertOk()));
-
-    expect($many)->toBe($few);
-
-    $filters = null;
-    Event::listen(RedirectDomainsListingActionEvent::class, function (RedirectDomainsListingActionEvent $event) use (&$filters): void {
-        $filters = $event->filters;
-    });
-
-    $this->get(route('atrium.cortex.redirect-domains.index', ['source' => 'owned']))->assertOk();
-
-    expect($filters?->paged)->toBeTrue()->and($filters?->source)->toBe('owned');
-
-    $this->get(route('atrium.cortex.redirect-domains.index', ['source' => 'owned', 'page' => 2]))
-        ->assertOk()
-        ->assertSee('data-testid="redirect-domain-owned"', false);
-});
-
-it('lists virtual agents on the dashboard without their prompts or sub-agents', function () {
-    app()->detectEnvironment(fn (): string => 'local');
-    $agent = VirtualAgentModel::factory()->published('A long prompt.')->create();
-    $agent->subAgents()->attach(VirtualAgentModel::factory()->create()->getKey());
-
-    $queries = statements(fn () => $this->get(route('atrium.cortex.virtual-agents.index'))->assertOk()->assertSee('v1'));
-
-    $pivot = Tables::name('virtual_agent_sub_agents');
-    $versions = Tables::name('virtual_agent_versions');
-
-    expect(array_filter($queries, fn (string $sql): bool => str_contains($sql, $pivot)))->toBe([])
-        ->and(array_filter($queries, fn (string $sql): bool => str_contains($sql, $versions) && str_contains($sql, 'content')))->toBe([])
-        ->and(array_filter($queries, fn (string $sql): bool => str_contains($sql, '"'.$versions.'".*') || str_contains($sql, 'select * from "'.$versions.'"')))->toBe([]);
-});
-
 it('checks sub-agent slugs and cycles a query at a time, not one per slug or agent', function () {
     $chain = layeredAgents(depth: 4, width: 1);
     $slugs = VirtualAgentModel::factory()->count(5)->create()->pluck('slug')->all();
@@ -259,19 +209,4 @@ it('checks sub-agent slugs and cycles a query at a time, not one per slug or age
 
     expect(fn () => UpdateVirtualAgentData::from(['sub_agents' => ['missing', $slugs[0]]], $target))
         ->toThrow(ValidationException::class);
-});
-
-it('checks concrete agent search results against their overrides in one query', function () {
-    app(AgentRegistry::class)->register('echo-agent', EchoAgent::class);
-    app(AgentRegistry::class)->register('echo-agent-two', EchoAgent::class);
-
-    $source = app(CortexPlugin::class)->search();
-
-    $results = [];
-    $queries = statements(function () use ($source, &$results): void {
-        $results = array_map(fn ($result): string => $result->title, $source->results('echo'));
-    });
-
-    expect($results)->toBe(['echo-agent', 'echo-agent-two'])
-        ->and(count(array_filter($queries, fn (string $sql): bool => str_contains($sql, Tables::name('concrete_agent_overrides')))))->toBe(1);
 });

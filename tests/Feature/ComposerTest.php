@@ -20,20 +20,54 @@ it('requires Keystone and no other suite package', function (): void {
     expect($suite)->toBe(['refactor-circus/keystone']);
 });
 
-it('suggests Atrium and needs it only for its own suite', function (): void {
+it('names neither Atrium nor PennantPlus in any package section', function (string $package): void {
     $composer = composerManifest();
 
-    expect($composer['suggest'])->toHaveKey('refactor-circus/atrium')
-        ->and(trim((string) $composer['suggest']['refactor-circus/atrium']))->not->toBe('')
-        ->and($composer['require-dev'])->toHaveKey('refactor-circus/atrium')
-        ->and($composer['require'])->not->toHaveKey('refactor-circus/atrium');
+    foreach (['require', 'require-dev', 'suggest', 'conflict', 'replace', 'provide'] as $section) {
+        expect($composer[$section] ?? [])->not->toHaveKey($package);
+    }
+})->with([
+    'Atrium' => ['refactor-circus/atrium'],
+    'PennantPlus' => ['refactor-circus/pennantplus'],
+]);
+
+it('adds no Atrium or PennantPlus repository', function (): void {
+    $urls = array_map(
+        fn (array $repository): string => strtolower((string) ($repository['url'] ?? '')),
+        composerManifest()['repositories'] ?? [],
+    );
+
+    expect(array_filter($urls, fn (string $url): bool => str_contains($url, 'atrium') || str_contains($url, 'pennantplus')))->toBe([]);
 });
 
-it('refuses an Atrium older than the screen-extensions registry', function (): void {
-    $constraint = composerManifest()['conflict']['refactor-circus/atrium'] ?? '';
+it('declares only its Atrium front-end module, as JS, CSS and an integration manifest in dist/atrium', function (): void {
+    expect(composerManifest()['extra']['atrium'] ?? null)->toBe([
+        'key' => 'cortex',
+        'integration' => 'dist/atrium/integration.json',
+        'scripts' => ['dist/atrium/atrium.js'],
+        'styles' => ['dist/atrium/atrium.css'],
+    ]);
+});
 
-    expect($constraint)->toStartWith('<')
-        ->and($constraint)->toBe('<0.1.0');
+it('names neither Atrium nor PennantPlus anywhere else in the manifest', function (): void {
+    $manifest = strtolower(manifestWithoutAtriumModule());
+
+    expect($manifest)->not->toContain('atrium')
+        ->and($manifest)->not->toContain('pennantplus');
+});
+
+it('runs no without-Atrium suite', function (): void {
+    $scripts = composerManifest()['scripts'];
+
+    expect($scripts)->not->toHaveKey('test:without-atrium')
+        ->and((array) $scripts['test'])->not->toContain('@test:without-atrium')
+        ->and((array) $scripts['test'])->toContain('@test:unit');
+});
+
+it('has no without-Atrium CI job', function (): void {
+    $workflow = (string) file_get_contents(dirname(__DIR__, 2).'/.github/workflows/tests.yml');
+
+    expect($workflow)->not->toContain('without-atrium');
 });
 
 it('depends on no Roster', function (): void {
@@ -42,22 +76,4 @@ it('depends on no Roster', function (): void {
     foreach (['require', 'require-dev', 'suggest'] as $section) {
         expect($composer[$section] ?? [])->not->toHaveKey('refactor-circus/roster');
     }
-});
-
-it('runs the no-Atrium suite after the unit suite in composer test', function (): void {
-    $scripts = composerManifest()['scripts'];
-    $test = $scripts['test'];
-
-    expect($scripts)->toHaveKey('test:without-atrium')
-        ->and(implode(' ', (array) $scripts['test:without-atrium']))->toContain('phpunit.without-atrium.xml')
-        ->and($test)->toContain('@test:unit', '@test:without-atrium')
-        ->and(array_search('@test:without-atrium', $test, true))->toBeGreaterThan(array_search('@test:unit', $test, true));
-});
-
-it('proves the package runs with Atrium uninstalled in CI', function (): void {
-    $workflow = (string) file_get_contents(dirname(__DIR__, 2).'/.github/workflows/tests.yml');
-
-    expect($workflow)->toContain('without-atrium:')
-        ->and($workflow)->toContain('composer remove --dev refactor-circus/atrium --no-update')
-        ->and($workflow)->toContain('composer test:without-atrium');
 });

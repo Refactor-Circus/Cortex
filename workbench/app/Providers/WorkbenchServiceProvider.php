@@ -2,9 +2,13 @@
 
 namespace Workbench\App\Providers;
 
+use Dedoc\Scramble\Scramble;
+use Dedoc\Scramble\Support\Generator\OpenApi;
+use Dedoc\Scramble\Support\Generator\Server;
 use Illuminate\Contracts\Http\Kernel as HttpKernel;
 use Illuminate\Foundation\Http\Kernel;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\ServiceProvider;
 use Workbench\App\Ai\Agents\CatalogAgent;
 use Workbench\App\Ai\Agents\RefundAgent;
@@ -34,17 +38,9 @@ class WorkbenchServiceProvider extends ServiceProvider
     {
         config([
             'auth.providers.users.model' => User::class,
-            // refactor-circus/pennantplus's layered store: users who follow a feature's
-            // global value store nothing, as in a real application.
-            'pennant.default' => 'pennantplus',
-            'pennant.stores.pennantplus' => [
-                'driver' => 'pennantplus',
-                'connection' => null,
-                'table' => 'features',
-            ],
 
             // Offered when configuring a virtual agent. Nothing calls them
-            // unless an agent is run from the dashboard.
+            // unless an agent is run through the API or MCP server.
             'cortex.providers' => [
                 'anthropic' => ['claude-sonnet-5-5', 'claude-opus-5-5', 'claude-haiku-4-5'],
                 'openai' => ['gpt-5', 'gpt-5-mini'],
@@ -95,7 +91,59 @@ class WorkbenchServiceProvider extends ServiceProvider
             }
         });
 
-        // A real application defines a real gate; the demo user may see it all.
-        Gate::define('viewAtrium', fn ($user = null): bool => true);
+        // After every provider booted, so Scramble's own boot, which loads
+        // config('scramble'), cannot overwrite it.
+        $this->app->booted(function (): void {
+            $this->documentApi();
+
+            if ($this->app->runningConsoleCommand('scramble:export')) {
+                $this->useMigratedMemoryDatabase();
+            }
+        });
+    }
+
+    /**
+     * Scramble reads the models' columns from the database, so export from
+     * a freshly migrated in-memory one: the document then never depends on
+     * the state of the workbench database.
+     */
+    private function useMigratedMemoryDatabase(): void
+    {
+        config([
+            'database.connections.openapi' => [
+                'driver' => 'sqlite',
+                'database' => ':memory:',
+                'prefix' => '',
+                'foreign_key_constraints' => true,
+            ],
+            'database.default' => 'openapi',
+        ]);
+
+        Artisan::call('migrate', ['--force' => true]);
+    }
+
+    /**
+     * Pin `composer openapi:export` to Cortex's own routes and to fixed
+     * values, so the committed openapi.json changes only when the API does.
+     */
+    private function documentApi(): void
+    {
+        $prefix = trim((string) config('cortex.routes.prefix'), '/');
+
+        Scramble::configure()
+            ->useConfig(array_replace_recursive((array) config('scramble'), [
+                'api_path' => $prefix,
+                'info' => [
+                    'version' => '2.0.0',
+                    'description' => 'The Cortex JSON API: virtual and concrete agents, tools, MCP servers, redirect domains and the agent directory. Paths are relative to the `cortex.routes.prefix` of the host application.',
+                ],
+                'ui' => ['title' => 'Cortex API'],
+            ]))
+            ->routes(fn (Route $route): bool => str_starts_with((string) $route->getName(), 'cortex.'))
+            // A relative server instead of one built from APP_URL: clients
+            // pass their own base URL, prefix included.
+            ->withDocumentTransformers(function (OpenApi $openApi) use ($prefix): void {
+                $openApi->servers = [Server::make('/'.$prefix)];
+            });
     }
 }
